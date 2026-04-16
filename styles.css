@@ -1,1 +1,10 @@
-/* css styles */
+/* Dark navbar for both light and dark mode */
+.navbar {
+  background-color: #2b3e50;
+}
+
+/* White background for light mode only */
+body {
+  background-color: #ffffff;
+  color: #000000;
+}

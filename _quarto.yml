@@ -16,9 +16,7 @@ website:
 
 format:
   html:
-    theme:
-      light: superhero
-      dark: brand
+    theme: superhero
     css: styles.css
     toc: true
 
