@@ -20,15 +20,30 @@ pacman::p_load(tidyverse)
 exam_data <- read_csv("data/Exam_data.csv")
 ```
 
-# Plotting a simple bar chart
+# Plotting different chart types
+
+## Bar chart
 
 ```{r}
-ggplot(data=exam_data, 
+p1 <- ggplot(data=exam_data, 
        aes(x=RACE)) +
   geom_bar() +
   ggtitle("Number of students by Nationalities")
+p1
 
 ```
+
+```{r}
+p1 +
+  coord_flip()
+```
+
+```{r}
+p1 + theme_linedraw()
+
+```
+
+## Histogram chart
 
 ```{r}
 ggplot(data=exam_data, aes(x = MATHS)) +
@@ -39,6 +54,7 @@ ggplot(data=exam_data, aes(x = MATHS)) +
   ggtitle("Distribution of Maths scores")
 
 ```
+
 ```{r}
 ggplot(data=exam_data, 
        aes(x = MATHS)) +
@@ -48,6 +64,7 @@ ggplot(data=exam_data,
                      breaks = NULL)  +
   ggtitle("Distribution of Maths scores")
 ```
+
 ```{r}
 ggplot(data=exam_data, 
        aes(x= MATHS, 
@@ -65,6 +82,8 @@ ggplot(data=exam_data,
   ggtitle("Density of Maths scores by Gender")
 ```
 
+## Box plot
+
 ```{r}
 ggplot(data=exam_data, 
        aes(y = MATHS, 
@@ -72,6 +91,8 @@ ggplot(data=exam_data,
   geom_boxplot(notch=TRUE) +
   ggtitle("Boxplot of Maths scores by Gender")
 ```
+
+## Violin plot
 
 ```{r}
 ggplot(data=exam_data, 
@@ -81,6 +102,8 @@ ggplot(data=exam_data,
   ggtitle("Violin plot of Math scores by Gender")
 ```
 
+## Scatter plot
+
 ```{r}
 ggplot(data=exam_data, 
        aes(x= MATHS, 
@@ -88,8 +111,21 @@ ggplot(data=exam_data,
   geom_point() +
   geom_smooth(method=lm, 
               linewidth=0.5) +
-  ggtitle("Scatterplot between Math and English scores")
+  ggtitle("Scatter plot between Math and English scores")
 ```
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x= MATHS, y=ENGLISH)) +
+  geom_point() +
+  geom_smooth(method=lm, 
+              size=0.5) +  
+  coord_cartesian(xlim=c(0,100),
+                  ylim=c(0,100)) +
+  ggtitle("Scatter plot between Math and English scores, equal axis")
+```
+
+## Combination chart types
 
 ```{r}
 ggplot(data=exam_data, 
@@ -110,6 +146,7 @@ ggplot(data=exam_data,
                colour ="red",        
                size=4)               
 ```
+
 ```{r}
 ggplot(data=exam_data, 
        aes(x= MATHS)) +

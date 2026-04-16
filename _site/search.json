@@ -33,5 +33,47 @@
     "title": "Hands-on Exercise 1",
     "section": "",
     "text": "exam_data &lt;- read_csv(\"data/Exam_data.csv\")\n\nRows: 322 Columns: 7\n── Column specification ────────────────────────────────────────────────────────\nDelimiter: \",\"\nchr (4): ID, CLASS, GENDER, RACE\ndbl (3): ENGLISH, MATHS, SCIENCE\n\nℹ Use `spec()` to retrieve the full column specification for this data.\nℹ Specify the column types or set `show_col_types = FALSE` to quiet this message."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#bar-chart",
+    "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#bar-chart",
+    "title": "Hands-on Exercise 1",
+    "section": "Bar chart",
+    "text": "Bar chart\n\np1 &lt;- ggplot(data=exam_data, \n       aes(x=RACE)) +\n  geom_bar() +\n  ggtitle(\"Number of students by Nationalities\")\np1\n\n\n\n\n\n\n\n\n\np1 +\n  coord_flip()\n\n\n\n\n\n\n\n\n\np1 + theme_linedraw()"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#histogram-chart",
+    "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#histogram-chart",
+    "title": "Hands-on Exercise 1",
+    "section": "Histogram chart",
+    "text": "Histogram chart\n\nggplot(data=exam_data, aes(x = MATHS)) +\n  geom_histogram(bins=10, \n                 boundary = 100,\n                 color=\"black\", \n                 fill=\"light blue\") +\n  ggtitle(\"Distribution of Maths scores\")\n\n\n\n\n\n\n\n\n\nggplot(data=exam_data, \n       aes(x = MATHS)) +\n  geom_dotplot(binwidth=2.5,         \n               dotsize = 0.5) +      \n  scale_y_continuous(NULL,           \n                     breaks = NULL)  +\n  ggtitle(\"Distribution of Maths scores\")\n\n\n\n\n\n\n\n\n\nggplot(data=exam_data, \n       aes(x= MATHS, \n           fill = GENDER)) +\n  geom_histogram(bins=20, \n                 color=\"grey30\") +\n  ggtitle(\"Stacked Distribution of Maths scores by Gender\")\n\n\n\n\n\n\n\n\n\nggplot(data=exam_data, \n       aes(x = MATHS, \n           colour = GENDER)) +\n  geom_density() +\n  ggtitle(\"Density of Maths scores by Gender\")"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#box-plot",
+    "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#box-plot",
+    "title": "Hands-on Exercise 1",
+    "section": "Box plot",
+    "text": "Box plot\n\nggplot(data=exam_data, \n       aes(y = MATHS, \n           x= GENDER)) +\n  geom_boxplot(notch=TRUE) +\n  ggtitle(\"Boxplot of Maths scores by Gender\")"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#violin-plot",
+    "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#violin-plot",
+    "title": "Hands-on Exercise 1",
+    "section": "Violin plot",
+    "text": "Violin plot\n\nggplot(data=exam_data, \n       aes(y = MATHS, \n           x= GENDER)) +\n  geom_violin() +\n  ggtitle(\"Violin plot of Math scores by Gender\")"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#scatter-plot",
+    "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#scatter-plot",
+    "title": "Hands-on Exercise 1",
+    "section": "Scatter plot",
+    "text": "Scatter plot\n\nggplot(data=exam_data, \n       aes(x= MATHS, \n           y=ENGLISH)) +\n  geom_point() +\n  geom_smooth(method=lm, \n              linewidth=0.5) +\n  ggtitle(\"Scatter plot between Math and English scores\")\n\n`geom_smooth()` using formula = 'y ~ x'\n\n\n\n\n\n\n\n\n\n\nggplot(data=exam_data, \n       aes(x= MATHS, y=ENGLISH)) +\n  geom_point() +\n  geom_smooth(method=lm, \n              size=0.5) +  \n  coord_cartesian(xlim=c(0,100),\n                  ylim=c(0,100)) +\n  ggtitle(\"Scatter plot between Math and English scores, equal axis\")\n\nWarning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.\nℹ Please use `linewidth` instead.\n\n\n`geom_smooth()` using formula = 'y ~ x'"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#combination-chart-types",
+    "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#combination-chart-types",
+    "title": "Hands-on Exercise 1",
+    "section": "Combination chart types",
+    "text": "Combination chart types\n\nggplot(data=exam_data, \n       aes(y = MATHS, \n           x= GENDER)) +\n  geom_boxplot() +                    \n  geom_point(position=\"jitter\", \n             size = 0.5) +\n  ggtitle(\"Scatter and box plots of Math scores by Gender\")\n\n\n\n\n\n\n\n\n\nggplot(data=exam_data, \n       aes(y = MATHS, x= GENDER)) +\n  geom_boxplot() +\n  stat_summary(geom = \"point\",       \n               fun = \"mean\",         \n               colour =\"red\",        \n               size=4)               \n\n\n\n\n\n\n\n\n\nggplot(data=exam_data, \n       aes(x= MATHS)) +\n  geom_histogram(bins=20) +\n  facet_wrap(~ CLASS) +\n  ggtitle(\"facet_wrap()\")\n\n\n\n\n\n\n\n\n\nggplot(data=exam_data, \n       aes(x= MATHS)) +\n  geom_histogram(bins=20) +\n  facet_grid(~ CLASS) +\n  ggtitle(\"facet_grid()\")"
   }
 ]
