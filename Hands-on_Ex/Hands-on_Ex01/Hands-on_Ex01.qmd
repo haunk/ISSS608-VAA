@@ -23,8 +23,106 @@ exam_data <- read_csv("data/Exam_data.csv")
 # Plotting a simple bar chart
 
 ```{r}
-ggplot(data = exam_data,
-      aes(x = RACE)) +
-  geom_bar()
+ggplot(data=exam_data, 
+       aes(x=RACE)) +
+  geom_bar() +
+  ggtitle("Number of students by Nationalities")
 
+```
+
+```{r}
+ggplot(data=exam_data, aes(x = MATHS)) +
+  geom_histogram(bins=10, 
+                 boundary = 100,
+                 color="black", 
+                 fill="light blue") +
+  ggtitle("Distribution of Maths scores")
+
+```
+```{r}
+ggplot(data=exam_data, 
+       aes(x = MATHS)) +
+  geom_dotplot(binwidth=2.5,         
+               dotsize = 0.5) +      
+  scale_y_continuous(NULL,           
+                     breaks = NULL)  +
+  ggtitle("Distribution of Maths scores")
+```
+```{r}
+ggplot(data=exam_data, 
+       aes(x= MATHS, 
+           fill = GENDER)) +
+  geom_histogram(bins=20, 
+                 color="grey30") +
+  ggtitle("Stacked Distribution of Maths scores by Gender")
+```
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x = MATHS, 
+           colour = GENDER)) +
+  geom_density() +
+  ggtitle("Density of Maths scores by Gender")
+```
+
+```{r}
+ggplot(data=exam_data, 
+       aes(y = MATHS, 
+           x= GENDER)) +
+  geom_boxplot(notch=TRUE) +
+  ggtitle("Boxplot of Maths scores by Gender")
+```
+
+```{r}
+ggplot(data=exam_data, 
+       aes(y = MATHS, 
+           x= GENDER)) +
+  geom_violin() +
+  ggtitle("Violin plot of Math scores by Gender")
+```
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x= MATHS, 
+           y=ENGLISH)) +
+  geom_point() +
+  geom_smooth(method=lm, 
+              linewidth=0.5) +
+  ggtitle("Scatterplot between Math and English scores")
+```
+
+```{r}
+ggplot(data=exam_data, 
+       aes(y = MATHS, 
+           x= GENDER)) +
+  geom_boxplot() +                    
+  geom_point(position="jitter", 
+             size = 0.5) +
+  ggtitle("Scatter and box plots of Math scores by Gender")
+```
+
+```{r}
+ggplot(data=exam_data, 
+       aes(y = MATHS, x= GENDER)) +
+  geom_boxplot() +
+  stat_summary(geom = "point",       
+               fun = "mean",         
+               colour ="red",        
+               size=4)               
+```
+```{r}
+ggplot(data=exam_data, 
+       aes(x= MATHS)) +
+  geom_histogram(bins=20) +
+  facet_wrap(~ CLASS) +
+  ggtitle("facet_wrap()")
+
+```
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x= MATHS)) +
+  geom_histogram(bins=20) +
+  facet_grid(~ CLASS) +
+  ggtitle("facet_grid()")
 ```
