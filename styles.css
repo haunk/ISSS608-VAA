@@ -1,54 +1,36 @@
-/* Ensure the body (the entire page content) covers the full height */
-html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
-
-/* 1. Set up the body as the container for the blurred layer */
+/* Ensure the base background of the whole site is white */
 body {
+  background-color: white !important;
+  color: black;
   margin: 0;
-  font-family: Arial, sans-serif; /* Keep your font */
-  position: relative; /* CRITICAL for the blur layer */
-  background-color: #000; /* Fallback color if image fails */
-  /* Remove old background settings from body */
-  background-image: none !important;
+  min-height: 100vh;
 }
 
-/* 2. Create the blur layer using a pseudo-element */
-body:after {
+/* ONLY if the body has the home-page class, show the sea */
+body.home-page {
+  background-color: transparent !important; 
+}
+
+body.home-page::after {
   content: "";
-  position: fixed; /* Fixes image so it doesn't scroll with page */
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  /* Replace with your downloaded image path */
-  background-image: url('images/deep-sea-banner.jpg'); 
+  background-image: url('images/deep-sea-banner.jpg') !important;
   background-size: cover;
   background-position: center;
-  /* Applying the blur and brightness reduction */
-  filter: blur(6px) brightness(80%); 
-  -webkit-filter: blur(6px) brightness(80%); /* For safari */
-  /* This ensures the layer is behind the content */
-  z-index: -1; 
+  filter: blur(6px) brightness(60%);
+  z-index: -1;
+  display: block;
 }
 
-/* 3. Ensure your actual content is on top and easy to read */
-#quarto-content, .container {
-  position: relative;
-  z-index: 1; /* Above the blur layer */
-  /* If text is over a dark blurred background, it should be light */
-  color: #ffffff !important; 
-  padding-top: 2rem; /* Add some space so content isn't right at the top */
-}
-
-/* Ensure headings like ISSS608-VAA are light */
-h1, h2, h3, h4 {
-  color: #ffffff !important;
-}
-
-/* Link colors might need adjustment to contrast with the dark background */
-a {
-  color: #a8dadc !important; /* A light, contrasting color for links */
+/* Only make text white on the home page */
+.home-page #quarto-content, 
+.home-page main, 
+.home-page p, 
+.home-page h1, 
+.home-page h2 {
+  color: white !important;
 }
