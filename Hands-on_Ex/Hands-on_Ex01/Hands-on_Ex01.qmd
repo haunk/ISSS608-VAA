@@ -1,6 +1,13 @@
 ---
 title: "Hands-on Exercise 1"
 author: "Nguyen Kim Hau"
+date: "April 16, 2026"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  warning: false
+  freeze: true
 ---
 
 # Getting Started
@@ -18,6 +25,10 @@ pacman::p_load(tidyverse)
 
 ```{r}
 exam_data <- read_csv("data/Exam_data.csv")
+```
+
+```{r}
+head(exam_data, n = 10)
 ```
 
 # Plotting different chart types
