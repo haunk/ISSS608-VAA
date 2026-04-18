@@ -45,8 +45,7 @@ p1
 ```
 
 ```{r}
-p1 +
-  coord_flip()
+p1 + coord_flip()
 ```
 
 ```{r}
