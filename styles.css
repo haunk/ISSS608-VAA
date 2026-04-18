@@ -1,10 +1,54 @@
-/* Dark navbar for both light and dark mode */
-.navbar {
-  background-color: #2b3e50;
+/* Ensure the body (the entire page content) covers the full height */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
-/* White background for light mode only */
+/* 1. Set up the body as the container for the blurred layer */
 body {
-  background-color: #ffffff;
-  color: #000000;
+  margin: 0;
+  font-family: Arial, sans-serif; /* Keep your font */
+  position: relative; /* CRITICAL for the blur layer */
+  background-color: #000; /* Fallback color if image fails */
+  /* Remove old background settings from body */
+  background-image: none !important;
+}
+
+/* 2. Create the blur layer using a pseudo-element */
+body:after {
+  content: "";
+  position: fixed; /* Fixes image so it doesn't scroll with page */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* Replace with your downloaded image path */
+  background-image: url('images/deep-sea-banner.jpg'); 
+  background-size: cover;
+  background-position: center;
+  /* Applying the blur and brightness reduction */
+  filter: blur(6px) brightness(80%); 
+  -webkit-filter: blur(6px) brightness(80%); /* For safari */
+  /* This ensures the layer is behind the content */
+  z-index: -1; 
+}
+
+/* 3. Ensure your actual content is on top and easy to read */
+#quarto-content, .container {
+  position: relative;
+  z-index: 1; /* Above the blur layer */
+  /* If text is over a dark blurred background, it should be light */
+  color: #ffffff !important; 
+  padding-top: 2rem; /* Add some space so content isn't right at the top */
+}
+
+/* Ensure headings like ISSS608-VAA are light */
+h1, h2, h3, h4 {
+  color: #ffffff !important;
+}
+
+/* Link colors might need adjustment to contrast with the dark background */
+a {
+  color: #a8dadc !important; /* A light, contrasting color for links */
 }

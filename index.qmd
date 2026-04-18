@@ -2,4 +2,14 @@
 title: "ISSS608-VAA"
 ---
 
-Welcome to **ISSS608 Visual Analytics and Application**. In this website, you will find my coursework prepared for this course.
+::: {.text-center style="padding: 60px 20px; color: white;"}
+**Welcome to Nemo’s Journey**
+
+Nemo’s journey is not just a swim through the sea, but a voyage through the vast architecture of new ideas. Challenge accepted. Danger embraced. Wisdom sought in the sapphire silence of the deep.
+
+**Welcome to ISSS608: Visual Analytics and Application.** Within this digital reef, you will find my coursework - a collection of insights and data stories gathered from the currents of exploration.
+
+![](images/family.png){width="614"}
+
+P/S:...
+:::

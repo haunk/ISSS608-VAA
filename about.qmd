@@ -4,6 +4,6 @@ title: "About"
 
 About this site
 
-```{r}
-1 + 1
-```
+Author: Nguyen Kim Hau
+
+Course: ISSS608 Visual Analytics and Application
