@@ -4,7 +4,7 @@
     "href": "index.html",
     "title": "ISSS608-VAA",
     "section": "",
-    "text": "Welcome to Nemo’s Journey\nNemo’s journey is not just a swim through the sea, but a voyage through the vast architecture of new ideas. Challenge accepted. Danger embraced. Wisdom sought in the sapphire silence of the deep.\nWelcome to ISSS608: Visual Analytics and Application. Within this digital reef, you will find my coursework - a collection of insights and data stories gathered from the currents of exploration.\n\nP/S:…"
+    "text": "Welcome to Nemo’s Journey \nNemo’s journey is not just a swim through the sea, but a voyage through the vast architecture of new ideas. Challenge accepted. Danger embraced. Wisdom sought in the sapphire silence of the deep.\nWelcome to ISSS608: Visual Analytics and Application. Within this digital reef, you will find my coursework - a collection of insights and data stories gathered from the currents of exploration.\n\nP/S:…"
   },
   {
     "objectID": "about.html",
@@ -75,5 +75,33 @@
     "title": "Hands-on Exercise 1",
     "section": "Combination chart types",
     "text": "Combination chart types\n\nggplot(data=exam_data, \n       aes(y = MATHS, \n           x= GENDER)) +\n  geom_boxplot() +                    \n  geom_point(position=\"jitter\", \n             size = 0.5) +\n  ggtitle(\"Scatter and box plots of Math scores by Gender\")\n\n\n\n\n\n\n\n\n\nggplot(data=exam_data, \n       aes(y = MATHS, x= GENDER)) +\n  geom_boxplot() +\n  stat_summary(geom = \"point\",       \n               fun = \"mean\",         \n               colour =\"red\",        \n               size=4)               \n\n\n\n\n\n\n\n\n\nggplot(data=exam_data, \n       aes(x= MATHS)) +\n  geom_histogram(bins=20) +\n  facet_wrap(~ CLASS) +\n  ggtitle(\"facet_wrap()\")\n\n\n\n\n\n\n\n\n\nggplot(data=exam_data, \n       aes(x= MATHS)) +\n  geom_histogram(bins=20) +\n  facet_grid(~ CLASS) +\n  ggtitle(\"facet_grid()\")"
+  },
+  {
+    "objectID": "Analytics_Project/Customer_Segmentation/Customer_Segmentation.html",
+    "href": "Analytics_Project/Customer_Segmentation/Customer_Segmentation.html",
+    "title": "Customer Segmentation",
+    "section": "",
+    "text": "Data Analytics Project\nA multi-dimensional customer segmentation study using Latent Class Analysis (LCA) to identify 6 distinct customer personas from 48,723 customers and 3.1M transactions.\n\n\nA leading Colombian fintech company needed to understand their diverse customer base to:\n\nImprove targeted marketing effectiveness\nReduce churn in at-risk segments\nIdentify cross-selling opportunities\nOptimize resource allocation across customer groups\n\n\n\n\nData Scope: 48,723 customers | 3.1M transactions | 58 variables\nAnalysis Framework:\n\nBehavioral Targeting\nRisk Profiling\nTechnographic Segmentation\nValue-Based Segmentation\n\nKey Steps:\n\nSelected significant variables, Feature Engineering\nCompared K-Means vs. Latent Class Analysis models\nSelected optimal model (LCA with 6 clusters, Entropy R² = 0.845)\nCreated actionable customer personas\n\n\n\n\n\n\nAfter analyzing business domain and checking correlation value, 10 variables are remained.I will run LCA clustering trials to find out the most suitable number of latent clusters. At k = 6, BIC gets lowest point and Entropy_R2 reaches a high point of 0.845.\n\n\n\nAssign total customers into 6 clusters\n\n\n\n\n\n\nCluster 4 and 6 demand the highest retention investment as top CLV contributors with strong engagement.\nCluster 3 and 5 offer clear cross-sell pathways - investment products for insurance-focused customers and insurance for investor-focused ones.\nCluster 1 requires proactive re-engagement to address the satisfaction gap before churn accelerates across this large segment.\nCluster 2, while currently low-value, represents the future customer base and benefits most from structured onboarding programs that build early product habits and long-term loyalty.\n\n\n\n\nStrategic priorities by cluster"
+  },
+  {
+    "objectID": "Analytics_Project/Customer_Segmentation/Customer_Segmentation.html#business-challenge",
+    "href": "Analytics_Project/Customer_Segmentation/Customer_Segmentation.html#business-challenge",
+    "title": "Customer Segmentation",
+    "section": "",
+    "text": "A leading Colombian fintech company needed to understand their diverse customer base to:\n\nImprove targeted marketing effectiveness\nReduce churn in at-risk segments\nIdentify cross-selling opportunities\nOptimize resource allocation across customer groups"
+  },
+  {
+    "objectID": "Analytics_Project/Customer_Segmentation/Customer_Segmentation.html#methodology",
+    "href": "Analytics_Project/Customer_Segmentation/Customer_Segmentation.html#methodology",
+    "title": "Customer Segmentation",
+    "section": "",
+    "text": "Data Scope: 48,723 customers | 3.1M transactions | 58 variables\nAnalysis Framework:\n\nBehavioral Targeting\nRisk Profiling\nTechnographic Segmentation\nValue-Based Segmentation\n\nKey Steps:\n\nSelected significant variables, Feature Engineering\nCompared K-Means vs. Latent Class Analysis models\nSelected optimal model (LCA with 6 clusters, Entropy R² = 0.845)\nCreated actionable customer personas"
+  },
+  {
+    "objectID": "Analytics_Project/Customer_Segmentation/Customer_Segmentation.html#key-findings",
+    "href": "Analytics_Project/Customer_Segmentation/Customer_Segmentation.html#key-findings",
+    "title": "Customer Segmentation",
+    "section": "",
+    "text": "After analyzing business domain and checking correlation value, 10 variables are remained.I will run LCA clustering trials to find out the most suitable number of latent clusters. At k = 6, BIC gets lowest point and Entropy_R2 reaches a high point of 0.845.\n\n\n\nAssign total customers into 6 clusters\n\n\n\n\n\n\nCluster 4 and 6 demand the highest retention investment as top CLV contributors with strong engagement.\nCluster 3 and 5 offer clear cross-sell pathways - investment products for insurance-focused customers and insurance for investor-focused ones.\nCluster 1 requires proactive re-engagement to address the satisfaction gap before churn accelerates across this large segment.\nCluster 2, while currently low-value, represents the future customer base and benefits most from structured onboarding programs that build early product habits and long-term loyalty.\n\n\n\n\nStrategic priorities by cluster"
   }
 ]

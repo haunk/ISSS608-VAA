@@ -7,7 +7,7 @@ format:
 ---
 
 ::: {.text-center style="padding: 60px 20px; color: white;"}
-**Welcome to Nemo’s Journey**
+**Welcome to Nemo’s Journey** ![](images/nemo.png){width="55" height="43"}
 
 Nemo’s journey is not just a swim through the sea, but a voyage through the vast architecture of new ideas. Challenge accepted. Danger embraced. Wisdom sought in the sapphire silence of the deep.
 
