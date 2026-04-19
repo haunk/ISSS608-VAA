@@ -76,4 +76,6 @@ After analyzing business domain and checking correlation value, 10 variables are
 
 This analysis is conducted on KNIME Analytics Platform.
 
+![A part of workflow](images/workflow.png)
+
 Feel free to explore the full workflow here. <https://hub.knime.com/s/p7LaJUaJYsiFkF47>.
