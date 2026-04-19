@@ -15,23 +15,21 @@ website:
       Take-home Exercise"
         menu:
           - text: "Take-home Exercise 1"
-    
-    
-    right:
-      - text: "<img src='/images/turtle_2.png' width='40' height='40' style='margin-right: 5px;'> 
-      Home"
-        href: index.qmd
-        
+          
       - text: "<img src='/images/black.png' width='40' height='40' style='margin-right: 5px;'> 
-      About"
-        href: about.qmd
-        
-      - text: "<img src='/images/bird.png' width='40' height='40' style='margin-right: 5px;'> 
       Analytics Project"
         menu:
           - text: "Customer Segmentation"
             href: "Analytics_Project/Customer_Segmentation/Customer_Segmentation.html"
-
+    
+    
+    right:
+      - text: "Home"
+        href: index.qmd
+        
+      - text: "About"
+        href: about.qmd
+        
 format:
   html:
     theme: superhero

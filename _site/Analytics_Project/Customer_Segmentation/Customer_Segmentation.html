@@ -113,27 +113,27 @@ ul.task-list li input[type="checkbox"] {
         <li class="dropdown-header">Take-home Exercise 1</li>
     </ul>
   </li>
-</ul>
-            <ul class="navbar-nav navbar-nav-scroll ms-auto">
-  <li class="nav-item">
-    <a class="nav-link" href="../../index.html"> 
-<span class="menu-text"><img src="../../images/turtle_2.png" width="40" height="40" style="margin-right: 5px;"> Home</span></a>
-  </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="../../about.html"> 
-<span class="menu-text"><img src="../../images/black.png" width="40" height="40" style="margin-right: 5px;"> About</span></a>
-  </li>  
   <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-img-srcimagesbird.png-width40-height40-stylemargin-right-5px--analytics-project" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text"><img src="../../images/bird.png" width="40" height="40" style="margin-right: 5px;"> Analytics Project</span>
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-img-srcimagesblack.png-width40-height40-stylemargin-right-5px--analytics-project" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text"><img src="../../images/black.png" width="40" height="40" style="margin-right: 5px;"> Analytics Project</span>
     </a>
-    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-img-srcimagesbird.png-width40-height40-stylemargin-right-5px--analytics-project">    
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-img-srcimagesblack.png-width40-height40-stylemargin-right-5px--analytics-project">    
         <li>
     <a class="dropdown-item" href="../../Analytics_Project/Customer_Segmentation/Customer_Segmentation.html">
  <span class="dropdown-text">Customer Segmentation</span></a>
   </li>  
     </ul>
   </li>
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
 </ul>
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
@@ -156,9 +156,11 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#methodology" id="toc-methodology" class="nav-link" data-scroll-target="#methodology">2. Methodology</a></li>
   <li><a href="#key-findings" id="toc-key-findings" class="nav-link" data-scroll-target="#key-findings">3. Key Findings</a>
   <ul class="collapse">
-  <li><a href="#clusters-have-high-entropy-r2" id="toc-clusters-have-high-entropy-r2" class="nav-link" data-scroll-target="#clusters-have-high-entropy-r2">6 clusters have high Entropy R2</a></li>
+  <li><a href="#customer-segments-discovered" id="toc-customer-segments-discovered" class="nav-link" data-scroll-target="#customer-segments-discovered">6 customer segments discovered</a></li>
   <li><a href="#cluster-characteristics-and-business-recommendation" id="toc-cluster-characteristics-and-business-recommendation" class="nav-link" data-scroll-target="#cluster-characteristics-and-business-recommendation">Cluster Characteristics and Business Recommendation</a></li>
   </ul></li>
+  <li><a href="#technical-summary" id="toc-technical-summary" class="nav-link" data-scroll-target="#technical-summary">4. Technical Summary</a></li>
+  <li><a href="#workflow" id="toc-workflow" class="nav-link" data-scroll-target="#workflow">5. Workflow</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -237,8 +239,8 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="key-findings" class="level2">
 <h2 class="anchored" data-anchor-id="key-findings">3. Key Findings</h2>
-<section id="clusters-have-high-entropy-r2" class="level3">
-<h3 class="anchored" data-anchor-id="clusters-have-high-entropy-r2">6 clusters have high Entropy R2</h3>
+<section id="customer-segments-discovered" class="level3">
+<h3 class="anchored" data-anchor-id="customer-segments-discovered">6 customer segments discovered</h3>
 <p>After analyzing business domain and checking correlation value, 10 variables are remained.I will run LCA clustering trials to find out the most suitable number of latent clusters. At k = 6, BIC gets lowest point and Entropy_R<sup><sub>2</sub></sup> reaches a high point of 0.845.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -261,9 +263,32 @@ ul.task-list li input[type="checkbox"] {
 <figcaption>Strategic priorities by cluster</figcaption>
 </figure>
 </div>
-
-
 </section>
+</section>
+<section id="technical-summary" class="level2">
+<h2 class="anchored" data-anchor-id="technical-summary">4. Technical Summary</h2>
+<p><strong>Tools &amp; Methods:</strong></p>
+<ul>
+<li>KNIME Analytics Platform</li>
+<li>Latent Class Analysis (LCA)</li>
+<li>Principal Component Analysis (PCA)</li>
+<li>Feature Engineering &amp; Selection</li>
+<li>Data Binning &amp; Transformation</li>
+</ul>
+<p><strong>Model Performance:</strong></p>
+<ul>
+<li>Entropy R²: 0.845 (exceeds 0.8 threshold)</li>
+<li>BIC: 112,817.79</li>
+<li>10 variables across 4 business dimensions</li>
+<li>Silhouette comparison: LCA &gt;&gt; K-Means (0.139)</li>
+</ul>
+</section>
+<section id="workflow" class="level2">
+<h2 class="anchored" data-anchor-id="workflow">5. Workflow</h2>
+<p>This analysis is conducted on KNIME Analytics Platform.</p>
+<p>Feel free to explore full workflow here. <a href="https://hub.knime.com/s/p7LaJUaJYsiFkF47" class="uri">https://hub.knime.com/s/p7LaJUaJYsiFkF47</a></p>
+
+
 </section>
 </section>
 
