@@ -38,15 +38,21 @@ A leading Colombian fintech company needed to understand their diverse customer 
 3.  Selected optimal model (LCA with 6 clusters, Entropy R² = 0.845)
 4.  Created actionable customer personas
 
+![10 selected variables after running 2 PoLCA stages](images/variables.png)
+
 ## 3. Key Findings
 
 **6 customer segments discovered**
 
 After analyzing business domain and checking correlation value, 10 variables are remained.I will run LCA clustering trials to find out the most suitable number of latent clusters. At k = 6, BIC gets lowest point and Entropy_R^~2~^ reaches a high point of 0.845.
 
-![Assign total customers into 6 clusters](images/LCA_plot.png)
+![Results of LCA with different k clusters](images/clipboard-4018205156.png)
 
-**Cluster Characteristics and Business Recommendation**
+The value of features in each cluster are visualized by Parallel Coordinates Plot.
+
+![Assigning total customers into 6 clusters](images/LCA_plot.png)
+
+**Customer Personas and Business Recommendation**
 
 -   Cluster 4 and 6 demand the highest retention investment as top CLV contributors with strong engagement.
 -   Cluster 3 and 5 offer clear cross-sell pathways - investment products for insurance-focused customers and insurance for investor-focused ones.

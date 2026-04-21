@@ -34,3 +34,40 @@ body.home-page::after {
 .home-page h2 {
   color: white !important;
 }
+
+/* ========== TAB STYLING ========== */
+/* Make tab text bolder and larger */
+.panel-tabset .nav-link {
+  font-weight: 600 !important;
+  font-size: 1.1rem !important;
+  color: #2c3e50 !important;
+  border: 1px solid #dee2e6 !important;  /* Lighter border */
+  background-color: #f8f9fa !important;   /* Light background for inactive tabs */
+}
+
+/* Active tab styling - darker and more prominent */
+.panel-tabset .nav-link.active {
+  font-weight: 700 !important;
+  background-color: #1e3a5f !important;  /* Dark navy background */
+  color: white !important;
+}
+
+/* Hover effect for better interactivity */
+.panel-tabset .nav-link:hover {
+  background-color: #e9ecef !important;
+  color: #1e3a5f !important;
+  border: 1px solid #dee2e6 !important;  
+  border-bottom-color: white !important;
+}
+
+/* Make the tab container border lighter */
+.panel-tabset .tab-content {
+  border: 1px solid #dee2e6 !important;
+  border-top: 1px solid #dee2e6 !important;
+}
+
+/* ========== CALLOUT STYLING ========== */
+/* Make callout-tip title text white */
+.callout-tip .callout-header * {
+  color: white !important;
+}

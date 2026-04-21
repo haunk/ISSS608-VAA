@@ -8,8 +8,10 @@ website:
       - text: "<img src='/images/dory.png' width='40' height='40' style='margin-right: 5px;'> 
       Hands-on Exercise"
         menu:
-          - text: "Hands-on Exercise 1 - ggplot2 methods"
+          - text: "Hands-on Exercise 1 - ggplot2"
             href: "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html"
+          - text: "Hands-on Exercise 2 - Beyond ggplot2"
+            href: "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html"
             
       - text: "<img src='/images/shark.png' width='40' height='40' style='margin-right: 5px;'> 
       Take-home Exercise"

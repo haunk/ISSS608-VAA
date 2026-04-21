@@ -101,7 +101,11 @@ ul.task-list li input[type="checkbox"] {
     <ul class="dropdown-menu" aria-labelledby="nav-menu-img-srcimagesdory.png-width40-height40-stylemargin-right-5px--hands-on-exercise">    
         <li>
     <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html">
- <span class="dropdown-text">Hands-on Exercise 1 - ggplot2 methods</span></a>
+ <span class="dropdown-text">Hands-on Exercise 1 - ggplot2</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html">
+ <span class="dropdown-text">Hands-on Exercise 2 - Beyond ggplot2</span></a>
   </li>  
     </ul>
   </li>
@@ -190,7 +194,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">April 19, 2026</p>
+      <p class="date-modified">April 21, 2026</p>
     </div>
   </div>
     
@@ -232,6 +236,12 @@ ul.task-list li input[type="checkbox"] {
 <li>Selected optimal model (LCA with 6 clusters, Entropy R² = 0.845)</li>
 <li>Created actionable customer personas</li>
 </ol>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/variables.png" class="img-fluid figure-img"></p>
+<figcaption>10 selected variables after running 2 PoLCA stages</figcaption>
+</figure>
+</div>
 </section>
 <section id="key-findings" class="level2">
 <h2 class="anchored" data-anchor-id="key-findings">3. Key Findings</h2>
@@ -239,11 +249,18 @@ ul.task-list li input[type="checkbox"] {
 <p>After analyzing business domain and checking correlation value, 10 variables are remained.I will run LCA clustering trials to find out the most suitable number of latent clusters. At k = 6, BIC gets lowest point and Entropy_R<sup><sub>2</sub></sup> reaches a high point of 0.845.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="images/LCA_plot.png" class="img-fluid figure-img"></p>
-<figcaption>Assign total customers into 6 clusters</figcaption>
+<p><img src="images/clipboard-4018205156.png" class="img-fluid figure-img"></p>
+<figcaption>Results of LCA with different k clusters</figcaption>
 </figure>
 </div>
-<p><strong>Cluster Characteristics and Business Recommendation</strong></p>
+<p>The value of features in each cluster are visualized by Parallel Coordinates Plot.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/LCA_plot.png" class="img-fluid figure-img"></p>
+<figcaption>Assigning total customers into 6 clusters</figcaption>
+</figure>
+</div>
+<p><strong>Customer Personas and Business Recommendation</strong></p>
 <ul>
 <li>Cluster 4 and 6 demand the highest retention investment as top CLV contributors with strong engagement.</li>
 <li>Cluster 3 and 5 offer clear cross-sell pathways - investment products for insurance-focused customers and insurance for investor-focused ones.</li>
