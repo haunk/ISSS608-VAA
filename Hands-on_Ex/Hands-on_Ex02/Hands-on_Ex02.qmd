@@ -70,7 +70,7 @@ library(psych)
 describe(exam_data)
 ```
 
-# 3. **Beyond ggplot2 Annotation: ggrepel**
+# 3. Beyond ggplot2 Annotation: ggrepel
 
 **ggrepel** is an extension of **ggplot2** package which provides `geoms` for **ggplot2** to repel overlapping text as in our examples on the right.
 
@@ -187,6 +187,7 @@ p2 +
 # 5. Beyond Single Graph
 
 Create single charts.
+
 ```{r}
 p1 <- ggplot(data=exam_data, 
              aes(x = MATHS)) +
@@ -230,16 +231,20 @@ In this case, we use an ggplot2 extension called patchwork which is specially de
 -   Two-Row Layout using the Division Sign /
 
 ## 5.2. Combining multiple ggplot2 graphs
+
 ```{r}
 (p1 / p2) | p3
 ```
+
 ## 5.3 Creating a composite figure with tag
+
 ```{r}
 ((p1 / p2) | p3) + 
   plot_annotation(tag_levels = 'A')
 ```
 
 ## 5.4 Creating a composite figure by using patchwork and ggtheme
+
 ```{r}
 patchwork <- (p1 / p2) | p3
 patchwork & theme_economist() &
