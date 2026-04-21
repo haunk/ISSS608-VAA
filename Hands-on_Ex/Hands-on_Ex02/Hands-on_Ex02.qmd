@@ -22,7 +22,7 @@ Using several ggplot2 extensions for creating more elegant and effective statist
 
 # 2. Getting started
 
-## **2.1. Installing and loading the required libraries**
+## 2.1. Installing and loading the required libraries
 
 Beside tidyverse, four R packages will be used:
 
@@ -45,7 +45,7 @@ pacman::p_load(ggrepel,
                )
 ```
 
-## **2.2. Importing data**
+## 2.2. Importing data
 
 The code chunk below imports exam_data.csv into R environment by using read_csv() function of readr package. readr is one of the tidyverse package.
 
