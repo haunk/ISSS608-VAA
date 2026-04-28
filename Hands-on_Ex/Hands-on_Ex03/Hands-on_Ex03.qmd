@@ -111,7 +111,7 @@ girafe(
 
 Use opts_tooltip() of ggiraph to customize tooltip rendering by add css declarations.
 
-Notice that the background colour of the tooltip is pink (#d8118c), color of hovered point turns to yellow.
+Notice that the background colour of the tooltip is pink (#d8118c), color of hovered point turns to yellow. Notice that the background colour of the tooltip is [pink (#d8118c)]{style="color:#d8118c;"}, color of hovered point turns to [yellow]{style="color:yellow;"}.
 
 ```{r}
 tooltip_css <- 
