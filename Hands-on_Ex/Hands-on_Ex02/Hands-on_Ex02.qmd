@@ -1,5 +1,5 @@
 ---
-title: "Hands-on Exercise 2"
+title: "2 Beyond ggplot2 Fundamentals"
 author: "Nguyen Kim Hau"
 date: "April 21, 2026"
 date-modified: "last-modified"
@@ -10,7 +10,7 @@ execute:
   freeze: true
 ---
 
-# 1. Purpose
+# 2.1 Purpose
 
 Using several ggplot2 extensions for creating more elegant and effective statistical graphics:
 
@@ -20,9 +20,9 @@ Using several ggplot2 extensions for creating more elegant and effective statist
 
 ![Source: https://r4va.netlify.app/chap02](/images/chap02_ggrepel.jpg)
 
-# 2. Getting started
+# 2.2 Getting started
 
-## 2.1. Installing and loading the required libraries
+## 2.2.1 Installing and loading the required libraries
 
 Beside tidyverse, four R packages will be used:
 
@@ -45,7 +45,7 @@ pacman::p_load(ggrepel,
                )
 ```
 
-## 2.2. Importing data
+## 2.2.2 Importing data
 
 The code chunk below imports exam_data.csv into R environment by using read_csv() function of readr package. readr is one of the tidyverse package.
 
@@ -57,7 +57,7 @@ exam_data <- read_csv("data/Exam_data.csv")
 head(exam_data, n = 10)
 ```
 
-## 2.3. Statistics
+## 2.2.3 Statistics
 
 Show some statistics about this data.
 
@@ -70,7 +70,9 @@ library(psych)
 describe(exam_data)
 ```
 
-# 3. Beyond ggplot2 Annotation: ggrepel
+# 2.3 Beyond ggplot2 
+
+## 2.3.1 Annotation: ggrepel
 
 **ggrepel** is an extension of **ggplot2** package which provides `geoms` for **ggplot2** to repel overlapping text as in our examples on the right.
 
@@ -113,7 +115,7 @@ ggplot(data=exam_data,
 ```
 :::
 
-# 4. Beyond ggplot2 Themes
+# 2.4 Beyond ggplot2 Themes
 
 ```{r}
 p1 <- ggplot(data=exam_data, 
@@ -126,7 +128,7 @@ p1 <- ggplot(data=exam_data,
 p1
 ```
 
-## 4.1 Working with ggtheme package
+## 2.4.1 Working with ggtheme package
 
 ggthemes provides ‘ggplot2’ themes that replicate the look of plots by Edward Tufte, Stephen Few, Fivethirtyeight, The Economist, ‘Stata’, ‘Excel’, and The Wall Street Journal, among others.
 
@@ -144,7 +146,7 @@ p1 & theme_wsj() & theme(plot.margin = margin(5, 5, 5, 5))
 
 Other **ggthemes** can be explorered [here](https://yutannihilation.github.io/allYourFigureAreBelongToUs/ggthemes/).
 
-## 4.2. Working with hrbtheme package
+## 2.4.2 Working with hrbtheme package
 
 hrbrthemes package provides a base theme that focuses on typographic elements, including where various labels are placed as well as the fonts that are used.
 
@@ -177,14 +179,14 @@ p2 +
 ```
 
 ::: callout-tip
-## What we modify above?
+## 2.4.3 What we modify above?
 
 -   `axis_title_size` argument is used to increase the font size of the axis title to 18,
 -   `base_size` argument is used to increase the default axis label to 15, and
 -   `grid` argument is used to remove the x-axis grid lines.
 :::
 
-# 5. Beyond Single Graph
+# 2.5 Beyond Single Graph
 
 Create single charts.
 
@@ -222,7 +224,7 @@ p3 <- ggplot(data=exam_data,
   ggtitle("English scores versus Maths scores")
 ```
 
-## 5.1. Creating Composite Graphics: pathwork methods
+## 2.5.1 Creating Composite Graphics: pathwork methods
 
 In this case, we use an ggplot2 extension called patchwork which is specially designed for combining separate ggplot2 graphs into a single figure. Patchwork package has a very simple syntax where we can create layouts super easily. Here’s the general syntax that combines:
 
@@ -230,20 +232,20 @@ In this case, we use an ggplot2 extension called patchwork which is specially de
 -   Parenthesis () to create a subplot group.
 -   Two-Row Layout using the Division Sign /
 
-## 5.2. Combining multiple ggplot2 graphs
+## 2.5.2 Combining multiple ggplot2 graphs
 
 ```{r}
 (p1 / p2) | p3
 ```
 
-## 5.3 Creating a composite figure with tag
+## 2.5.3 Creating a composite figure with tag
 
 ```{r}
 ((p1 / p2) | p3) + 
   plot_annotation(tag_levels = 'A')
 ```
 
-## 5.4 Creating a composite figure by using patchwork and ggtheme
+## 2.5.4 Creating a composite figure by using patchwork and ggtheme
 
 ```{r}
 patchwork <- (p1 / p2) | p3

@@ -1,5 +1,5 @@
 ---
-title: "Hands-on Exercise 1"
+title: "1 A Layered Grammar of Graphics: ggplot2 methods"
 author: "Nguyen Kim Hau"
 date: "April 16, 2026"
 date-modified: "last-modified"
@@ -10,9 +10,13 @@ execute:
   freeze: true
 ---
 
-# Getting Started
+# 1.1 Getting Started
 
-## Install and launching R packages
+After reading this page, you can draw this chart by yourself!
+
+![](images/demo.png)
+
+## 1.1.1 Install and launching R packages
 
 The code chunk below uses p_load() of pacman package to check if tidyverse packages are installed in the computer. If they are, then they will be launched into R.
 
@@ -21,7 +25,7 @@ pacman::p_load(tidyverse)
 
 ```
 
-## Importing the data
+## 1.1.2 Importing the data
 
 ```{r}
 exam_data <- read_csv("data/Exam_data.csv")
@@ -31,9 +35,9 @@ exam_data <- read_csv("data/Exam_data.csv")
 head(exam_data, n = 10)
 ```
 
-# Plotting different chart types
+# 1.2 Plotting different chart types
 
-## Bar chart
+## 1.2.1 Bar chart
 
 ```{r}
 p1 <- ggplot(data=exam_data, 
@@ -53,7 +57,7 @@ p1 + theme_linedraw()
 
 ```
 
-## Histogram chart
+## 1.2.3 Histogram chart
 
 ```{r}
 ggplot(data=exam_data, aes(x = MATHS)) +
@@ -92,7 +96,7 @@ ggplot(data=exam_data,
   ggtitle("Density of Maths scores by Gender")
 ```
 
-## Box plot
+## 1.2.4 Box plot
 
 ```{r}
 ggplot(data=exam_data, 
@@ -102,7 +106,7 @@ ggplot(data=exam_data,
   ggtitle("Boxplot of Maths scores by Gender")
 ```
 
-## Violin plot
+## 1.2.5 Violin plot
 
 ```{r}
 ggplot(data=exam_data, 
@@ -112,7 +116,7 @@ ggplot(data=exam_data,
   ggtitle("Violin plot of Math scores by Gender")
 ```
 
-## Scatter plot
+## 1.2.6 Scatter plot
 
 ```{r}
 ggplot(data=exam_data, 
@@ -135,7 +139,7 @@ ggplot(data=exam_data,
   ggtitle("Scatter plot between Math and English scores, equal axis")
 ```
 
-## Combination chart types
+## 1.2.7 Combination chart types
 
 ```{r}
 ggplot(data=exam_data, 

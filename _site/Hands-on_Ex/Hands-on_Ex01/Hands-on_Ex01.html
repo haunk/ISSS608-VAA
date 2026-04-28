@@ -9,7 +9,7 @@
 <meta name="author" content="Nguyen Kim Hau">
 <meta name="dcterms.date" content="2026-04-16">
 
-<title>Hands-on Exercise 1 – ISSS608-VAA</title>
+<title>1 A Layered Grammar of Graphics: ggplot2 methods – ISSS608-VAA</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -136,11 +136,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <ul class="dropdown-menu" aria-labelledby="nav-menu-img-srcimagesdory.png-width40-height40-stylemargin-right-5px--hands-on-exercise">    
         <li>
     <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html">
- <span class="dropdown-text">Hands-on Exercise 1 - ggplot2</span></a>
+ <span class="dropdown-text">HO1-A Layered Grammar of Graphics: ggplot2 methods</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html">
- <span class="dropdown-text">Hands-on Exercise 2 - Beyond ggplot2</span></a>
+ <span class="dropdown-text">HO2-Beyond ggplot2 Fundamentals</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html">
+ <span class="dropdown-text">HO3-Programming Interactive Data Visualisation with R</span></a>
   </li>  
     </ul>
   </li>
@@ -153,10 +157,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </ul>
   </li>
   <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-img-srcimagesblack.png-width40-height40-stylemargin-right-5px--analytics-project" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text"><img src="../../images/black.png" width="40" height="40" style="margin-right: 5px;"> Analytics Project</span>
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-img-srcimagesblack.png-width40-height40-stylemargin-right-5px--real-world-project" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text"><img src="../../images/black.png" width="40" height="40" style="margin-right: 5px;"> Real-world Project</span>
     </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-img-srcimagesblack.png-width40-height40-stylemargin-right-5px--analytics-project">    
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-img-srcimagesblack.png-width40-height40-stylemargin-right-5px--real-world-project">    
         <li>
     <a class="dropdown-item" href="../../Analytics_Project/Customer_Segmentation/Customer_Segmentation.html">
  <span class="dropdown-text">Customer Segmentation</span></a>
@@ -189,19 +193,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#getting-started" id="toc-getting-started" class="nav-link active" data-scroll-target="#getting-started">Getting Started</a>
+  <li><a href="#getting-started" id="toc-getting-started" class="nav-link active" data-scroll-target="#getting-started">1.1 Getting Started</a>
   <ul class="collapse">
-  <li><a href="#install-and-launching-r-packages" id="toc-install-and-launching-r-packages" class="nav-link" data-scroll-target="#install-and-launching-r-packages">Install and launching R packages</a></li>
-  <li><a href="#importing-the-data" id="toc-importing-the-data" class="nav-link" data-scroll-target="#importing-the-data">Importing the data</a></li>
+  <li><a href="#install-and-launching-r-packages" id="toc-install-and-launching-r-packages" class="nav-link" data-scroll-target="#install-and-launching-r-packages">1.1.1 Install and launching R packages</a></li>
+  <li><a href="#importing-the-data" id="toc-importing-the-data" class="nav-link" data-scroll-target="#importing-the-data">1.1.2 Importing the data</a></li>
   </ul></li>
-  <li><a href="#plotting-different-chart-types" id="toc-plotting-different-chart-types" class="nav-link" data-scroll-target="#plotting-different-chart-types">Plotting different chart types</a>
+  <li><a href="#plotting-different-chart-types" id="toc-plotting-different-chart-types" class="nav-link" data-scroll-target="#plotting-different-chart-types">1.2 Plotting different chart types</a>
   <ul class="collapse">
-  <li><a href="#bar-chart" id="toc-bar-chart" class="nav-link" data-scroll-target="#bar-chart">Bar chart</a></li>
-  <li><a href="#histogram-chart" id="toc-histogram-chart" class="nav-link" data-scroll-target="#histogram-chart">Histogram chart</a></li>
-  <li><a href="#box-plot" id="toc-box-plot" class="nav-link" data-scroll-target="#box-plot">Box plot</a></li>
-  <li><a href="#violin-plot" id="toc-violin-plot" class="nav-link" data-scroll-target="#violin-plot">Violin plot</a></li>
-  <li><a href="#scatter-plot" id="toc-scatter-plot" class="nav-link" data-scroll-target="#scatter-plot">Scatter plot</a></li>
-  <li><a href="#combination-chart-types" id="toc-combination-chart-types" class="nav-link" data-scroll-target="#combination-chart-types">Combination chart types</a></li>
+  <li><a href="#bar-chart" id="toc-bar-chart" class="nav-link" data-scroll-target="#bar-chart">1.2.1 Bar chart</a></li>
+  <li><a href="#histogram-chart" id="toc-histogram-chart" class="nav-link" data-scroll-target="#histogram-chart">1.2.3 Histogram chart</a></li>
+  <li><a href="#box-plot" id="toc-box-plot" class="nav-link" data-scroll-target="#box-plot">1.2.4 Box plot</a></li>
+  <li><a href="#violin-plot" id="toc-violin-plot" class="nav-link" data-scroll-target="#violin-plot">1.2.5 Violin plot</a></li>
+  <li><a href="#scatter-plot" id="toc-scatter-plot" class="nav-link" data-scroll-target="#scatter-plot">1.2.6 Scatter plot</a></li>
+  <li><a href="#combination-chart-types" id="toc-combination-chart-types" class="nav-link" data-scroll-target="#combination-chart-types">1.2.7 Combination chart types</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -211,7 +215,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Hands-on Exercise 1</h1>
+<h1 class="title">1 A Layered Grammar of Graphics: ggplot2 methods</h1>
 </div>
 
 
@@ -235,7 +239,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">April 21, 2026</p>
+      <p class="date-modified">April 28, 2026</p>
     </div>
   </div>
     
@@ -247,16 +251,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <section id="getting-started" class="level1">
-<h1>Getting Started</h1>
+<h1>1.1 Getting Started</h1>
+<p>After reading this page, you can draw this chart by yourself!</p>
+<p><img src="images/demo.png" class="img-fluid"></p>
 <section id="install-and-launching-r-packages" class="level2">
-<h2 class="anchored" data-anchor-id="install-and-launching-r-packages">Install and launching R packages</h2>
+<h2 class="anchored" data-anchor-id="install-and-launching-r-packages">1.1.1 Install and launching R packages</h2>
 <p>The code chunk below uses p_load() of pacman package to check if tidyverse packages are installed in the computer. If they are, then they will be launched into R.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyverse)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="importing-the-data" class="level2">
-<h2 class="anchored" data-anchor-id="importing-the-data">Importing the data</h2>
+<h2 class="anchored" data-anchor-id="importing-the-data">1.1.2 Importing the data</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>exam_data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/Exam_data.csv"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -281,9 +287,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 </section>
 <section id="plotting-different-chart-types" class="level1">
-<h1>Plotting different chart types</h1>
+<h1>1.2 Plotting different chart types</h1>
 <section id="bar-chart" class="level2">
-<h2 class="anchored" data-anchor-id="bar-chart">Bar chart</h2>
+<h2 class="anchored" data-anchor-id="bar-chart">1.2.1 Bar chart</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data=</span>exam_data, </span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x=</span>RACE)) <span class="sc">+</span></span>
@@ -299,8 +305,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>p1 <span class="sc">+</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>p1 <span class="sc">+</span> <span class="fu">coord_flip</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -321,7 +326,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </section>
 <section id="histogram-chart" class="level2">
-<h2 class="anchored" data-anchor-id="histogram-chart">Histogram chart</h2>
+<h2 class="anchored" data-anchor-id="histogram-chart">1.2.3 Histogram chart</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>exam_data, <span class="fu">aes</span>(<span class="at">x =</span> MATHS)) <span class="sc">+</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins=</span><span class="dv">10</span>, </span>
@@ -384,7 +389,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </section>
 <section id="box-plot" class="level2">
-<h2 class="anchored" data-anchor-id="box-plot">Box plot</h2>
+<h2 class="anchored" data-anchor-id="box-plot">1.2.4 Box plot</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>exam_data, </span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">y =</span> MATHS, </span>
@@ -401,7 +406,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </section>
 <section id="violin-plot" class="level2">
-<h2 class="anchored" data-anchor-id="violin-plot">Violin plot</h2>
+<h2 class="anchored" data-anchor-id="violin-plot">1.2.5 Violin plot</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>exam_data, </span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">y =</span> MATHS, </span>
@@ -418,7 +423,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </section>
 <section id="scatter-plot" class="level2">
-<h2 class="anchored" data-anchor-id="scatter-plot">Scatter plot</h2>
+<h2 class="anchored" data-anchor-id="scatter-plot">1.2.6 Scatter plot</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>exam_data, </span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x=</span> MATHS, </span>
@@ -454,7 +459,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </section>
 <section id="combination-chart-types" class="level2">
-<h2 class="anchored" data-anchor-id="combination-chart-types">Combination chart types</h2>
+<h2 class="anchored" data-anchor-id="combination-chart-types">1.2.7 Combination chart types</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>exam_data, </span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">y =</span> MATHS, </span>

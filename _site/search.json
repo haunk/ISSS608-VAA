@@ -16,65 +16,65 @@
   {
     "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html",
     "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html",
-    "title": "Hands-on Exercise 1",
+    "title": "1 A Layered Grammar of Graphics: ggplot2 methods",
     "section": "",
-    "text": "The code chunk below uses p_load() of pacman package to check if tidyverse packages are installed in the computer. If they are, then they will be launched into R.\n\npacman::p_load(tidyverse)\n\n\n\n\n\nexam_data &lt;- read_csv(\"data/Exam_data.csv\")\n\n\nhead(exam_data, n = 10)\n\n# A tibble: 10 × 7\n   ID         CLASS GENDER RACE    ENGLISH MATHS SCIENCE\n   &lt;chr&gt;      &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;\n 1 Student321 3I    Male   Malay        21     9      15\n 2 Student305 3I    Female Malay        24    22      16\n 3 Student289 3H    Male   Chinese      26    16      16\n 4 Student227 3F    Male   Chinese      27    77      31\n 5 Student318 3I    Male   Malay        27    11      25\n 6 Student306 3I    Female Malay        31    16      16\n 7 Student313 3I    Male   Chinese      31    21      25\n 8 Student316 3I    Male   Malay        31    18      27\n 9 Student312 3I    Male   Malay        33    19      15\n10 Student297 3H    Male   Indian       34    49      37"
+    "text": "After reading this page, you can draw this chart by yourself!\n\n\n\nThe code chunk below uses p_load() of pacman package to check if tidyverse packages are installed in the computer. If they are, then they will be launched into R.\n\npacman::p_load(tidyverse)\n\n\n\n\n\nexam_data &lt;- read_csv(\"data/Exam_data.csv\")\n\n\nhead(exam_data, n = 10)\n\n# A tibble: 10 × 7\n   ID         CLASS GENDER RACE    ENGLISH MATHS SCIENCE\n   &lt;chr&gt;      &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;\n 1 Student321 3I    Male   Malay        21     9      15\n 2 Student305 3I    Female Malay        24    22      16\n 3 Student289 3H    Male   Chinese      26    16      16\n 4 Student227 3F    Male   Chinese      27    77      31\n 5 Student318 3I    Male   Malay        27    11      25\n 6 Student306 3I    Female Malay        31    16      16\n 7 Student313 3I    Male   Chinese      31    21      25\n 8 Student316 3I    Male   Malay        31    18      27\n 9 Student312 3I    Male   Malay        33    19      15\n10 Student297 3H    Male   Indian       34    49      37"
   },
   {
     "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#install-and-launching-r-packages",
     "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#install-and-launching-r-packages",
-    "title": "Hands-on Exercise 1",
+    "title": "1 A Layered Grammar of Graphics: ggplot2 methods",
     "section": "",
     "text": "The code chunk below uses p_load() of pacman package to check if tidyverse packages are installed in the computer. If they are, then they will be launched into R.\n\npacman::p_load(tidyverse)"
   },
   {
     "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#importing-the-data",
     "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#importing-the-data",
-    "title": "Hands-on Exercise 1",
+    "title": "1 A Layered Grammar of Graphics: ggplot2 methods",
     "section": "",
     "text": "exam_data &lt;- read_csv(\"data/Exam_data.csv\")\n\n\nhead(exam_data, n = 10)\n\n# A tibble: 10 × 7\n   ID         CLASS GENDER RACE    ENGLISH MATHS SCIENCE\n   &lt;chr&gt;      &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;\n 1 Student321 3I    Male   Malay        21     9      15\n 2 Student305 3I    Female Malay        24    22      16\n 3 Student289 3H    Male   Chinese      26    16      16\n 4 Student227 3F    Male   Chinese      27    77      31\n 5 Student318 3I    Male   Malay        27    11      25\n 6 Student306 3I    Female Malay        31    16      16\n 7 Student313 3I    Male   Chinese      31    21      25\n 8 Student316 3I    Male   Malay        31    18      27\n 9 Student312 3I    Male   Malay        33    19      15\n10 Student297 3H    Male   Indian       34    49      37"
   },
   {
     "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#bar-chart",
     "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#bar-chart",
-    "title": "Hands-on Exercise 1",
-    "section": "Bar chart",
-    "text": "Bar chart\n\np1 &lt;- ggplot(data=exam_data, \n       aes(x=RACE)) +\n  geom_bar() +\n  ggtitle(\"Number of students by Nationalities\")\np1\n\n\n\n\n\n\n\n\n\np1 +\n  coord_flip()\n\n\n\n\n\n\n\n\n\np1 + theme_linedraw()"
+    "title": "1 A Layered Grammar of Graphics: ggplot2 methods",
+    "section": "1.2.1 Bar chart",
+    "text": "1.2.1 Bar chart\n\np1 &lt;- ggplot(data=exam_data, \n       aes(x=RACE)) +\n  geom_bar() +\n  ggtitle(\"Number of students by Nationalities\")\np1\n\n\n\n\n\n\n\n\n\np1 + coord_flip()\n\n\n\n\n\n\n\n\n\np1 + theme_linedraw()"
   },
   {
     "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#histogram-chart",
     "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#histogram-chart",
-    "title": "Hands-on Exercise 1",
-    "section": "Histogram chart",
-    "text": "Histogram chart\n\nggplot(data=exam_data, aes(x = MATHS)) +\n  geom_histogram(bins=10, \n                 boundary = 100,\n                 color=\"black\", \n                 fill=\"light blue\") +\n  ggtitle(\"Distribution of Maths scores\")\n\n\n\n\n\n\n\n\n\nggplot(data=exam_data, \n       aes(x = MATHS)) +\n  geom_dotplot(binwidth=2.5,         \n               dotsize = 0.5) +      \n  scale_y_continuous(NULL,           \n                     breaks = NULL)  +\n  ggtitle(\"Distribution of Maths scores\")\n\n\n\n\n\n\n\n\n\nggplot(data=exam_data, \n       aes(x= MATHS, \n           fill = GENDER)) +\n  geom_histogram(bins=20, \n                 color=\"grey30\") +\n  ggtitle(\"Stacked Distribution of Maths scores by Gender\")\n\n\n\n\n\n\n\n\n\nggplot(data=exam_data, \n       aes(x = MATHS, \n           colour = GENDER)) +\n  geom_density() +\n  ggtitle(\"Density of Maths scores by Gender\")"
+    "title": "1 A Layered Grammar of Graphics: ggplot2 methods",
+    "section": "1.2.3 Histogram chart",
+    "text": "1.2.3 Histogram chart\n\nggplot(data=exam_data, aes(x = MATHS)) +\n  geom_histogram(bins=10, \n                 boundary = 100,\n                 color=\"black\", \n                 fill=\"light blue\") +\n  ggtitle(\"Distribution of Maths scores\")\n\n\n\n\n\n\n\n\n\nggplot(data=exam_data, \n       aes(x = MATHS)) +\n  geom_dotplot(binwidth=2.5,         \n               dotsize = 0.5) +      \n  scale_y_continuous(NULL,           \n                     breaks = NULL)  +\n  ggtitle(\"Distribution of Maths scores\")\n\n\n\n\n\n\n\n\n\nggplot(data=exam_data, \n       aes(x= MATHS, \n           fill = GENDER)) +\n  geom_histogram(bins=20, \n                 color=\"grey30\") +\n  ggtitle(\"Stacked Distribution of Maths scores by Gender\")\n\n\n\n\n\n\n\n\n\nggplot(data=exam_data, \n       aes(x = MATHS, \n           colour = GENDER)) +\n  geom_density() +\n  ggtitle(\"Density of Maths scores by Gender\")"
   },
   {
     "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#box-plot",
     "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#box-plot",
-    "title": "Hands-on Exercise 1",
-    "section": "Box plot",
-    "text": "Box plot\n\nggplot(data=exam_data, \n       aes(y = MATHS, \n           x= GENDER)) +\n  geom_boxplot(notch=TRUE) +\n  ggtitle(\"Boxplot of Maths scores by Gender\")"
+    "title": "1 A Layered Grammar of Graphics: ggplot2 methods",
+    "section": "1.2.4 Box plot",
+    "text": "1.2.4 Box plot\n\nggplot(data=exam_data, \n       aes(y = MATHS, \n           x= GENDER)) +\n  geom_boxplot(notch=TRUE) +\n  ggtitle(\"Boxplot of Maths scores by Gender\")"
   },
   {
     "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#violin-plot",
     "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#violin-plot",
-    "title": "Hands-on Exercise 1",
-    "section": "Violin plot",
-    "text": "Violin plot\n\nggplot(data=exam_data, \n       aes(y = MATHS, \n           x= GENDER)) +\n  geom_violin() +\n  ggtitle(\"Violin plot of Math scores by Gender\")"
+    "title": "1 A Layered Grammar of Graphics: ggplot2 methods",
+    "section": "1.2.5 Violin plot",
+    "text": "1.2.5 Violin plot\n\nggplot(data=exam_data, \n       aes(y = MATHS, \n           x= GENDER)) +\n  geom_violin() +\n  ggtitle(\"Violin plot of Math scores by Gender\")"
   },
   {
     "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#scatter-plot",
     "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#scatter-plot",
-    "title": "Hands-on Exercise 1",
-    "section": "Scatter plot",
-    "text": "Scatter plot\n\nggplot(data=exam_data, \n       aes(x= MATHS, \n           y=ENGLISH)) +\n  geom_point() +\n  geom_smooth(method=lm, \n              linewidth=0.5) +\n  ggtitle(\"Scatter plot between Math and English scores\")\n\n\n\n\n\n\n\n\n\nggplot(data=exam_data, \n       aes(x= MATHS, y=ENGLISH)) +\n  geom_point() +\n  geom_smooth(method=lm, \n              size=0.5) +  \n  coord_cartesian(xlim=c(0,100),\n                  ylim=c(0,100)) +\n  ggtitle(\"Scatter plot between Math and English scores, equal axis\")"
+    "title": "1 A Layered Grammar of Graphics: ggplot2 methods",
+    "section": "1.2.6 Scatter plot",
+    "text": "1.2.6 Scatter plot\n\nggplot(data=exam_data, \n       aes(x= MATHS, \n           y=ENGLISH)) +\n  geom_point() +\n  geom_smooth(method=lm, \n              linewidth=0.5) +\n  ggtitle(\"Scatter plot between Math and English scores\")\n\n\n\n\n\n\n\n\n\nggplot(data=exam_data, \n       aes(x= MATHS, y=ENGLISH)) +\n  geom_point() +\n  geom_smooth(method=lm, \n              size=0.5) +  \n  coord_cartesian(xlim=c(0,100),\n                  ylim=c(0,100)) +\n  ggtitle(\"Scatter plot between Math and English scores, equal axis\")"
   },
   {
     "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#combination-chart-types",
     "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#combination-chart-types",
-    "title": "Hands-on Exercise 1",
-    "section": "Combination chart types",
-    "text": "Combination chart types\n\nggplot(data=exam_data, \n       aes(y = MATHS, \n           x= GENDER)) +\n  geom_boxplot() +                    \n  geom_point(position=\"jitter\", \n             size = 0.5) +\n  ggtitle(\"Scatter and box plots of Math scores by Gender\")\n\n\n\n\n\n\n\n\n\nggplot(data=exam_data, \n       aes(y = MATHS, x= GENDER)) +\n  geom_boxplot() +\n  stat_summary(geom = \"point\",       \n               fun = \"mean\",         \n               colour =\"red\",        \n               size=4)               \n\n\n\n\n\n\n\n\n\nggplot(data=exam_data, \n       aes(x= MATHS)) +\n  geom_histogram(bins=20) +\n  facet_wrap(~ CLASS) +\n  ggtitle(\"facet_wrap()\")\n\n\n\n\n\n\n\n\n\nggplot(data=exam_data, \n       aes(x= MATHS)) +\n  geom_histogram(bins=20) +\n  facet_grid(~ CLASS) +\n  ggtitle(\"facet_grid()\")"
+    "title": "1 A Layered Grammar of Graphics: ggplot2 methods",
+    "section": "1.2.7 Combination chart types",
+    "text": "1.2.7 Combination chart types\n\nggplot(data=exam_data, \n       aes(y = MATHS, \n           x= GENDER)) +\n  geom_boxplot() +                    \n  geom_point(position=\"jitter\", \n             size = 0.5) +\n  ggtitle(\"Scatter and box plots of Math scores by Gender\")\n\n\n\n\n\n\n\n\n\nggplot(data=exam_data, \n       aes(y = MATHS, x= GENDER)) +\n  geom_boxplot() +\n  stat_summary(geom = \"point\",       \n               fun = \"mean\",         \n               colour =\"red\",        \n               size=4)               \n\n\n\n\n\n\n\n\n\nggplot(data=exam_data, \n       aes(x= MATHS)) +\n  geom_histogram(bins=20) +\n  facet_wrap(~ CLASS) +\n  ggtitle(\"facet_wrap()\")\n\n\n\n\n\n\n\n\n\nggplot(data=exam_data, \n       aes(x= MATHS)) +\n  geom_histogram(bins=20) +\n  facet_grid(~ CLASS) +\n  ggtitle(\"facet_grid()\")"
   },
   {
     "objectID": "Analytics_Project/Customer_Segmentation/Customer_Segmentation.html",
@@ -121,30 +121,30 @@
   {
     "objectID": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html",
     "href": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html",
-    "title": "Hands-on Exercise 2",
+    "title": "2 Beyond ggplot2 Fundamentals",
     "section": "",
     "text": "Using several ggplot2 extensions for creating more elegant and effective statistical graphics:\n\nControl the placement of annotation on a graph by using functions provided in ggrepel package.\nCreate professional publication quality figure by using functions provided in ggthemes and hrbrthemes packages.\nPlot composite figure by combining ggplot2 graphs by using patchwork package.\n\n\n\n\nSource: https://r4va.netlify.app/chap02"
   },
   {
     "objectID": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#installing-and-loading-the-required-libraries",
     "href": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#installing-and-loading-the-required-libraries",
-    "title": "Hands-on Exercise 2",
-    "section": "2.1. Installing and loading the required libraries",
-    "text": "2.1. Installing and loading the required libraries\nBeside tidyverse, four R packages will be used:\n\nggrepel: an R package provides geoms for ggplot2 to repel overlapping text labels.\nggthemes: an R package provides some extra themes, geoms, and scales for ‘ggplot2’.\nhrbrthemes: an R package provides typography-centric themes and theme components for ggplot2.\npatchwork: an R package for preparing composite figure created using ggplot2.\n\nCode chunk below will be used to check if these packages have been installed and also will load them onto your working R environment.\n\npacman::p_load(ggrepel, \n               patchwork,\n               ggthemes,\n               hrbrthemes,\n               tidyverse,\n               psych,\n               ggplot,\n               extrafont\n               )"
+    "title": "2 Beyond ggplot2 Fundamentals",
+    "section": "2.2.1 Installing and loading the required libraries",
+    "text": "2.2.1 Installing and loading the required libraries\nBeside tidyverse, four R packages will be used:\n\nggrepel: an R package provides geoms for ggplot2 to repel overlapping text labels.\nggthemes: an R package provides some extra themes, geoms, and scales for ‘ggplot2’.\nhrbrthemes: an R package provides typography-centric themes and theme components for ggplot2.\npatchwork: an R package for preparing composite figure created using ggplot2.\n\nCode chunk below will be used to check if these packages have been installed and also will load them onto your working R environment.\n\npacman::p_load(ggrepel, \n               patchwork,\n               ggthemes,\n               hrbrthemes,\n               tidyverse,\n               psych,\n               ggplot,\n               extrafont\n               )"
   },
   {
     "objectID": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#importing-data",
     "href": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#importing-data",
-    "title": "Hands-on Exercise 2",
-    "section": "2.2. Importing data",
-    "text": "2.2. Importing data\nThe code chunk below imports exam_data.csv into R environment by using read_csv() function of readr package. readr is one of the tidyverse package.\n\nexam_data &lt;- read_csv(\"data/Exam_data.csv\")\n\n\nhead(exam_data, n = 10)\n\n# A tibble: 10 × 7\n   ID         CLASS GENDER RACE    ENGLISH MATHS SCIENCE\n   &lt;chr&gt;      &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;\n 1 Student321 3I    Male   Malay        21     9      15\n 2 Student305 3I    Female Malay        24    22      16\n 3 Student289 3H    Male   Chinese      26    16      16\n 4 Student227 3F    Male   Chinese      27    77      31\n 5 Student318 3I    Male   Malay        27    11      25\n 6 Student306 3I    Female Malay        31    16      16\n 7 Student313 3I    Male   Chinese      31    21      25\n 8 Student316 3I    Male   Malay        31    18      27\n 9 Student312 3I    Male   Malay        33    19      15\n10 Student297 3H    Male   Indian       34    49      37"
+    "title": "2 Beyond ggplot2 Fundamentals",
+    "section": "2.2.2 Importing data",
+    "text": "2.2.2 Importing data\nThe code chunk below imports exam_data.csv into R environment by using read_csv() function of readr package. readr is one of the tidyverse package.\n\nexam_data &lt;- read_csv(\"data/Exam_data.csv\")\n\n\nhead(exam_data, n = 10)\n\n# A tibble: 10 × 7\n   ID         CLASS GENDER RACE    ENGLISH MATHS SCIENCE\n   &lt;chr&gt;      &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;\n 1 Student321 3I    Male   Malay        21     9      15\n 2 Student305 3I    Female Malay        24    22      16\n 3 Student289 3H    Male   Chinese      26    16      16\n 4 Student227 3F    Male   Chinese      27    77      31\n 5 Student318 3I    Male   Malay        27    11      25\n 6 Student306 3I    Female Malay        31    16      16\n 7 Student313 3I    Male   Chinese      31    21      25\n 8 Student316 3I    Male   Malay        31    18      27\n 9 Student312 3I    Male   Malay        33    19      15\n10 Student297 3H    Male   Indian       34    49      37"
   },
   {
     "objectID": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#statistics",
     "href": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#statistics",
-    "title": "Hands-on Exercise 2",
-    "section": "2.3. Statistics",
-    "text": "2.3. Statistics\nShow some statistics about this data.\nThere are a total of seven attributes in the exam_data tibble data frame. Four of them are categorical data type and the other three are in continuous data type.\nThe categorical attributes are: ID, CLASS, GENDER and RACE. The continuous attributes are: MATHS, ENGLISH and SCIENCE.\n\nlibrary(psych)\ndescribe(exam_data)\n\n        vars   n   mean    sd median trimmed    mad min max range  skew\nID*        1 322 161.50 93.10  161.5  161.50 119.35   1 322   321  0.00\nCLASS*     2 322   4.71  2.49    5.0    4.68   2.97   1   9     8  0.09\nGENDER*    3 322   1.47  0.50    1.0    1.47   0.00   1   2     1  0.11\nRACE*      4 322   1.79  1.00    1.0    1.71   0.00   1   4     3  0.59\nENGLISH    5 322  67.18 14.69   70.0   68.50  13.34  21  96    75 -0.77\nMATHS      6 322  69.33 19.98   74.0   71.61  17.79   9  99    90 -0.93\nSCIENCE    7 322  61.16 18.18   65.0   62.50  17.79  15  96    81 -0.60\n        kurtosis   se\nID*        -1.21 5.19\nCLASS*     -1.17 0.14\nGENDER*    -1.99 0.03\nRACE*      -1.41 0.06\nENGLISH     0.18 0.82\nMATHS       0.17 1.11\nSCIENCE    -0.35 1.01"
+    "title": "2 Beyond ggplot2 Fundamentals",
+    "section": "2.2.3 Statistics",
+    "text": "2.2.3 Statistics\nShow some statistics about this data.\nThere are a total of seven attributes in the exam_data tibble data frame. Four of them are categorical data type and the other three are in continuous data type.\nThe categorical attributes are: ID, CLASS, GENDER and RACE. The continuous attributes are: MATHS, ENGLISH and SCIENCE.\n\nlibrary(psych)\ndescribe(exam_data)\n\n        vars   n   mean    sd median trimmed    mad min max range  skew\nID*        1 322 161.50 93.10  161.5  161.50 119.35   1 322   321  0.00\nCLASS*     2 322   4.71  2.49    5.0    4.68   2.97   1   9     8  0.09\nGENDER*    3 322   1.47  0.50    1.0    1.47   0.00   1   2     1  0.11\nRACE*      4 322   1.79  1.00    1.0    1.71   0.00   1   4     3  0.59\nENGLISH    5 322  67.18 14.69   70.0   68.50  13.34  21  96    75 -0.77\nMATHS      6 322  69.33 19.98   74.0   71.61  17.79   9  99    90 -0.93\nSCIENCE    7 322  61.16 18.18   65.0   62.50  17.79  15  96    81 -0.60\n        kurtosis   se\nID*        -1.21 5.19\nCLASS*     -1.17 0.14\nGENDER*    -1.99 0.03\nRACE*      -1.41 0.06\nENGLISH     0.18 0.82\nMATHS       0.17 1.11\nSCIENCE    -0.35 1.01"
   },
   {
     "objectID": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#working-with-ggrepel",
@@ -156,43 +156,78 @@
   {
     "objectID": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#working-with-ggtheme-package",
     "href": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#working-with-ggtheme-package",
-    "title": "Hands-on Exercise 2",
-    "section": "4.1 Working with ggtheme package",
-    "text": "4.1 Working with ggtheme package\nggthemes provides ‘ggplot2’ themes that replicate the look of plots by Edward Tufte, Stephen Few, Fivethirtyeight, The Economist, ‘Stata’, ‘Excel’, and The Wall Street Journal, among others.\nThe Economist theme:\n\np1 + theme_economist()\n\n\n\n\n\n\n\n\nThe Wall Street Journal theme:\n\np1 & theme_wsj() & theme(plot.margin = margin(5, 5, 5, 5))\n\n\n\n\n\n\n\n\nOther ggthemes can be explorered here."
+    "title": "2 Beyond ggplot2 Fundamentals",
+    "section": "2.4.1 Working with ggtheme package",
+    "text": "2.4.1 Working with ggtheme package\nggthemes provides ‘ggplot2’ themes that replicate the look of plots by Edward Tufte, Stephen Few, Fivethirtyeight, The Economist, ‘Stata’, ‘Excel’, and The Wall Street Journal, among others.\nThe Economist theme:\n\np1 + theme_economist()\n\n\n\n\n\n\n\n\nThe Wall Street Journal theme:\n\np1 & theme_wsj() & theme(plot.margin = margin(5, 5, 5, 5))\n\n\n\n\n\n\n\n\nOther ggthemes can be explorered here."
   },
   {
     "objectID": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#working-with-hrbtheme-package",
     "href": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#working-with-hrbtheme-package",
-    "title": "Hands-on Exercise 2",
-    "section": "4.2. Working with hrbtheme package",
-    "text": "4.2. Working with hrbtheme package\nhrbrthemes package provides a base theme that focuses on typographic elements, including where various labels are placed as well as the fonts that are used.\nInstall fonts to use theme_ipsum()\ninstall.packages(\"extrafont\")\nlibrary(extrafont)\nfont_import()\nloadfonts(device = \"win\")\n\np2 &lt;- ggplot(data=exam_data, \n             aes(x = MATHS)) +\n  geom_histogram(bins=20, \n                 boundary = 100,\n                 color=\"grey25\", \n                 fill=\"grey90\") +\n  ggtitle(\"Distribution of Maths scores\") \n\np2 + theme_ipsum()\n\n\n\n\n\n\n\n\n\np2 +\n  theme_ipsum(axis_title_size = 18,\n              base_size = 15,\n              grid = \"Y\")\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTipWhat we modify above?\n\n\n\n\naxis_title_size argument is used to increase the font size of the axis title to 18,\nbase_size argument is used to increase the default axis label to 15, and\ngrid argument is used to remove the x-axis grid lines."
+    "title": "2 Beyond ggplot2 Fundamentals",
+    "section": "2.4.2 Working with hrbtheme package",
+    "text": "2.4.2 Working with hrbtheme package\nhrbrthemes package provides a base theme that focuses on typographic elements, including where various labels are placed as well as the fonts that are used.\nInstall fonts to use theme_ipsum()\ninstall.packages(\"extrafont\")\nlibrary(extrafont)\nfont_import()\nloadfonts(device = \"win\")\n\np2 &lt;- ggplot(data=exam_data, \n             aes(x = MATHS)) +\n  geom_histogram(bins=20, \n                 boundary = 100,\n                 color=\"grey25\", \n                 fill=\"grey90\") +\n  ggtitle(\"Distribution of Maths scores\") \n\np2 + theme_ipsum()\n\n\n\n\n\n\n\n\n\np2 +\n  theme_ipsum(axis_title_size = 18,\n              base_size = 15,\n              grid = \"Y\")\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTip2.4.3 What we modify above?\n\n\n\n\naxis_title_size argument is used to increase the font size of the axis title to 18,\nbase_size argument is used to increase the default axis label to 15, and\ngrid argument is used to remove the x-axis grid lines."
   },
   {
     "objectID": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#creating-composite-graphics-pathwork-methods",
     "href": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#creating-composite-graphics-pathwork-methods",
-    "title": "Hands-on Exercise 2",
-    "section": "5.1. Creating Composite Graphics: pathwork methods",
-    "text": "5.1. Creating Composite Graphics: pathwork methods\nIn this case, we use an ggplot2 extension called patchwork which is specially designed for combining separate ggplot2 graphs into a single figure. Patchwork package has a very simple syntax where we can create layouts super easily. Here’s the general syntax that combines:\n\nTwo-Column Layout using the Plus Sign +.\nParenthesis () to create a subplot group.\nTwo-Row Layout using the Division Sign /"
+    "title": "2 Beyond ggplot2 Fundamentals",
+    "section": "2.5.1 Creating Composite Graphics: pathwork methods",
+    "text": "2.5.1 Creating Composite Graphics: pathwork methods\nIn this case, we use an ggplot2 extension called patchwork which is specially designed for combining separate ggplot2 graphs into a single figure. Patchwork package has a very simple syntax where we can create layouts super easily. Here’s the general syntax that combines:\n\nTwo-Column Layout using the Plus Sign +.\nParenthesis () to create a subplot group.\nTwo-Row Layout using the Division Sign /"
   },
   {
     "objectID": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#combining-multiple-ggplot2-graphs",
     "href": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#combining-multiple-ggplot2-graphs",
-    "title": "Hands-on Exercise 2",
-    "section": "5.2. Combining multiple ggplot2 graphs",
-    "text": "5.2. Combining multiple ggplot2 graphs\n\n(p1 / p2) | p3"
+    "title": "2 Beyond ggplot2 Fundamentals",
+    "section": "2.5.2 Combining multiple ggplot2 graphs",
+    "text": "2.5.2 Combining multiple ggplot2 graphs\n\n(p1 / p2) | p3"
   },
   {
     "objectID": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#creating-a-composite-figure-with-tag",
     "href": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#creating-a-composite-figure-with-tag",
-    "title": "Hands-on Exercise 2",
-    "section": "5.3 Creating a composite figure with tag",
-    "text": "5.3 Creating a composite figure with tag\n\n((p1 / p2) | p3) + \n  plot_annotation(tag_levels = 'A')"
+    "title": "2 Beyond ggplot2 Fundamentals",
+    "section": "2.5.3 Creating a composite figure with tag",
+    "text": "2.5.3 Creating a composite figure with tag\n\n((p1 / p2) | p3) + \n  plot_annotation(tag_levels = 'A')"
   },
   {
     "objectID": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#creating-a-composite-figure-by-using-patchwork-and-ggtheme",
     "href": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#creating-a-composite-figure-by-using-patchwork-and-ggtheme",
-    "title": "Hands-on Exercise 2",
-    "section": "5.4 Creating a composite figure by using patchwork and ggtheme",
-    "text": "5.4 Creating a composite figure by using patchwork and ggtheme\n\npatchwork &lt;- (p1 / p2) | p3\npatchwork & theme_economist() &\n    theme(\n    plot.title = element_text(size = 10, face = \"bold\"),\n    axis.title = element_text(size = 8),\n    axis.text = element_text(size = 7),\n    plot.margin = margin(2, 2, 2, 2, \"pt\")\n    )"
+    "title": "2 Beyond ggplot2 Fundamentals",
+    "section": "2.5.4 Creating a composite figure by using patchwork and ggtheme",
+    "text": "2.5.4 Creating a composite figure by using patchwork and ggtheme\n\npatchwork &lt;- (p1 / p2) | p3\npatchwork & theme_economist() &\n    theme(\n    plot.title = element_text(size = 10, face = \"bold\"),\n    axis.title = element_text(size = 8),\n    axis.text = element_text(size = 7),\n    plot.margin = margin(2, 2, 2, 2, \"pt\")\n    )"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html",
+    "title": "3 Programming Interactive Data Visualisation with R",
+    "section": "",
+    "text": "To learn how to create interactive data visualisation by using functions provided by ggiraph and plotlyr packages."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#tooltip-effect-with-tooltip-aesthetic",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#tooltip-effect-with-tooltip-aesthetic",
+    "title": "3 Programming Interactive Data Visualisation with R",
+    "section": "3.4.1 Tooltip effect with tooltip aesthetic",
+    "text": "3.4.1 Tooltip effect with tooltip aesthetic\nBelow shows a typical code chunk to plot an interactive statistical graph by using ggiraph package. The code chunk consists of two parts. First, an ggplot object will be created. Next, girafe() of ggiraph will be used to create an interactive svg object.\nBy hovering the mouse pointer on an data point of interest, the student’s ID will be displayed.\n\np &lt;- ggplot(data=exam_data, \n       aes(x = MATHS)) +\n  geom_dotplot_interactive(\n    aes(tooltip = ID),\n    stackgroups = TRUE, \n    binwidth = 1, \n    method = \"histodot\") +\n  scale_y_continuous(NULL, \n                     breaks = NULL)\ngirafe(\n  ggobj = p,\n  width_svg = 6,\n  height_svg = 6*0.618\n)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#displaying-multiple-information-on-tooltip",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#displaying-multiple-information-on-tooltip",
+    "title": "3 Programming Interactive Data Visualisation with R",
+    "section": "3.5.1 Displaying multiple information on tooltip",
+    "text": "3.5.1 Displaying multiple information on tooltip\nThe content of the tooltip can be customised by including a list object.\nThe first three lines of codes in the code chunk create a new field called tooltip. At the same time, it populates text in ID and CLASS fields into the newly created field.\n\nexam_data$tooltip &lt;- c(paste0(     \n  \"Name = \", exam_data$ID,         \n  \"\\n Class = \", exam_data$CLASS)) \n\np &lt;- ggplot(data=exam_data, \n       aes(x = MATHS)) +\n    geom_dotplot_interactive(\n      aes(tooltip = exam_data$tooltip), \n      stackgroups = TRUE,\n      binwidth = 1,\n      method = \"histodot\") +\n    scale_y_continuous(NULL,               \n                       breaks = NULL)\ngirafe(\n  ggobj = p,\n  width_svg = 8,\n  height_svg = 8*0.618\n)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#customising-tooltip-style",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#customising-tooltip-style",
+    "title": "3 Programming Interactive Data Visualisation with R",
+    "section": "3.5.2 Customising Tooltip style",
+    "text": "3.5.2 Customising Tooltip style\nUse opts_tooltip() of ggiraph to customize tooltip rendering by add css declarations.\nNotice that the background colour of the tooltip is pink (#d8118c), color of hovered point turns to yellow.\n\ntooltip_css &lt;- \n\"background-color:#d8118c;\ncolor:white;\nfont-style:bold;\npadding:5px;\nborder-radius:3px;\" #&lt;&lt;\n\nexam_data$tooltip &lt;- c(paste0(     \n  \"Name = \", exam_data$ID,         \n  \"\\n Class = \", exam_data$CLASS)) \n\np &lt;- ggplot(data=exam_data, \n       aes(x = MATHS)) +\n    geom_dotplot_interactive(              \n      aes(tooltip  = exam_data$tooltip,\n           data_id = ID),                   \n      stackgroups = TRUE,                  \n      binwidth = 1,                        \n      method = \"histodot\") +               \n    scale_y_continuous(NULL,               \n                       breaks = NULL)\ngirafe(                                  \n  ggobj = p,                             \n  width_svg = 6,                         \n  height_svg = 6*0.618,\n  options = list(    #&lt;&lt;\n    opts_tooltip(css = tooltip_css),\n    opts_hover(css = \"fill:yellow;stroke:orange;\")\n    ) #&lt;&lt;\n)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#annotation-ggrepel",
+    "href": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#annotation-ggrepel",
+    "title": "2 Beyond ggplot2 Fundamentals",
+    "section": "2.3.1 Annotation: ggrepel",
+    "text": "2.3.1 Annotation: ggrepel\nggrepel is an extension of ggplot2 package which provides geoms for ggplot2 to repel overlapping text as in our examples on the right.\nWe simply replace geom_text() by geom_text_repel() and geom_label() by geom_label_repel.\n\nThe plotThe code\n\n\n\n\n\n\n\n\n\n\n\n\n\nggplot(data=exam_data,\n       aes(x= MATHS,\n           y=ENGLISH)) +\n  geom_point() +\n  geom_smooth(method=lm,\n              size=0.5) +\n  geom_label_repel(aes(label = ID),\n                   fontface = \"bold\") +\n  coord_cartesian(xlim=c(0,100),\n                  ylim=c(0,100)) +\n  ggtitle(\"English scores versus Maths scores for Primary 3\")"
   }
 ]

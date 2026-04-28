@@ -8,10 +8,14 @@ website:
       - text: "<img src='/images/dory.png' width='40' height='40' style='margin-right: 5px;'> 
       Hands-on Exercise"
         menu:
-          - text: "Hands-on Exercise 1 - ggplot2"
+          - text: "HO1-A Layered Grammar of Graphics: ggplot2 methods"
             href: "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html"
-          - text: "Hands-on Exercise 2 - Beyond ggplot2"
+          
+          - text: "HO2-Beyond ggplot2 Fundamentals"
             href: "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html"
+            
+          - text: "HO3-Programming Interactive Data Visualisation with R"
+            href: "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html"
             
       - text: "<img src='/images/shark.png' width='40' height='40' style='margin-right: 5px;'> 
       Take-home Exercise"
@@ -19,7 +23,7 @@ website:
           - text: "Take-home Exercise 1"
           
       - text: "<img src='/images/black.png' width='40' height='40' style='margin-right: 5px;'> 
-      Analytics Project"
+      Real-world Project"
         menu:
           - text: "Customer Segmentation"
             href: "Analytics_Project/Customer_Segmentation/Customer_Segmentation.html"
