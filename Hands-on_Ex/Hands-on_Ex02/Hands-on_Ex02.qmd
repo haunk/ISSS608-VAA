@@ -70,7 +70,7 @@ library(psych)
 describe(exam_data)
 ```
 
-# 2.3 Beyond ggplot2 
+# 2.3 Beyond ggplot2
 
 ## 2.3.1 Annotation: ggrepel
 
@@ -179,7 +179,7 @@ p2 +
 ```
 
 ::: callout-tip
-## 2.4.3 What we modify above?
+## What we modify above?
 
 -   `axis_title_size` argument is used to increase the font size of the axis title to 18,
 -   `base_size` argument is used to increase the default axis label to 15, and
