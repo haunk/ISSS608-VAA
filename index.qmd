@@ -4,6 +4,7 @@ format:
   html:
     toc: false
     body-classes: "home-page"
+    include-after-body: fish-animation.html
 ---
 
 ::: {.text-center style="padding: 60px 20px; color: white;"}

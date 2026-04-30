@@ -1,0 +1,19 @@
+---
+title: "4  Programming Animated Statistical Graphics with R"
+author: "Nguyen Kim Hau"
+date: "April 30, 2026"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  warning: false
+  freeze: true
+---
+
+# 4.1 Purpose
+
+-   How to create animated data visualisation by using **gganimate** and **plotly r** packages.
+-   How to reshape data by using **tidyr** package
+-   How to process, wrangle and transform data by using **dplyr** package.
+
+After following me on this page, you can create this animated chart by yourself!

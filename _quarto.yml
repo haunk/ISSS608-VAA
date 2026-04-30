@@ -1,5 +1,7 @@
 project:
   type: website
+  resources:
+    - "images/*.webp"
 
 website:
   title: "ISSS608-VAA"
@@ -8,14 +10,17 @@ website:
       - text: "<img src='/images/dory.png' width='40' height='40' style='margin-right: 5px;'> 
       Hands-on Exercise"
         menu:
-          - text: "HO1-A Layered Grammar of Graphics: ggplot2 methods"
+          - text: "HO1_A Layered Grammar of Graphics: ggplot2 methods"
             href: "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html"
           
-          - text: "HO2-Beyond ggplot2 Fundamentals"
+          - text: "HO2_Beyond ggplot2 Fundamentals"
             href: "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html"
             
-          - text: "HO3-Programming Interactive Data Visualisation with R"
+          - text: "HO3_Interactive Data Visualisation with R"
             href: "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html"
+            
+          - text: "HO4_Animated Statistical Graphics with R"
+            href: "Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04.html"
             
       - text: "<img src='/images/shark.png' width='40' height='40' style='margin-right: 5px;'> 
       Take-home Exercise"
