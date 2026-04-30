@@ -340,6 +340,6 @@
     "href": "Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04.html#building-an-animated-bubble-plot-plot_ly-method",
     "title": "4 Programming Animated Statistical Graphics with R",
     "section": "4.5.2 Building an animated bubble plot: plot_ly() method",
-    "text": "4.5.2 Building an animated bubble plot: plot_ly() method\n\nbp &lt;- globalPop %&gt;%\n  plot_ly(x = ~Old, \n          y = ~Young, \n          size = ~Population, \n          color = ~Continent,\n          sizes = c(2, 100),\n          frame = ~Year, \n          text = ~Country, \n          hoverinfo = \"text\",\n          type = 'scatter',\n          mode = 'markers'\n          ) %&gt;%\n  layout(showlegend = FALSE)\nbp"
+    "text": "4.5.2 Building an animated bubble plot: plot_ly() method\n\nbp &lt;- globalPop %&gt;%\n  plot_ly(x = ~Old, \n          y = ~Young, \n          size = ~Population, \n          color = ~Continent,\n          sizes = c(2, 100),\n          frame = ~Year, \n          text = ~Country, \n          hoverinfo = \"text\",\n          type = 'scatter',\n          mode = 'markers'\n          ) %&gt;%\n  layout(showlegend = FALSE)\nbp\n\n\n\n\n\nThank you for reaching here. Waiting for the next lesson!."
   }
 ]
