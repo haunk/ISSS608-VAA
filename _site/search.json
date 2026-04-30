@@ -298,6 +298,20 @@
     "href": "Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04.html",
     "title": "4 Programming Animated Statistical Graphics with R",
     "section": "",
-    "text": "4.1 Purpose\n\nHow to create animated data visualisation by using gganimate and plotly r packages.\nHow to reshape data by using tidyr package\nHow to process, wrangle and transform data by using dplyr package.\n\nAfter following me on this page, you can create this animated chart by yourself!"
+    "text": "How to create animated data visualisation by using gganimate and plotly r packages.\nHow to reshape data by using tidyr package\nHow to process, wrangle and transform data by using dplyr package.\n\nAfter following me on this page, you can create this animated chart by yourself!"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04.html#loading-the-r-packages",
+    "href": "Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04.html#loading-the-r-packages",
+    "title": "4 Programming Animated Statistical Graphics with R",
+    "section": "4.3.1 Loading the R packages",
+    "text": "4.3.1 Loading the R packages\n\nplotly, R library for plotting interactive statistical graphs.\ngganimate, an ggplot extension for creating animated statistical graphs.\ngifski converts video frames to GIF animations using pngquant’s fancy features for efficient cross-frame palettes and temporal dithering. It produces animated GIFs that use thousands of colors per frame.\ngapminder: An excerpt of the data available at Gapminder.org. We just want to use its country_colors scheme.\ntidyverse, a family of modern R packages specially designed to support data science, analysis and communication task including creating static statistical graphs.\n\n\npacman::p_load(readxl, gifski, gapminder,\n               plotly, gganimate, tidyverse)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04.html#importing-the-data",
+    "href": "Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04.html#importing-the-data",
+    "title": "4 Programming Animated Statistical Graphics with R",
+    "section": "4.3.2 Importing the data",
+    "text": "4.3.2 Importing the data\n\ncol &lt;- c(\"Country\", \"Continent\")\nglobalPop &lt;- read_xls(\"data/GlobalPopulation.xls\",\n                      sheet=\"Data\") %&gt;%\n  mutate(across(all_of(col), factor)) %&gt;%\n  mutate(Year = as.integer(Year))\n\n\n\n\n\n\n\nNoteThings to learn\n\n\n\n\nread_xls() of readxl package is used to import the Excel worksheet.\nmutate of dplyr package is used to modify/add data.\nmutate(across(all_of(col), factor)) converts columns listed in col into factors (categorical data). Old version is mutate_each_(funs(factor(.)), col).\ns.integer(Year) — converts the Year column to a whole number (integer).\n%&gt;% is pipe operator (from the magrittr/tidyverse package), meaning taking the result from the left and pass it into the next function.\n\n\n\n\nhead(globalPop, n = 10)\n\n# A tibble: 10 × 6\n   Country      Year Young   Old Population Continent\n   &lt;fct&gt;       &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt; &lt;fct&gt;    \n 1 Afghanistan  1996  83.6   4.5     21560. Asia     \n 2 Afghanistan  1998  84.1   4.5     22913. Asia     \n 3 Afghanistan  2000  84.6   4.5     23898. Asia     \n 4 Afghanistan  2002  85.1   4.5     25268. Asia     \n 5 Afghanistan  2004  84.5   4.5     28514. Asia     \n 6 Afghanistan  2006  84.3   4.6     31057  Asia     \n 7 Afghanistan  2008  84.1   4.6     32738. Asia     \n 8 Afghanistan  2010  83.7   4.6     34505. Asia     \n 9 Afghanistan  2012  82.9   4.6     36416. Asia     \n10 Afghanistan  2014  82.1   4.7     38327. Asia"
   }
 ]

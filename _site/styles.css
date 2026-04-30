@@ -71,3 +71,6 @@ body.home-page::after {
 .callout-tip .callout-header * {
   color: white !important;
 }
+.callout-note .callout-header * {
+  color: white !important;
+}
