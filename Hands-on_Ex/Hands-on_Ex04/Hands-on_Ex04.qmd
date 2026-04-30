@@ -23,8 +23,11 @@ After following me on this page, you can create this animated chart by yourself!
 pacman::p_load(readxl, gifski, gapminder,
                plotly, gganimate, tidyverse)
 
+col <- c("Country", "Continent")
 globalPop <- read_xls("data/GlobalPopulation.xls",
-                      sheet="Data")
+                      sheet="Data") %>%
+  mutate(across(all_of(col), factor)) %>%
+  mutate(Year = as.integer(Year))
 
 
 ggplot(globalPop, aes(x = Old, y = Young, 
