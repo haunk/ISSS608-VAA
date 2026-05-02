@@ -10,8 +10,7 @@ Welcome to **ISSS608: Visual Analytics and Application** — a Quarto-powered we
 
 ```         
 ISSS608-VAA/
-├── Analytics_Project/
-│   └── Customer_Segmentation/   # Real-world data analytics project
+├── Analytics_Project/            # Real-world data analytics project
 ├── Hands-on_Ex/                  # Hands-on visualization exercises
 ├── images/                       # Image assets
 ├── _freeze/                      # Quarto freeze directory
