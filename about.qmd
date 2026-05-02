@@ -2,7 +2,9 @@
 title: "About"
 ---
 
-Author: **Nguyen Kim Hau**
+![](images/nemo.png){width="45"} Like Nemo, I'm on a journey. Driven by curiosity, guided by data. Always swimming forward.
+
+**Nguyen Kim Hau**
 
 -   📧 [kh.nguyen.2025\@mitb.smu.edu.sg](mailto:kh.nguyen.2025@mitb.smu.edu.sg) \
     or [haukimng\@gmail.com](mailto:haukimng@gmail.com)
