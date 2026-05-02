@@ -2,8 +2,9 @@
 title: "About"
 ---
 
-About this site
+Author: **Nguyen Kim Hau**
 
-Author: Nguyen Kim Hau
-
-Email: kh.nguyen.2025\@mitb.smu.edu.sg
+-   📧 [kh.nguyen.2025\@mitb.smu.edu.sg](mailto:kh.nguyen.2025@mitb.smu.edu.sg) \
+    or [haukimng\@gmail.com](mailto:haukimng@gmail.com)
+-   💼 [linkedin.com/in/haukim](https://www.linkedin.com/in/haukim)
+-   🌐 [haukim.vercel.app](https://haukim.vercel.app)
