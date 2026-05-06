@@ -341,5 +341,68 @@
     "title": "4 Programming Animated Statistical Graphics with R",
     "section": "4.5.2 Building an animated bubble plot: plot_ly() method",
     "text": "4.5.2 Building an animated bubble plot: plot_ly() method\n\nbp &lt;- globalPop %&gt;%\n  plot_ly(x = ~Old, \n          y = ~Young, \n          size = ~Population, \n          color = ~Continent,\n          sizes = c(2, 100),\n          frame = ~Year, \n          text = ~Country, \n          hoverinfo = \"text\",\n          type = 'scatter',\n          mode = 'markers'\n          ) %&gt;%\n  layout(showlegend = FALSE)\nbp\n\n\n\n\n\nThank you for reaching here. Waiting for the next lesson!."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex04/Hands_on_Ex04.html",
+    "href": "Hands-on_Ex/Hands-on_Ex04/Hands_on_Ex04.html",
+    "title": "5 Visualising Distribution",
+    "section": "",
+    "text": "Visualising distribution is not new in statistical analysis. In chapter 1 we have shared with you some of the popular statistical graphics methods for visualising distribution are histogram, probability density curve (pdf), boxplot, notch plot and violin plot and how they can be created by using ggplot2. In this chapter, we are going to share with you two relatively new statistical graphic methods for visualising distribution, namely ridgeline plot and raincloud plot by using ggplot2 and its extensions."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex04/Hands_on_Ex04.html#learning-outcome",
+    "href": "Hands-on_Ex/Hands-on_Ex04/Hands_on_Ex04.html#learning-outcome",
+    "title": "5 Visualising Distribution",
+    "section": "",
+    "text": "Visualising distribution is not new in statistical analysis. In chapter 1 we have shared with you some of the popular statistical graphics methods for visualising distribution are histogram, probability density curve (pdf), boxplot, notch plot and violin plot and how they can be created by using ggplot2. In this chapter, we are going to share with you two relatively new statistical graphic methods for visualising distribution, namely ridgeline plot and raincloud plot by using ggplot2 and its extensions."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03b/Hands-on_Ex03b.html",
+    "href": "Hands-on_Ex/Hands-on_Ex03b/Hands-on_Ex03b.html",
+    "title": "4 Programming Animated Statistical Graphics with R",
+    "section": "",
+    "text": "How to create animated data visualisation by using gganimate and plotly r packages.\nHow to reshape data by using tidyr package\nHow to process, wrangle and transform data by using dplyr package.\n\nAfter following me on this page, you can create this animated chart by yourself!"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03b/Hands-on_Ex03b.html#loading-the-r-packages",
+    "href": "Hands-on_Ex/Hands-on_Ex03b/Hands-on_Ex03b.html#loading-the-r-packages",
+    "title": "4 Programming Animated Statistical Graphics with R",
+    "section": "4.3.1 Loading the R packages",
+    "text": "4.3.1 Loading the R packages\n\nplotly, R library for plotting interactive statistical graphs.\ngganimate, an ggplot extension for creating animated statistical graphs.\ngifski converts video frames to GIF animations using pngquant’s fancy features for efficient cross-frame palettes and temporal dithering. It produces animated GIFs that use thousands of colors per frame.\ngapminder: An excerpt of the data available at Gapminder.org. We just want to use its country_colors scheme.\ntidyverse, a family of modern R packages specially designed to support data science, analysis and communication task including creating static statistical graphs.\n\n\npacman::p_load(readxl, gifski, gapminder,\n               plotly, gganimate, tidyverse)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03b/Hands-on_Ex03b.html#importing-the-data",
+    "href": "Hands-on_Ex/Hands-on_Ex03b/Hands-on_Ex03b.html#importing-the-data",
+    "title": "4 Programming Animated Statistical Graphics with R",
+    "section": "4.3.2 Importing the data",
+    "text": "4.3.2 Importing the data\n\ncol &lt;- c(\"Country\", \"Continent\")\nglobalPop &lt;- read_xls(\"data/GlobalPopulation.xls\",\n                      sheet=\"Data\") %&gt;%\n  mutate(across(all_of(col), factor)) %&gt;%\n  mutate(Year = as.integer(Year))\n\n\n\n\n\n\n\nNoteThings to learn\n\n\n\n\nread_xls() of readxl package is used to import the Excel worksheet.\nmutate of dplyr package is used to modify/add data.\nmutate(across(all_of(col), factor)) converts columns listed in col into factors (categorical data). Old version is mutate_each_(funs(factor(.)), col). Can be use mutate_at(col, as.factor).\ns.integer(Year) — converts the Year column to a whole number (integer).\n%&gt;% is pipe operator (from the magrittr/tidyverse package), meaning taking the result from the left and pass it into the next function.\n\n\n\n\nhead(globalPop, n = 10)\n\n# A tibble: 10 × 6\n   Country      Year Young   Old Population Continent\n   &lt;fct&gt;       &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt; &lt;fct&gt;    \n 1 Afghanistan  1996  83.6   4.5     21560. Asia     \n 2 Afghanistan  1998  84.1   4.5     22913. Asia     \n 3 Afghanistan  2000  84.6   4.5     23898. Asia     \n 4 Afghanistan  2002  85.1   4.5     25268. Asia     \n 5 Afghanistan  2004  84.5   4.5     28514. Asia     \n 6 Afghanistan  2006  84.3   4.6     31057  Asia     \n 7 Afghanistan  2008  84.1   4.6     32738. Asia     \n 8 Afghanistan  2010  83.7   4.6     34505. Asia     \n 9 Afghanistan  2012  82.9   4.6     36416. Asia     \n10 Afghanistan  2014  82.1   4.7     38327. Asia     \n\n\n\nlibrary(psych)\ndescribe(globalPop)\n\n           vars    n     mean        sd median  trimmed     mad    min\nCountry*      1 6204   111.47     64.07  111.0   111.47   83.03    1.0\nYear          2 6204  2023.05     16.13 2024.0  2023.06   20.76 1996.0\nYoung         3 6204    41.66     20.22   34.3    39.00   15.42   15.5\nOld           4 6204    17.93     13.57   12.8    15.93   10.53    1.0\nPopulation    5 6204 34860.92 139208.84 5771.6 12001.51 8382.32    3.3\nContinent*    6 6204     2.75      1.47    3.0     2.62    1.48    1.0\n                 max     range skew kurtosis      se\nCountry*       222.0     221.0 0.00    -1.20    0.81\nYear          2050.0      54.0 0.00    -1.20    0.20\nYoung          109.2      93.7 1.00    -0.01    0.26\nOld             77.1      76.1 1.14     0.64    0.17\nPopulation 1807878.6 1807875.3 9.10    90.28 1767.38\nContinent*       6.0       5.0 0.53    -0.65    0.02"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03b/Hands-on_Ex03b.html#building-a-static-population-bubble-plot",
+    "href": "Hands-on_Ex/Hands-on_Ex03b/Hands-on_Ex03b.html#building-a-static-population-bubble-plot",
+    "title": "4 Programming Animated Statistical Graphics with R",
+    "section": "4.4.1 Building a static population bubble plot",
+    "text": "4.4.1 Building a static population bubble plot\nThe basic ggplot2 functions are used to create a static bubble plot.\n\nggplot(globalPop, aes(x = Old, y = Young, \n                      size = Population, \n                      colour = Country)) +\n  geom_point(alpha = 0.7, \n             show.legend = FALSE) +\n  scale_colour_manual(values = country_colors) +\n  scale_size(range = c(2, 12)) +\n  labs(title = 'Year: {frame_time}', \n       x = '% Aged', \n       y = '% Young')"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03b/Hands-on_Ex03b.html#building-the-animated-bubble-plot",
+    "href": "Hands-on_Ex/Hands-on_Ex03b/Hands-on_Ex03b.html#building-the-animated-bubble-plot",
+    "title": "4 Programming Animated Statistical Graphics with R",
+    "section": "4.4.2 Building the animated bubble plot",
+    "text": "4.4.2 Building the animated bubble plot\n\ntransition_time() of gganimate is used to create transition through distinct states in time (i.e. Year).\nease_aes() is used to control easing of aesthetics.\n\n\nggplot(globalPop, aes(x = Old, y = Young, \n                      size = Population, \n                      colour = Country)) +\n  geom_point(alpha = 0.7, \n             show.legend = FALSE) +\n  scale_colour_manual(values = country_colors) +\n  scale_size(range = c(2, 12)) +\n  labs(title = 'Year: {frame_time}', \n       x = '% Aged', \n       y = '% Young') +\n  transition_time(Year) +       \n  ease_aes('linear')          \n\n\n\n\n\n\n\n\nThe default is linear. Other methods are: quadratic, cubic, quartic, quintic, sine, circular, exponential, elastic, back, and bounce. See demo here. I myself think they are all nice motions but not too different."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03b/Hands-on_Ex03b.html#building-an-animated-bubble-plot-ggplotly-method",
+    "href": "Hands-on_Ex/Hands-on_Ex03b/Hands-on_Ex03b.html#building-an-animated-bubble-plot-ggplotly-method",
+    "title": "4 Programming Animated Statistical Graphics with R",
+    "section": "4.5.1 Building an animated bubble plot: ggplotly() method",
+    "text": "4.5.1 Building an animated bubble plot: ggplotly() method\nNotice that although show.legend = FALSE argument was used, the legend still appears on the plot. To overcome this problem, theme(legend.position=‘none’) should be used.\n\ngg &lt;- ggplot(globalPop, \n       aes(x = Old, \n           y = Young, \n           size = Population, \n           colour = Country)) +\n  geom_point(aes(size = Population,\n                 frame = Year),\n             alpha = 0.7) +\n  scale_colour_manual(values = country_colors) +\n  scale_size(range = c(2, 12)) +\n  labs(x = '% Aged', \n       y = '% Young') + \n  theme(legend.position='none')\n\nggplotly(gg)\n\n\n\n\n\nThe animated bubble plot above includes a play/pause button and a slider component for controlling the animation.\n\n\n\n\n\n\nNoteThings to learn\n\n\n\n\nAppropriate ggplot2 functions are used to create a static bubble plot. The output is then saved as an R object called gg.\nggplotly() is then used to convert the R graphic object into an animated svg object."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03b/Hands-on_Ex03b.html#building-an-animated-bubble-plot-plot_ly-method",
+    "href": "Hands-on_Ex/Hands-on_Ex03b/Hands-on_Ex03b.html#building-an-animated-bubble-plot-plot_ly-method",
+    "title": "4 Programming Animated Statistical Graphics with R",
+    "section": "4.5.2 Building an animated bubble plot: plot_ly() method",
+    "text": "4.5.2 Building an animated bubble plot: plot_ly() method\n\nbp &lt;- globalPop %&gt;%\n  plot_ly(x = ~Old, \n          y = ~Young, \n          size = ~Population, \n          color = ~Continent,\n          sizes = c(2, 100),\n          frame = ~Year, \n          text = ~Country, \n          hoverinfo = \"text\",\n          type = 'scatter',\n          mode = 'markers'\n          ) %&gt;%\n  layout(showlegend = FALSE)\nbp\n\n\n\n\n\nThank you for reaching here. Waiting for the next lesson!."
   }
 ]
