@@ -22,6 +22,9 @@ website:
           - text: "HO4_Animated Statistical Graphics with R"
             href: "Hands-on_Ex/Hands-on_Ex03b/Hands-on_Ex03b.html"
             
+          - text: "HO5_Visualising Distribution"
+            href: "Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04.html"
+            
       - text: "<img src='/images/shark.png' width='40' height='40' style='margin-right: 5px;'> 
       Take-home Exercise"
         menu:
