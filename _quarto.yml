@@ -25,6 +25,9 @@ website:
           - text: "HO5_Visualising Distribution"
             href: "Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04.html"
             
+          - text: "HO6_Visual Statistical Analysis"
+            href: "Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04b.html"
+            
       - text: "<img src='/images/shark.png' width='40' height='40' style='margin-right: 5px;'> 
       Take-home Exercise"
         menu:
