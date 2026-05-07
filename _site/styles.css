@@ -74,3 +74,12 @@ body.home-page::after {
 .callout-note .callout-header * {
   color: white !important;
 }
+.callout-important .callout-header * {
+  color: white !important;
+}
+.callout-caution .callout-header * {
+  color: white !important;
+}
+.callout-warning .callout-header * {
+  color: white !important;
+}

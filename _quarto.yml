@@ -19,7 +19,7 @@ website:
           - text: "HO3_Interactive Data Visualisation with R"
             href: "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html"
             
-          - text: "HO4_Animated Statistical Graphics with R"
+          - text: "HO4_Animated Statistical Graphics with R ⭐"
             href: "Hands-on_Ex/Hands-on_Ex03b/Hands-on_Ex03b.html"
             
           - text: "HO5_Visualising Distribution"
@@ -27,6 +27,9 @@ website:
             
           - text: "HO6_Visual Statistical Analysis"
             href: "Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04b.html"
+          
+          - text: "HO7_Visualising Uncertainty"
+            href: "Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04c.html"
             
       - text: "<img src='/images/shark.png' width='40' height='40' style='margin-right: 5px;'> 
       Take-home Exercise"
