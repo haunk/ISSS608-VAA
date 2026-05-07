@@ -28,8 +28,11 @@ website:
           - text: "HO6_Visual Statistical Analysis"
             href: "Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04b.html"
           
-          - text: "HO7_Visualising Uncertainty"
+          - text: "HO7_Visualising Uncertainty ⭐"
             href: "Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04c.html"
+            
+          - text: "HO8_Funnel Plots for Fair Comparisons"
+            href: "Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04d.html"
             
       - text: "<img src='/images/shark.png' width='40' height='40' style='margin-right: 5px;'> 
       Take-home Exercise"
