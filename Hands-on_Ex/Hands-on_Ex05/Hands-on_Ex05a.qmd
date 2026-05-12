@@ -52,6 +52,10 @@ To important *respopagsex2000to2018_tidy.csv* into R, ***read_csv()*** function 
 pop_data <- read_csv("data/respopagsex2000to2018_tidy.csv") 
 ```
 
+```{r}
+head(pop_data, n = 10)
+```
+
 ### 9.3.3 Preparing the Data
 
 Next, use the ***mutate()*** function of **dplyr** package to derive three new measures, namely: young, active, and old.
@@ -88,6 +92,15 @@ ggtern(data=agpop_mutated, aes(x=YOUNG,y=ACTIVE, z=OLD)) +
   labs(title="Population structure, 2015") +
   theme_rgbw()
 ```
+
+::: callout-note
+## Understand this plot:
+
+-   Most points are clustered in the upper-center area
+-   High ACTIVE (working-age) population \~60-70%
+-   Moderate YOUNG population \~20-30%
+-   Lower OLD population \~10-20%
+:::
 
 ### 9.4.2 Plotting an interative ternary diagram
 
@@ -136,5 +149,5 @@ plot_ly(
 ```
 
 ::: callout-note
-You can zoom in/out the plot
+You can zoom in/out the plot.
 :::
