@@ -34,6 +34,9 @@ website:
           - text: "HO8_Funnel Plots for Fair Comparisons"
             href: "Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04d.html"
             
+          - text: "HO9_Creating Ternary Plot with R"
+            href: "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05a.html"
+            
       - text: "<img src='/images/shark.png' width='40' height='40' style='margin-right: 5px;'> 
       Take-home Exercise"
         menu:
