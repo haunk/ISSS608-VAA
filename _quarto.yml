@@ -40,6 +40,9 @@ website:
           - text: "HO10_Visual Correlation Analysis ⭐"
             href: "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05b.html"
             
+          - text: "HO11_Heatmap for Visualising and Analysing Multivariate Data"
+            href: "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05c.html"
+            
       - text: "<img src='/images/shark.png' width='40' height='40' style='margin-right: 5px;'> 
       Take-home Exercise"
         menu:
