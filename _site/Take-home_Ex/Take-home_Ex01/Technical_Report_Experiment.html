@@ -107,6 +107,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
+<script src="../../site_libs/kePrint-0.0.1/kePrint.js"></script>
+
+<link href="../../site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
 
 
 <link rel="stylesheet" href="../../styles.css">
@@ -231,8 +235,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#data-wrangling" id="toc-data-wrangling" class="nav-link active" data-scroll-target="#data-wrangling">Data wrangling</a>
+  <ul class="collapse">
+  <li><a href="#importing-dataset" id="toc-importing-dataset" class="nav-link" data-scroll-target="#importing-dataset">Importing dataset</a></li>
+  <li><a href="#conversing-datatype" id="toc-conversing-datatype" class="nav-link" data-scroll-target="#conversing-datatype">Conversing datatype</a></li>
+  <li><a href="#handling-missing-values" id="toc-handling-missing-values" class="nav-link" data-scroll-target="#handling-missing-values">Handling missing values</a></li>
+  </ul></li>
+  <li><a href="#visual-analysis" id="toc-visual-analysis" class="nav-link" data-scroll-target="#visual-analysis">Visual Analysis</a>
+  <ul class="collapse">
+  <li><a href="#univariate-analysis" id="toc-univariate-analysis" class="nav-link" data-scroll-target="#univariate-analysis">Univariate Analysis</a>
+  <ul class="collapse">
+  <li><a href="#categorical-variables" id="toc-categorical-variables" class="nav-link" data-scroll-target="#categorical-variables">Categorical variables</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -274,39 +296,670 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
+<section id="data-wrangling" class="level1">
+<h1>Data wrangling</h1>
+<section id="importing-dataset" class="level2">
+<h2 class="anchored" data-anchor-id="importing-dataset">Importing dataset</h2>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyverse) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyverse,</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>               psych,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>               dplyr,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>               patchwork</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>               ) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+<p>The dataset contains anonymised microdata on automobile insurance policies and covers the main operations of the non-life portfolio from January 2022 to December 2024. The database shows 354,140 records and 47 variables, where each row corresponds to a policy transaction and each column to a specific attribute of that transaction.</p>
+<p>This dataset uses semicolon delimiters, we use read_csv2() that is a base R shortcut that assumes semicolon delimiters by default.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>motoinsu <span class="ot">&lt;-</span> <span class="fu">read_csv2</span>(<span class="st">"data/Motor_insurance_portfolio.csv"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+<p>Out of a total of 47 attributes in the motoinsu tibble data frame, 29 of them are numerical data type (dbl - double) and 28 features are categorical data type (char - character).</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(motoinsu, <span class="at">n=</span> <span class="dv">10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">describe</span>(motoinsu <span class="sc">%&gt;%</span> </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>           <span class="fu">select</span>(<span class="fu">where</span>(is.numeric)) <span class="co"># Only show numerical columns</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>         ) <span class="sc">%&gt;%</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(vars, min, max, mean, skew) <span class="co"># Only get desired columns</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 10 × 47
-   insured_id  year policy_type policy_status business_type payment_frequency
-        &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;       &lt;chr&gt;         &lt;chr&gt;         &lt;chr&gt;            
- 1          1  2022 COMP_E      C             NB            A                
- 2          2  2022 COMP_E      A             P             A                
- 3          2  2023 COMP_E      A             P             A                
- 4          2  2024 COMP_E      A             P             A                
- 5          3  2022 COMP_E      A             NB            S                
- 6          3  2023 COMP_E      A             P             S                
- 7          3  2024 COMP_E      A             P             S                
- 8          4  2022 CC          A             NB            A                
- 9          4  2023 CC          A             P             A                
-10          4  2024 CC          A             P             A                
-# ℹ 41 more variables: bonus_score &lt;chr&gt;, driver_age &lt;dbl&gt;, vehicle_age &lt;dbl&gt;,
-#   age_driving_licence &lt;dbl&gt;, fuel_type &lt;chr&gt;, vehicle_value &lt;dbl&gt;,
-#   seats &lt;dbl&gt;, power_to_weight_ratio &lt;dbl&gt;, vehicle_brand &lt;chr&gt;,
-#   municipality_type &lt;chr&gt;, circulation_area &lt;chr&gt;, total_premium &lt;dbl&gt;,
-#   liability_premium &lt;chr&gt;, property_damage_premium &lt;chr&gt;,
-#   theft_premium &lt;chr&gt;, fire_premium &lt;chr&gt;, glass_premium &lt;chr&gt;,
-#   legal_protection_premium &lt;chr&gt;, occupants_premium &lt;chr&gt;, …</code></pre>
+<pre><code>                            vars  min          max         mean   skew
+insured_id                     1    1 1.856780e+05 7.604450e+04   0.47
+year                           2 2022 2.024000e+03 2.023290e+03  -0.53
+driver_age                     3   18 9.000000e+01 4.901000e+01   0.23
+vehicle_age                    4    0 6.800000e+01 2.592000e+01   0.19
+age_driving_licence            5    0 8.000000e+01 2.299000e+01   2.14
+vehicle_value                  6 8694 2.715851e+11 3.460536e+09   3.90
+seats                          7    2 9.000000e+00 5.080000e+00   0.90
+power_to_weight_ratio          8    0 6.481000e+03 1.007860e+03  -0.75
+total_premium                  9    0 9.999870e+14 3.257749e+14   0.92
+total_claims                  10    0 1.800000e+01 2.200000e-01   4.71
+liability_claims              11    0 8.000000e+00 1.100000e-01   4.29
+liability_property_claims     12    0 8.000000e+00 9.000000e-02   3.86
+liability_injury_claims       13    0 3.000000e+00 1.000000e-02   8.90
+property_claims               14    0 1.500000e+01 6.000000e-02   9.38
+theft_claims                  15    0 2.000000e+00 1.000000e-02  14.43
+fire_claims                   16    0 1.000000e+00 0.000000e+00  59.48
+glass_claims                  17    0 3.000000e+00 3.000000e-02   5.89
+legal_protection_claims       18    0 2.000000e+00 1.000000e-02  10.47
+occupants_claims              19    0 1.000000e+00 0.000000e+00  90.73
+total_incurred                20    0 9.993500e+14 2.480425e+11  57.88
+liability_incurred            21    0 9.993500e+14 1.862203e+11  66.06
+liability_property_incurred   22    0 9.993500e+14 2.279669e+11  59.74
+liability_injury_incurred     23    0 1.150000e+14 3.250855e+08 595.09
+property_incurred             24    0 9.776150e+14 4.087487e+10 141.39
+theft_incurred                25    0 2.706988e+08 2.532901e+04 124.26
+fire_incurred                 26    0 2.829000e+03 2.000000e-02 390.87
+glass_incurred                27    0 1.150000e+14 3.247953e+08 595.09
+legal_protection_incurred     28    0 9.932550e+14 8.582059e+10  99.51
+occupants_incurred            29    0 6.900000e+04 8.400000e-01 283.17</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>var_desc <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"data/Descriptive_of_variables.xlsx"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fill</span>(<span class="fu">everything</span>(), <span class="at">.direction =</span> <span class="st">"down"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Variables, Group) <span class="sc">%&gt;%</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">Description =</span> <span class="fu">paste</span>(Description, <span class="at">collapse =</span> <span class="st">" "</span>), <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>var_desc <span class="sc">%&gt;%</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span>),</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>                <span class="at">full_width =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="table table-striped table-hover table-condensed caption-top table-sm small">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Variables</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Group</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">age_driving_licence</td>
+<td style="text-align: left;">Driver and vehicle characteristics</td>
+<td style="text-align: left;">Year in which the insured obtained the driving licence. Note: this variable records the calendar year of licence issuance and does not measure the length of time the licence has been held.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">bonus_score</td>
+<td style="text-align: left;">Policy and insured characteristics</td>
+<td style="text-align: left;">Indicator of the policyholder’s past claims experience: - G: Positive reflects a favourable claims history - N: indicates a neutral profile - B: had a negative denotes a poor claims history.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">business_type</td>
+<td style="text-align: left;">Policy and insured characteristics</td>
+<td style="text-align: left;">Classification of the policy according to its business origin. - NB: new_business - P: portfolio</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">circulation_area</td>
+<td style="text-align: left;">Driver and vehicle characteristics</td>
+<td style="text-align: left;">Indicates the predominant circulation environment of the vehicle: - U: urban - R: rural</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">driver_age</td>
+<td style="text-align: left;">Driver and vehicle characteristics</td>
+<td style="text-align: left;">Age of the main driver associated with the policy, measured in years.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">fire_claims</td>
+<td style="text-align: left;">Exposure, claims and incurred</td>
+<td style="text-align: left;">Count of fire-related claims.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">fire_incurred</td>
+<td style="text-align: left;">Exposure, claims and incurred</td>
+<td style="text-align: left;">Total incurred cost for fire claims.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">fire_premium</td>
+<td style="text-align: left;">Premiums</td>
+<td style="text-align: left;">Premium for fire coverage.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">fuel_type</td>
+<td style="text-align: left;">Driver and vehicle characteristics</td>
+<td style="text-align: left;">Indicates the vehicle’s fuel type. In this dataset, only two categories are kept: - D: diesel - G: gasoline</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">glass_claims</td>
+<td style="text-align: left;">Exposure, claims and incurred</td>
+<td style="text-align: left;">Number of glass-related claims.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">glass_incurred</td>
+<td style="text-align: left;">Exposure, claims and incurred</td>
+<td style="text-align: left;">Total incurred cost for glass claims.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">glass_premium</td>
+<td style="text-align: left;">Premiums</td>
+<td style="text-align: left;">Premium for glass coverage.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">insured_id</td>
+<td style="text-align: left;">Policy and insured characteristics</td>
+<td style="text-align: left;">Unique identifier assigned to each policy number. It assigns a sequential ID based on the first appearance of each policy number; repeated policy numbers receive the same ID.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">legal_protection_claims</td>
+<td style="text-align: left;">Exposure, claims and incurred</td>
+<td style="text-align: left;">Number of legal protection claims.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">legal_protection_incurred</td>
+<td style="text-align: left;">Exposure, claims and incurred</td>
+<td style="text-align: left;">Total incurred cost for legal protection claims.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">legal_protection_premium</td>
+<td style="text-align: left;">Premiums</td>
+<td style="text-align: left;">Premium for legal protection coverage.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">liability_claims</td>
+<td style="text-align: left;">Exposure, claims and incurred</td>
+<td style="text-align: left;">Total number of liability claims reported under the policy.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">liability_exposure</td>
+<td style="text-align: left;">Exposure, claims and incurred</td>
+<td style="text-align: left;">Amount of exposure associated with liability coverage.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">liability_incurred</td>
+<td style="text-align: left;">Exposure, claims and incurred</td>
+<td style="text-align: left;">Total incurred cost (paid + reserved) for all liability claims.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">liability_injury_claims</td>
+<td style="text-align: left;">Exposure, claims and incurred</td>
+<td style="text-align: left;">Number of liability claims involving bodily injury.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">liability_injury_incurred</td>
+<td style="text-align: left;">Exposure, claims and incurred</td>
+<td style="text-align: left;">Total incurred cost for liability claims involving bodily injury.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">liability_premium</td>
+<td style="text-align: left;">Premiums</td>
+<td style="text-align: left;">Premium charged for third-party liability coverage.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">liability_property_claims</td>
+<td style="text-align: left;">Exposure, claims and incurred</td>
+<td style="text-align: left;">Number of liability claims related to material or property damage.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">liability_property_incurred</td>
+<td style="text-align: left;">Exposure, claims and incurred</td>
+<td style="text-align: left;">Total incurred cost for liability claims involving material or property damage.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">municipality_type</td>
+<td style="text-align: left;">Driver and vehicle characteristics</td>
+<td style="text-align: left;">Geographic classification of the policyholder’s municipality: - I: inland - C: coastal - IS: islands</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">occupants_claims</td>
+<td style="text-align: left;">Exposure, claims and incurred</td>
+<td style="text-align: left;">Number of claims under this coverage.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">occupants_incurred</td>
+<td style="text-align: left;">Exposure, claims and incurred</td>
+<td style="text-align: left;">Total incurred cost under this coverage.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">occupants_premium</td>
+<td style="text-align: left;">Premiums</td>
+<td style="text-align: left;">Premium for personal-injury coverage of vehicle occupants.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">payment_frequency</td>
+<td style="text-align: left;">Policy and insured characteristics</td>
+<td style="text-align: left;">Indicates the policy’s billing frequency: - A: annual - S: semiannual - Q: quarterly</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">policy_status</td>
+<td style="text-align: left;">Policy and insured characteristics</td>
+<td style="text-align: left;">Indicates whether the policy was active (A) or cancelled (C) at the time of analysis.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">policy_type</td>
+<td style="text-align: left;">Policy and insured characteristics</td>
+<td style="text-align: left;">Categorical variable describing the main coverage structure of the motor insurance policy. The original detailed combinations have been grouped into broader, actuarially meaningful categories. - TP: Basic third-party liability coverage only. - TPG: Third-party liability with glass coverage. - CC: Third-party liability combined with two or more additional coverages, such as theft, fire, total loss or glass. - COMP_E: comprehensive with excess. - COMP_N: comprehensive without excess</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">power_to_weight_ratio</td>
+<td style="text-align: left;">Driver and vehicle characteristics</td>
+<td style="text-align: left;">Approximate weight-to-power ratio of the vehicle (kg per horsepower), used as a proxy for performance characteristics.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">property_claims</td>
+<td style="text-align: left;">Exposure, claims and incurred</td>
+<td style="text-align: left;">Count of property damage claims.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">property_damage_premium</td>
+<td style="text-align: left;">Premiums</td>
+<td style="text-align: left;">Premium corresponding to property damage coverage.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">property_incurred</td>
+<td style="text-align: left;">Exposure, claims and incurred</td>
+<td style="text-align: left;">Total incurred cost for property damage claims.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">seats</td>
+<td style="text-align: left;">Driver and vehicle characteristics</td>
+<td style="text-align: left;">Number of seats available in the insured vehicle.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">theft_claims</td>
+<td style="text-align: left;">Exposure, claims and incurred</td>
+<td style="text-align: left;">Number of theft-related claims.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">theft_incurred</td>
+<td style="text-align: left;">Exposure, claims and incurred</td>
+<td style="text-align: left;">Total incurred cost for theft claims.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">theft_premium</td>
+<td style="text-align: left;">Premiums</td>
+<td style="text-align: left;">Premium associated with theft coverage.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">total_claims</td>
+<td style="text-align: left;">Exposure, claims and incurred</td>
+<td style="text-align: left;">Indicates the total number of claims reported for the policy during the exposure period. Typical values range from 0 (no claims) to several claims per contract.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">total_exposure</td>
+<td style="text-align: left;">Exposure, claims and incurred</td>
+<td style="text-align: left;">Represents the effective time-on-risk for each policy, expressed in policy years. Values range from 0 to 1 for partial-year exposure, and may exceed 1 if the contract covers more than one year.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">total_incurred</td>
+<td style="text-align: left;">Exposure, claims and incurred</td>
+<td style="text-align: left;">Represents the total incurred cost of claims for the policy, including paid amounts and outstanding reserves. Values are typically zero for policies without losses and positive when claims exist.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">total_premium</td>
+<td style="text-align: left;">Premiums</td>
+<td style="text-align: left;">Total premium of the policy, calculated as the sum of all individual coverage premiums.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">vehicle_age</td>
+<td style="text-align: left;">Driver and vehicle characteristics</td>
+<td style="text-align: left;">Age of the insured vehicle, also measured in years.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">vehicle_brand</td>
+<td style="text-align: left;">Driver and vehicle characteristics</td>
+<td style="text-align: left;">Brand of the insured vehicle as reported in the policy data.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">vehicle_value</td>
+<td style="text-align: left;">Driver and vehicle characteristics</td>
+<td style="text-align: left;">Declared insured value of the vehicle. Some entries are missing</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">year</td>
+<td style="text-align: left;">Policy and insured characteristics</td>
+<td style="text-align: left;">Calendar year</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(motoinsu)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 354,140
+Columns: 47
+$ insured_id                  &lt;dbl&gt; 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, …
+$ year                        &lt;dbl&gt; 2022, 2022, 2023, 2024, 2022, 2023, 2024, …
+$ policy_type                 &lt;chr&gt; "COMP_E", "COMP_E", "COMP_E", "COMP_E", "C…
+$ policy_status               &lt;chr&gt; "C", "A", "A", "A", "A", "A", "A", "A", "A…
+$ business_type               &lt;chr&gt; "NB", "P", "P", "P", "NB", "P", "P", "NB",…
+$ payment_frequency           &lt;chr&gt; "A", "A", "A", "A", "S", "S", "S", "A", "A…
+$ bonus_score                 &lt;chr&gt; "G", "G", "G", "G", "G", "G", "G", "G", "G…
+$ driver_age                  &lt;dbl&gt; 48, 43, 44, 45, 45, 46, 47, 32, 33, 34, 39…
+$ vehicle_age                 &lt;dbl&gt; 22, 24, 25, 26, 26, 27, 28, 12, 13, 14, 20…
+$ age_driving_licence         &lt;dbl&gt; 26, 19, 19, 18, 19, 19, 19, 19, 19, 19, 19…
+$ fuel_type                   &lt;chr&gt; "G", "D", "D", "D", "D", "D", "D", "D", "D…
+$ vehicle_value               &lt;dbl&gt; 1495114425, 650651232, 650651232, 65065123…
+$ seats                       &lt;dbl&gt; 4, 8, 8, 8, 7, 7, 7, 5, 5, 5, 5, 5, 5, 5, …
+$ power_to_weight_ratio       &lt;dbl&gt; 392, 1015, 1015, 1015, 919, 919, 919, 117,…
+$ vehicle_brand               &lt;chr&gt; "PORSCHE", "MERCEDES", "MERCEDES", "MERCED…
+$ municipality_type           &lt;chr&gt; "I", "I", "I", "I", "I", "I", "I", "I", "I…
+$ circulation_area            &lt;chr&gt; "U", "U", "U", "U", "R", "R", "R", "R", "R…
+$ total_premium               &lt;dbl&gt; 2.795576e+14, 5.466234e+14, 5.487526e+14, …
+$ liability_premium           &lt;chr&gt; "30.6023237556165", "114.333356153425", "1…
+$ property_damage_premium     &lt;chr&gt; "121.912689768658", "303.105967487671", "3…
+$ theft_premium               &lt;chr&gt; "112.361488722247", "80.784823960274", "83…
+$ fire_premium                &lt;chr&gt; "3.83244054509589", "7.82686089041096", "6…
+$ glass_premium               &lt;chr&gt; "8.30578787063014", "30.091750730137", "32…
+$ legal_protection_premium    &lt;chr&gt; "2.04362162038356", "7.81274746849314", "7…
+$ occupants_premium           &lt;chr&gt; "0.499205281315068", "2.66790841643835", "…
+$ total_claims                &lt;dbl&gt; 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, …
+$ liability_claims            &lt;dbl&gt; 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+$ liability_property_claims   &lt;dbl&gt; 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+$ liability_injury_claims     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+$ property_claims             &lt;dbl&gt; 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, …
+$ theft_claims                &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+$ fire_claims                 &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+$ glass_claims                &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+$ legal_protection_claims     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+$ occupants_claims            &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+$ total_incurred              &lt;dbl&gt; 0, 0, 233013, 25863615, 0, 0, 0, 0, 0, 0, …
+$ liability_incurred          &lt;dbl&gt; 0, 0, 233013, 1035, 0, 0, 0, 0, 0, 0, 0, 0…
+$ liability_property_incurred &lt;dbl&gt; 0, 0, 233013, 1035, 0, 0, 0, 0, 0, 0, 0, 0…
+$ liability_injury_incurred   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+$ property_incurred           &lt;dbl&gt; 0, 0, 0, 15513615, 0, 0, 0, 0, 0, 0, 0, 0,…
+$ theft_incurred              &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+$ fire_incurred               &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+$ glass_incurred              &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+$ legal_protection_incurred   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+$ occupants_incurred          &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+$ total_exposure              &lt;chr&gt; "0.0986301369863014", "1", "1", "1", "1", …
+$ liability_exposure          &lt;chr&gt; "0.0986301369863014", "1", "1", "1", "1", …</code></pre>
+</div>
+</div>
+</section>
+<section id="conversing-datatype" class="level2">
+<h2 class="anchored" data-anchor-id="conversing-datatype">Conversing datatype</h2>
+<p>We realize that we need to change data type of some variables as follows.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>motoinsu <span class="ot">&lt;-</span> motoinsu <span class="sc">%&gt;%</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># from dbl to chr (identifier)</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">insured_id =</span> <span class="fu">as.character</span>(insured_id),</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># from dbl to fac (categorical)</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">across</span>(<span class="fu">c</span>(year, policy_type, policy_status, business_type,</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>             payment_frequency, bonus_score, fuel_type, seats,</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>             vehicle_brand, municipality_type, circulation_area), </span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>           as.factor),</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># from char to dbl</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">across</span>(<span class="fu">c</span>(liability_premium, property_damage_premium,</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>             theft_premium, fire_premium, glass_premium,</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>             legal_protection_premium, occupants_premium,</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>             total_exposure, liability_exposure), </span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>           as.double)</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(motoinsu)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 354,140
+Columns: 47
+$ insured_id                  &lt;chr&gt; "1", "2", "2", "2", "3", "3", "3", "4", "4…
+$ year                        &lt;fct&gt; 2022, 2022, 2023, 2024, 2022, 2023, 2024, …
+$ policy_type                 &lt;fct&gt; COMP_E, COMP_E, COMP_E, COMP_E, COMP_E, CO…
+$ policy_status               &lt;fct&gt; C, A, A, A, A, A, A, A, A, A, A, A, A, A, …
+$ business_type               &lt;fct&gt; NB, P, P, P, NB, P, P, NB, P, P, NB, P, P,…
+$ payment_frequency           &lt;fct&gt; A, A, A, A, S, S, S, A, A, A, A, A, A, A, …
+$ bonus_score                 &lt;fct&gt; G, G, G, G, G, G, G, G, G, G, G, G, G, G, …
+$ driver_age                  &lt;dbl&gt; 48, 43, 44, 45, 45, 46, 47, 32, 33, 34, 39…
+$ vehicle_age                 &lt;dbl&gt; 22, 24, 25, 26, 26, 27, 28, 12, 13, 14, 20…
+$ age_driving_licence         &lt;dbl&gt; 26, 19, 19, 18, 19, 19, 19, 19, 19, 19, 19…
+$ fuel_type                   &lt;fct&gt; G, D, D, D, D, D, D, D, D, D, D, D, D, D, …
+$ vehicle_value               &lt;dbl&gt; 1495114425, 650651232, 650651232, 65065123…
+$ seats                       &lt;fct&gt; 4, 8, 8, 8, 7, 7, 7, 5, 5, 5, 5, 5, 5, 5, …
+$ power_to_weight_ratio       &lt;dbl&gt; 392, 1015, 1015, 1015, 919, 919, 919, 117,…
+$ vehicle_brand               &lt;fct&gt; PORSCHE, MERCEDES, MERCEDES, MERCEDES, KIA…
+$ municipality_type           &lt;fct&gt; I, I, I, I, I, I, I, I, I, I, C, I, I, C, …
+$ circulation_area            &lt;fct&gt; U, U, U, U, R, R, R, R, R, R, R, U, U, R, …
+$ total_premium               &lt;dbl&gt; 2.795576e+14, 5.466234e+14, 5.487526e+14, …
+$ liability_premium           &lt;dbl&gt; 30.60232, 114.33336, 110.66689, 122.09253,…
+$ property_damage_premium     &lt;dbl&gt; 121.9127, 303.1060, 304.9560, 305.2251, 35…
+$ theft_premium               &lt;dbl&gt; 112.361489, 80.784824, 83.521384, 107.8868…
+$ fire_premium                &lt;dbl&gt; 3.832441, 7.826861, 6.151465, 5.842892, 7.…
+$ glass_premium               &lt;dbl&gt; 8.305788, 30.091751, 32.861626, 31.101584,…
+$ legal_protection_premium    &lt;dbl&gt; 2.043622, 7.812747, 7.655637, 10.084173, 6…
+$ occupants_premium           &lt;dbl&gt; 0.4992053, 2.6679084, 2.9395659, 2.3992827…
+$ total_claims                &lt;dbl&gt; 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, …
+$ liability_claims            &lt;dbl&gt; 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+$ liability_property_claims   &lt;dbl&gt; 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+$ liability_injury_claims     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+$ property_claims             &lt;dbl&gt; 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, …
+$ theft_claims                &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+$ fire_claims                 &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+$ glass_claims                &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+$ legal_protection_claims     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+$ occupants_claims            &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+$ total_incurred              &lt;dbl&gt; 0, 0, 233013, 25863615, 0, 0, 0, 0, 0, 0, …
+$ liability_incurred          &lt;dbl&gt; 0, 0, 233013, 1035, 0, 0, 0, 0, 0, 0, 0, 0…
+$ liability_property_incurred &lt;dbl&gt; 0, 0, 233013, 1035, 0, 0, 0, 0, 0, 0, 0, 0…
+$ liability_injury_incurred   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+$ property_incurred           &lt;dbl&gt; 0, 0, 0, 15513615, 0, 0, 0, 0, 0, 0, 0, 0,…
+$ theft_incurred              &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+$ fire_incurred               &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+$ glass_incurred              &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+$ legal_protection_incurred   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+$ occupants_incurred          &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+$ total_exposure              &lt;dbl&gt; 0.09863014, 1.00000000, 1.00000000, 1.0000…
+$ liability_exposure          &lt;dbl&gt; 0.09863014, 1.00000000, 1.00000000, 1.0000…</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>dbl stands for: double, numbers with decimals.</li>
+<li>fct: factor, text with fixed, known categories. Factor uses less memory, which matters in such large database.</li>
+<li>char: character, plain text without predefined categories.</li>
+</ul>
+</div>
+</div>
+<p>After changing data type, we have 1 identifier, 11 categorical variables and 35 numerical variables.</p>
+</section>
+<section id="handling-missing-values" class="level2">
+<h2 class="anchored" data-anchor-id="handling-missing-values">Handling missing values</h2>
+<p>There are six features having missing values. Although all of these rates are small, under 1%, we treat them differently.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colSums</span>(<span class="fu">is.na</span>(motoinsu)) <span class="sc">%&gt;%</span> </span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  .[. <span class="sc">&gt;</span> <span class="dv">0</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        vehicle_age age_driving_licence           fuel_type       vehicle_value 
+                  2                   2                1287                 513 
+      fire_incurred  occupants_incurred 
+                 94                  25 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colMeans</span>(<span class="fu">is.na</span>(motoinsu)) <span class="sc">%&gt;%</span> <span class="co"># Caculate missing rate in each column</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(<span class="dv">5</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  .[. <span class="sc">&gt;</span> <span class="dv">0</span>] <span class="co"># Filter ratio &gt; 0</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        vehicle_age age_driving_licence           fuel_type       vehicle_value 
+            0.00001             0.00001             0.00363             0.00145 
+      fire_incurred  occupants_incurred 
+            0.00027             0.00007 </code></pre>
+</div>
+</div>
+<ul>
+<li><code>vehicle_age</code>, <code>age_driving_licence</code> only lack two values, we drop these missing rows.</li>
+<li><code>fire_incurred</code>, <code>occupants_incurred</code> having missing values likely means no claim, in insurance context. Therefore we can change to zero.</li>
+<li><code>fuel_type</code>, <code>vehicle_value</code> have more missing values, which make I consider between using mode/medium or remove missing rows. Because they are seem important features, it is risky to impute data. This issue should be reported to the relevant stakeholders.</li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>motoinsu <span class="ot">&lt;-</span> motoinsu <span class="sc">%&gt;%</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>(vehicle_age, age_driving_licence, fuel_type, vehicle_value ) <span class="sc">%&gt;%</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">fire_incurred    =</span> <span class="fu">replace_na</span>(fire_incurred, <span class="dv">0</span>),</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">occupants_incurred =</span> <span class="fu">replace_na</span>(occupants_incurred, <span class="dv">0</span>)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Check after modification</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="fu">colSums</span>(<span class="fu">is.na</span>(motoinsu)) <span class="sc">%&gt;%</span> </span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  .[. <span class="sc">&gt;</span> <span class="dv">0</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>named numeric(0)</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="visual-analysis" class="level1">
+<h1>Visual Analysis</h1>
+<section id="univariate-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="univariate-analysis">Univariate Analysis</h2>
+<section id="categorical-variables" class="level3">
+<h3 class="anchored" data-anchor-id="categorical-variables">Categorical variables</h3>
+<p>Among 11 categorical columns, vehicle_brand has too many distinct values. Therefore we will visualize its distribution and impute it later. Following is the distributions of 10 categorical features.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># gom_bar():  counts rows automatically</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co"># fct_infreq: reorder factor levels based on the frequency of values</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>cat_vars <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"year"</span>, <span class="st">"policy_type"</span>, <span class="st">"policy_status"</span>, <span class="st">"business_type"</span>,</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>              <span class="st">"payment_frequency"</span>, <span class="st">"bonus_score"</span>, </span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>              <span class="st">"fuel_type"</span>, <span class="st">"seats"</span>,</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>              <span class="st">"municipality_type"</span>, <span class="st">"circulation_area"</span>)</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>plots <span class="ot">&lt;-</span> <span class="fu">lapply</span>(cat_vars, <span class="cf">function</span>(col) {</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(motoinsu, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">fct_infreq</span>(<span class="sc">!!</span><span class="fu">sym</span>(col)))) <span class="sc">+</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">after_stat</span>(count<span class="sc">/</span><span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>)), <span class="at">fill =</span> <span class="st">"steelblue"</span>) <span class="sc">+</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">after_stat</span>(count<span class="sc">/</span><span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>),</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>                  <span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(<span class="fu">after_stat</span>(count<span class="sc">/</span><span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>), <span class="dv">1</span>), <span class="st">"%"</span>)),</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>              <span class="at">stat =</span> <span class="st">"count"</span>, <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Distribution of"</span>, col), <span class="at">x =</span> col, <span class="at">y =</span> <span class="st">"Percentage (%)"</span>) <span class="sc">+</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a><span class="fu">wrap_plots</span>(plots, <span class="at">ncol =</span> <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Technical_Report_Experiment_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="1440"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Insights:
+</div>
+</div>
+<section id="policy-business-characteristics" class="level3 callout-body-container callout-body">
+<h3 class="anchored" data-anchor-id="policy-business-characteristics">Policy &amp; Business Characteristics</h3>
+<ul>
+<li><strong>Year</strong>: Data is unbalanced - 2024 (47.4%) has the most records, likely because policies accumulate over time. Dataset covers 3 years of a growing portfolio.</li>
+<li><strong>Policy type</strong>: CC dominates (58%), meaning most customers choose combined third-party + additional coverage. Pure TP is rare (1.6%) - customers prefer more protection.</li>
+<li><strong>Policy status</strong>: 89.2% active (A) vs 10.8% cancelled (C) - relatively low cancellation rate, portfolio is stable.</li>
+<li><strong>Business type</strong>: 69.3% new business (NB) vs 30.7% portfolio (P), which means the insurer is heavily acquiring new customers rather than renewing existing ones. This is a risk signal, new customers have unknown claims history.</li>
+<li><strong>Payment frequency</strong>: 81.3% pay annually (A) - most customers prefer single payment, simplifying cash flow for the insurer.</li>
+<li><strong>Bonus score</strong>: 96.5% have score G (good/favorable claims history) - the portfolio is dominated by low-risk customers historically.</li>
+</ul>
+<section id="vehicle-characteristics" class="level4">
+<h4 class="anchored" data-anchor-id="vehicle-characteristics">Vehicle Characteristics</h4>
+<ul>
+<li><strong>Fuel type</strong>: 64.2% diesel (D) vs 35.8% gasoline (G) - diesel vehicles dominate, which may have different risk profiles.</li>
+<li><strong>Seats</strong>: 84.9% have 5 seats - standard passenger cars dominate, very homogeneous portfolio.</li>
+</ul>
+</section>
+<section id="geographic" class="level4">
+<h4 class="anchored" data-anchor-id="geographic">Geographic</h4>
+<ul>
+<li><strong>Municipality type</strong>: 64.6% type I (Inland) where typically have higher accident/theft risk than coastal and island areas.</li>
+<li><strong>Circulation area</strong>: Nearly split between U (53.8%) and R (46.2%) - urban vs rural almost balanced, suggesting national coverage.</li>
+</ul>
+</section>
+</section>
+</div>
+<p>Vehicle brand distribution show high fragmentation with top brand ~10%, many brands with &lt;1%. We will combine all brands excluding RENAULT, CITROEN, PEUGEOT, VOLKSWAGEN, FORD, SEAT, and OPEL.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># gom_bar():  counts rows automatically</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="co"># fct_infreq: reorder factor levels based on the frequency of values</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(motoinsu, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">fct_infreq</span>(vehicle_brand))) <span class="sc">+</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">after_stat</span>(count<span class="sc">/</span><span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>)), <span class="at">fill =</span> <span class="st">"steelblue"</span>) <span class="sc">+</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">after_stat</span>(count<span class="sc">/</span><span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>),</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>                <span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(<span class="fu">after_stat</span>(count<span class="sc">/</span><span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>), <span class="dv">1</span>), <span class="st">"%"</span>)),</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">stat =</span> <span class="st">"count"</span>, <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Distribution of Vehicle Brand"</span>, <span class="at">x =</span> <span class="st">"Vehicle Brand"</span>, <span class="at">y =</span> <span class="st">"Percentage (%)"</span>) <span class="sc">+</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Technical_Report_Experiment_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="1440"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>top_brands <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"RENAULT"</span>, <span class="st">"CITROEN"</span>, <span class="st">"PEUGEOT"</span>, <span class="st">"VOLKSWAGEN"</span>, <span class="st">"FORD"</span>, <span class="st">"SEAT"</span>, <span class="st">"OPEL"</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>motoinsu <span class="ot">&lt;-</span> motoinsu <span class="sc">%&gt;%</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">vehicle_brand_grouped =</span> <span class="fu">fct_other</span>(vehicle_brand, </span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">keep =</span> top_brands, </span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">other_level =</span> <span class="st">"Others"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Then plot them by distribution.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(motoinsu, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">fct_infreq</span>(vehicle_brand_grouped))) <span class="sc">+</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">after_stat</span>(count<span class="sc">/</span><span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>)), <span class="at">fill =</span> <span class="st">"steelblue"</span>) <span class="sc">+</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">after_stat</span>(count<span class="sc">/</span><span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>),</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(<span class="fu">after_stat</span>(count<span class="sc">/</span><span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>), <span class="dv">1</span>), <span class="st">"%"</span>)),</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">stat =</span> <span class="st">"count"</span>, <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Distribution of Vehicle Brand"</span>, <span class="at">x =</span> <span class="st">"Vehicle Brand"</span>, <span class="at">y =</span> <span class="st">"Percentage (%)"</span>) <span class="sc">+</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Technical_Report_Experiment_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Insights:
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>The near-equal spread among top brands means risk is not concentrated in any single brand’s characteristics.</li>
+</ul>
+<!-- -->
+<ul>
+<li>Among top 7, French brands (RENAULT, CITROEN, PEUGEOT) collectively represent ~27%, reflecting Spain’s strong preference for French automobiles.</li>
+</ul>
+<!-- -->
+<ul>
+<li>SEAT’s presence (~7.9%) is notable as a Spanish domestic brand, expected in a Spanish portfolio.</li>
+</ul>
+<!-- -->
+<ul>
+<li>The large “Others” group (40.6%) warrants further investigation - it contains luxury brands (BMW, MERCEDES, AUDI) and niche brands that may carry higher vehicle values and different risk profiles.</li>
+</ul>
 </div>
 </div>
 
 
+</section>
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

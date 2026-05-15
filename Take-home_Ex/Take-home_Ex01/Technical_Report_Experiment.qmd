@@ -10,14 +10,233 @@ execute:
   freeze: true
 ---
 
+# Data wrangling
+
+## Importing dataset
+
 ```{r}
-pacman::p_load(tidyverse) 
+pacman::p_load(tidyverse,
+               psych,
+               dplyr,
+               patchwork
+               ) 
 ```
+
+The dataset contains anonymised microdata on automobile insurance policies and covers the main operations of the non-life portfolio from January 2022 to December 2024. The database shows 354,140 records and 47 variables, where each row corresponds to a policy transaction and each column to a specific attribute of that transaction.
+
+This dataset uses semicolon delimiters, we use read_csv2() that is a base R shortcut that assumes semicolon delimiters by default.
 
 ```{r}
 motoinsu <- read_csv2("data/Motor_insurance_portfolio.csv")
 ```
 
+Out of a total of 47 attributes in the motoinsu tibble data frame, 29 of them are numerical data type (dbl - double) and 28 features are categorical data type (char - character).
+
 ```{r}
-head(motoinsu, n= 10)
+describe(motoinsu %>% 
+           select(where(is.numeric)) # Only show numerical columns
+         ) %>%
+  select(vars, min, max, mean, skew) # Only get desired columns
 ```
+
+```{r}
+library(readxl)
+library(tidyr)
+library(dplyr)
+library(kableExtra)
+
+var_desc <- read_excel("data/Descriptive_of_variables.xlsx") %>%
+  fill(everything(), .direction = "down") %>%
+  group_by(Variables, Group) %>%
+  summarise(Description = paste(Description, collapse = " "), .groups = "drop")
+
+var_desc %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE)
+```
+
+```{r}
+glimpse(motoinsu)
+```
+
+## Conversing datatype
+
+We realize that we need to change data type of some variables as follows.
+
+```{r}
+motoinsu <- motoinsu %>%
+  mutate(
+    # from dbl to chr (identifier)
+    insured_id = as.character(insured_id),
+    
+    # from dbl to fac (categorical)
+    across(c(year, policy_type, policy_status, business_type,
+             payment_frequency, bonus_score, fuel_type, seats,
+             vehicle_brand, municipality_type, circulation_area), 
+           as.factor),
+    
+    # from char to dbl
+    across(c(liability_premium, property_damage_premium,
+             theft_premium, fire_premium, glass_premium,
+             legal_protection_premium, occupants_premium,
+             total_exposure, liability_exposure), 
+           as.double)
+  )
+
+glimpse(motoinsu)
+```
+
+::: callout-tip
+-   dbl stands for: double, numbers with decimals.
+-   fct: factor, text with fixed, known categories. Factor uses less memory, which matters in such large database.
+-   char: character, plain text without predefined categories.
+:::
+
+After changing data type, we have 1 identifier, 11 categorical variables and 35 numerical variables.
+
+## Handling missing values
+
+There are six features having missing values. Although all of these rates are small, under 1%, we treat them differently.
+
+```{r}
+colSums(is.na(motoinsu)) %>% 
+  .[. > 0]
+```
+
+```{r}
+colMeans(is.na(motoinsu)) %>% # Caculate missing rate in each column
+  round(5) %>%
+  .[. > 0] # Filter ratio > 0
+```
+
+-   `vehicle_age`, `age_driving_licence` only lack two values, we drop these missing rows.
+-   `fire_incurred`, `occupants_incurred` having missing values likely means no claim, in insurance context. Therefore we can change to zero.
+-   `fuel_type`, `vehicle_value` have more missing values, which make I consider between using mode/medium or remove missing rows. Because they are seem important features, it is risky to impute data. This issue should be reported to the relevant stakeholders.
+
+```{r}
+motoinsu <- motoinsu %>%
+  drop_na(vehicle_age, age_driving_licence, fuel_type, vehicle_value ) %>%
+  mutate(
+    fire_incurred    = replace_na(fire_incurred, 0),
+    occupants_incurred = replace_na(occupants_incurred, 0)
+  )
+# Check after modification
+colSums(is.na(motoinsu)) %>% 
+  .[. > 0]
+```
+
+# Visual Analysis
+
+## Univariate Analysis
+
+### Categorical variables
+
+Among 11 categorical columns, vehicle_brand has too many distinct values. Therefore we will visualize its distribution and impute it later. Following is the distributions of 10 categorical features.
+
+```{r}
+#| fig-width: 15 # Adjust width of canvas
+#| fig-height: 20 # Adjust height of canvas
+# gom_bar():  counts rows automatically
+# fct_infreq: reorder factor levels based on the frequency of values
+
+cat_vars <- c("year", "policy_type", "policy_status", "business_type",
+              "payment_frequency", "bonus_score", 
+              "fuel_type", "seats",
+              "municipality_type", "circulation_area")
+
+plots <- lapply(cat_vars, function(col) {
+  ggplot(motoinsu, aes(x = fct_infreq(!!sym(col)))) +
+    geom_bar(aes(y = after_stat(count/sum(count) * 100)), fill = "steelblue") +
+    geom_text(aes(y = after_stat(count/sum(count) * 100),
+                  label = paste0(round(after_stat(count/sum(count) * 100), 1), "%")),
+              stat = "count", vjust = -0.5, size = 3) +
+    labs(title = paste("Distribution of", col), x = col, y = "Percentage (%)") +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+})
+
+wrap_plots(plots, ncol = 3)
+```
+
+::: callout-note
+## Insights:
+
+#### Policy & Business Characteristics
+
+-   **Year**: Data is unbalanced - 2024 (47.4%) has the most records, likely because policies accumulate over time. Dataset covers 3 years of a growing portfolio.
+-   **Policy type**: CC dominates (58%), meaning most customers choose combined third-party + additional coverage. Pure TP is rare (1.6%) - customers prefer more protection.
+-   **Policy status**: 89.2% active (A) vs 10.8% cancelled (C) - relatively low cancellation rate, portfolio is stable.
+-   **Business type**: 69.3% new business (NB) vs 30.7% portfolio (P), which means the insurer is heavily acquiring new customers rather than renewing existing ones. This is a risk signal, new customers have unknown claims history.
+-   **Payment frequency**: 81.3% pay annually (A) - most customers prefer single payment, simplifying cash flow for the insurer.
+-   **Bonus score**: 96.5% have score G (good/favorable claims history) - the portfolio is dominated by low-risk customers historically.
+
+#### Vehicle Characteristics
+
+-   **Fuel type**: 64.2% diesel (D) vs 35.8% gasoline (G) - diesel vehicles dominate, which may have different risk profiles.
+-   **Seats**: 84.9% have 5 seats - standard passenger cars dominate, very homogeneous portfolio.
+
+#### Geographic
+
+-   **Municipality type**: 64.6% type I (Inland) where typically have higher accident/theft risk than coastal and island areas.
+-   **Circulation area**: Nearly split between U (53.8%) and R (46.2%) - urban vs rural almost balanced, suggesting national coverage.
+:::
+
+Vehicle brand distribution show high fragmentation with top brand \~10%, many brands with \<1%. We will combine all brands excluding RENAULT, CITROEN, PEUGEOT, VOLKSWAGEN, FORD, SEAT, and OPEL.
+
+```{r}
+#| fig-width: 15 # Adjust width of canvas
+#| fig-height: 6 # Adjust height of canvas
+# gom_bar():  counts rows automatically
+# fct_infreq: reorder factor levels based on the frequency of values
+
+ggplot(motoinsu, aes(x = fct_infreq(vehicle_brand))) +
+  geom_bar(aes(y = after_stat(count/sum(count) * 100)), fill = "steelblue") +
+  geom_text(aes(y = after_stat(count/sum(count) * 100),
+                label = paste0(round(after_stat(count/sum(count) * 100), 1), "%")),
+            stat = "count", vjust = -0.5, size = 3) +
+  labs(title = "Distribution of Vehicle Brand", x = "Vehicle Brand", y = "Percentage (%)") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+Then plot them by distribution.
+
+```{r}
+
+# Bin
+top_brands <- c("RENAULT", "CITROEN", "PEUGEOT", "VOLKSWAGEN", "FORD", "SEAT", "OPEL")
+
+motoinsu <- motoinsu %>%
+  mutate(vehicle_brand_grouped = fct_other(vehicle_brand, 
+                                            keep = top_brands, 
+                                            other_level = "Others"))
+
+# Draw chart
+ggplot(motoinsu, aes(x = fct_infreq(vehicle_brand_grouped))) +
+  geom_bar(aes(y = after_stat(count/sum(count) * 100)), fill = "steelblue") +
+  geom_text(aes(y = after_stat(count/sum(count) * 100),
+                label = paste0(round(after_stat(count/sum(count) * 100), 1), "%")),
+            stat = "count", vjust = -0.5, size = 3) +
+  labs(title = "Distribution of Vehicle Brand", x = "Vehicle Brand", y = "Percentage (%)") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+::: callout-note
+## Insights:
+
+-   The near-equal spread among top brands means risk is not concentrated in any single brand's characteristics.
+
+<!-- -->
+
+-   Among top 7, French brands (RENAULT, CITROEN, PEUGEOT) collectively represent \~27%, reflecting Spain's strong preference for French automobiles.
+
+<!-- -->
+
+-   SEAT's presence (\~7.9%) is notable as a Spanish domestic brand, expected in a Spanish portfolio.
+
+<!-- -->
+
+-   The large "Others" group (40.6%) warrants further investigation - it contains luxury brands (BMW, MERCEDES, AUDI) and niche brands that may carry higher vehicle values and different risk profiles.
+:::
