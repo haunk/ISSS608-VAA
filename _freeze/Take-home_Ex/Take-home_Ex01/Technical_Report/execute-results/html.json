@@ -1,0 +1,15 @@
+{
+  "hash": "d2272abce42b33c052f59b61c21a7d60",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Technical Report\"\nauthor: \"Nguyen Kim Hau\"\ndate: \"May 15, 2026\"\ndate-modified: \"last-modified\"\nexecute: \n  eval: true\n  echo: true\n  warning: false\n  freeze: true\n---\n\n\n::: {.cell}\n\n```{.r .cell-code}\npacman::p_load(tidyverse) \n```\n:::\n\n\n\n::: {.cell}\n\n```{.r .cell-code}\nmotoinsu <- read_csv2(\"data/Dataset of motor insurance portfolio.csv\")\n```\n:::\n\n\n\n::: {.cell}\n\n```{.r .cell-code}\nhead(motoinsu, n= 10)\n```\n\n::: {.cell-output .cell-output-stdout}\n\n```\n# A tibble: 10 × 47\n   insured_id  year policy_type policy_status business_type payment_frequency\n        <dbl> <dbl> <chr>       <chr>         <chr>         <chr>            \n 1          1  2022 COMP_E      C             NB            A                \n 2          2  2022 COMP_E      A             P             A                \n 3          2  2023 COMP_E      A             P             A                \n 4          2  2024 COMP_E      A             P             A                \n 5          3  2022 COMP_E      A             NB            S                \n 6          3  2023 COMP_E      A             P             S                \n 7          3  2024 COMP_E      A             P             S                \n 8          4  2022 CC          A             NB            A                \n 9          4  2023 CC          A             P             A                \n10          4  2024 CC          A             P             A                \n# ℹ 41 more variables: bonus_score <chr>, driver_age <dbl>, vehicle_age <dbl>,\n#   age_driving_licence <dbl>, fuel_type <chr>, vehicle_value <dbl>,\n#   seats <dbl>, power_to_weight_ratio <dbl>, vehicle_brand <chr>,\n#   municipality_type <chr>, circulation_area <chr>, total_premium <dbl>,\n#   liability_premium <chr>, property_damage_premium <chr>,\n#   theft_premium <chr>, fire_premium <chr>, glass_premium <chr>,\n#   legal_protection_premium <chr>, occupants_premium <chr>, …\n```\n\n\n:::\n:::\n\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}
