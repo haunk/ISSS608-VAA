@@ -9,15 +9,3 @@ execute:
   warning: false
   freeze: true
 ---
-
-```{r}
-pacman::p_load(tidyverse) 
-```
-
-```{r}
-motoinsu <- read_csv2("data/Motor_insurance_portfolio.csv")
-```
-
-```{r}
-head(motoinsu, n= 10)
-```

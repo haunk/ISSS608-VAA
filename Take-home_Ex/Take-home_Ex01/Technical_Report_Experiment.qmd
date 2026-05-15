@@ -1,0 +1,23 @@
+---
+title: "Technical Report"
+author: "Nguyen Kim Hau"
+date: "May 15, 2026"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  warning: false
+  freeze: true
+---
+
+```{r}
+pacman::p_load(tidyverse) 
+```
+
+```{r}
+motoinsu <- read_csv2("data/Motor_insurance_portfolio.csv")
+```
+
+```{r}
+head(motoinsu, n= 10)
+```
