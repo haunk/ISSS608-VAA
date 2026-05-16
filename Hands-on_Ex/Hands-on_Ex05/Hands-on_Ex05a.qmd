@@ -149,5 +149,5 @@ plot_ly(
 ```
 
 ::: callout-note
-You can zoom in/out the plot.
+You can use zoom (zoom in/out the plot), pan, lasso and box selection.
 :::

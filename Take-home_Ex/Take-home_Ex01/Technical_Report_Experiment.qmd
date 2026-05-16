@@ -226,17 +226,17 @@ ggplot(motoinsu, aes(x = fct_infreq(vehicle_brand_grouped))) +
 ::: callout-note
 ## Insights:
 
--   The near-equal spread among top brands means risk is not concentrated in any single brand's characteristics.
+-   The near-equal spread among top brands means risk is **not concentrated** in any single brand's characteristics.
 
 <!-- -->
 
--   Among top 7, French brands (RENAULT, CITROEN, PEUGEOT) collectively represent \~27%, reflecting Spain's strong preference for French automobiles.
+-   Among top 7, French brands (RENAULT, CITROEN, PEUGEOT) collectively represent \~27%, reflecting **Spain's strong preference for French** automobiles.
 
 <!-- -->
 
--   SEAT's presence (\~7.9%) is notable as a Spanish domestic brand, expected in a Spanish portfolio.
+-   SEAT's presence (\~7.9%) is notable as a **Spanish domestic brand**, expected in a Spanish portfolio.
 
 <!-- -->
 
--   The large "Others" group (40.6%) warrants further investigation - it contains luxury brands (BMW, MERCEDES, AUDI) and niche brands that may carry higher vehicle values and different risk profiles.
+-   The large "Others" group (40.6%) warrants further investigation - it contains luxury brands (BMW, MERCEDES, AUDI) and niche brands that **may carry higher vehicle values and different risk profiles**.
 :::
