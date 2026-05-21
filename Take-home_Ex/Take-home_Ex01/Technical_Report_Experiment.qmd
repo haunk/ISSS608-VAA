@@ -136,7 +136,7 @@ Among 11 categorical columns, vehicle_brand has too many distinct values. Theref
 
 ```{r}
 #| fig-width: 15 # Adjust width of canvas
-#| fig-height: 20 # Adjust height of canvas
+#| fig-height: 15 # Adjust height of canvas
 # gom_bar():  counts rows automatically
 # fct_infreq: reorder factor levels based on the frequency of values
 
@@ -185,8 +185,8 @@ wrap_plots(plots, ncol = 3)
 Vehicle brand distribution show high fragmentation with top brand \~10%, many brands with \<1%. We will combine all brands excluding RENAULT, CITROEN, PEUGEOT, VOLKSWAGEN, FORD, SEAT, and OPEL.
 
 ```{r}
-#| fig-width: 15 # Adjust width of canvas
-#| fig-height: 6 # Adjust height of canvas
+#| fig-width: 15
+#| fig-height: 6
 # gom_bar():  counts rows automatically
 # fct_infreq: reorder factor levels based on the frequency of values
 
@@ -203,6 +203,8 @@ ggplot(motoinsu, aes(x = fct_infreq(vehicle_brand))) +
 Then plot them by distribution.
 
 ```{r}
+#| fig-width: 8
+#| fig-height: 4
 
 # Bin
 top_brands <- c("RENAULT", "CITROEN", "PEUGEOT", "VOLKSWAGEN", "FORD", "SEAT", "OPEL")
@@ -227,16 +229,133 @@ ggplot(motoinsu, aes(x = fct_infreq(vehicle_brand_grouped))) +
 ## Insights:
 
 -   The near-equal spread among top brands means risk is **not concentrated** in any single brand's characteristics.
-
-<!-- -->
-
 -   Among top 7, French brands (RENAULT, CITROEN, PEUGEOT) collectively represent \~27%, reflecting **Spain's strong preference for French** automobiles.
-
-<!-- -->
-
 -   SEAT's presence (\~7.9%) is notable as a **Spanish domestic brand**, expected in a Spanish portfolio.
-
-<!-- -->
-
 -   The large "Others" group (40.6%) warrants further investigation - it contains luxury brands (BMW, MERCEDES, AUDI) and niche brands that **may carry higher vehicle values and different risk profiles**.
 :::
+
+### Numerical variables
+
+Driver & vehicle Distributions
+
+```{r}
+#| fig-width: 16
+#| fig-height: 8
+
+num_vars <- c("driver_age", "vehicle_age", "age_driving_licence",
+              "vehicle_value", "power_to_weight_ratio")
+
+plots <- lapply(num_vars, function(col) {
+  ggplot(motoinsu, aes(x = as.numeric(!!sym(col)))) + # as.numeric() inside aes() forces any discrete/factor columns to be treated as continuous
+    geom_histogram(fill = "steelblue", color = "white", bins = 30) +
+    labs(title = paste("Distribution of", col), x = col, y = "Count") +
+    theme_minimal()
+})
+
+wrap_plots(plots, ncol = 3)
+```
+
+::: callout-note
+## Insights
+
+#### Driver & Licence Characteristics
+
+-   **driver_age**: roughly bell-shaped, peaking around **35–50 years**. Young drivers (\<25) and elderly (\>70) are rare, suggesting the portfolio skews toward middle-aged, experienced drivers.
+-   **vehicle_age**: bimodal distribution with peaks around **5–10 years** and **20–25 years**. Many both newer and older vehicles insured.
+-   **age_driving_licence**: heavily right-skewed, most policyholders have held licences for **less than 20 years**, consistent with the driver age distribution.
+
+#### Vehicle Characteristics
+
+-   **vehicle_value**: extremely right-skewed with most values near **zero** and a long tail. Most insured vehicles are low-to-mid value; a small number are very high-value vehicles (potential outliers/luxury cars).
+-   **power_to_weight_ratio**: right-skewed, concentrated around **1000–2000**, with a few extreme high-performance vehicles.
+:::
+
+Premium, Claims & Exposure Distributions
+
+```{r}
+#| fig-width: 15
+#| fig-height: 15
+
+num_vars <- c("total_premium", "liability_premium", "property_damage_premium",
+              "theft_premium", "fire_premium", "glass_premium",
+              "legal_protection_premium", "occupants_premium",
+              "total_claims", "liability_claims", "property_claims",
+              "total_incurred", "liability_incurred", "property_incurred",
+              "total_exposure", "liability_exposure")
+
+plots <- lapply(num_vars, function(col) {
+  ggplot(motoinsu, aes(x = as.numeric(!!sym(col)))) + # as.numeric() inside aes() forces any discrete/factor columns to be treated as continuous
+    geom_histogram(fill = "steelblue", color = "white", bins = 30) +
+    labs(title = paste("Distribution of", col), x = col, y = "Count") +
+    theme_minimal()
+})
+
+wrap_plots(plots, ncol = 3)
+```
+
+::: callout-note
+## Insights
+
+#### Premium Variables
+
+-   **total_premium**: right-skewed, most policies have low-to-mid premiums with a long tail of high-premium policies
+-   **liability_premium**: concentrated around **100–400**, the most normally distributed of all premiums — makes sense as liability coverage is **mandatory** for all vehicles in Spain
+-   **property_damage_premium, theft_premium, fire_premium, glass_premium, legal_protection_premium, occupants_premium**: all **extremely right-skewed with mass at zero**, meaning most policies **do not include** these optional coverages. This is consistent with CC being 58% of policies — only combined policies carry these extras.
+
+#### Claims Variables
+
+-   **total_claims, liability_claims, property_claims**: **overwhelming majority are zero**. Rare claims events with counts of 1–2 for most claimants, very few exceed 3. Classic **low-frequency** insurance pattern.
+
+#### Incurred Loss Variables
+
+-   **total_incurred, liability_incurred, property_incurred**: **almost all zero** with extreme outliers reaching 10\^15. These extreme values are suspicious and may indicate **data quality issues** or very catastrophic events worth investigating.
+
+#### Exposure Variables
+
+-   **total_exposure & liability_exposure**: both show a **U-shaped/bimodal pattern** concentrated at **0.25 and 1.0**:
+
+    -   **1.0** = full year policy (annual payment, 81.3%)
+    -   **0.25** = quarterly payment (4.3%)
+    -   Values between suggest mid-year cancellations (10.8% cancelled policies)
+:::
+
+Have a closer look on outlier cases in all numerical variables. Seven features show abnormal maximum values comparing to quantile 99.9%, which are "total_incurred", "liability_incurred", "liability_property_incurred", "liability_injury_incurred", "property_incurred", "glass_incurred", "legal_protection_incurred".
+
+```{r}
+incurred_vars <- c("total_incurred", "liability_incurred", "liability_property_incurred",
+                    "liability_injury_incurred", "property_incurred", 
+                    "glass_incurred", "legal_protection_incurred"
+                    )
+
+motoinsu %>%
+  summarise(across(all_of(incurred_vars), list(
+    max    = ~max(., na.rm = TRUE),
+    p999 = ~quantile(., 0.999, na.rm = TRUE),
+    q99 = ~quantile(., 0.99, na.rm = TRUE),
+    q75 = ~quantile(., 0.75, na.rm = TRUE),
+    q50 = ~quantile(., 0.50, na.rm = TRUE),
+    q25 = ~quantile(., 0.25, na.rm = TRUE)
+  ))) %>%
+  pivot_longer(everything(),
+               names_to = c("variable", "stat"),
+               names_sep = "_(?=[^_]+$)") %>%
+  pivot_wider(names_from = stat, values_from = value) %>%
+  mutate(across(where(is.numeric), ~round(., 2))) %>%
+  kable(format.args = list(big.mark = ",", scientific = FALSE)) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+They seem clearly data entry errors (likely missing decimal points). Therefore, we will remove them for not distort all analysis later. We use 0.999 threshold removes only the truly impossible values while keeping legitimate large claims, minimizing data loss (remove 0.5% of total rows). Such outliers need to inform to relevant stakeholders.
+
+```{r}
+original_n <- 354140
+
+motoinsu <- motoinsu %>%
+  filter(if_all(all_of(incurred_vars), 
+                ~ . <= quantile(., 0.999, na.rm = TRUE)))
+
+cat("Records before:", original_n, "\n",
+    "Records after:", nrow(motoinsu), "\n",
+    "Records removed:", original_n - nrow(motoinsu), "\n",
+    "Percentage removed:", round((original_n - nrow(motoinsu))/original_n * 100, 3), "%\n")
+```

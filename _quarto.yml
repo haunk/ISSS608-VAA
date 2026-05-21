@@ -49,10 +49,10 @@ website:
       - text: "<img src='/images/shark.png' width='40' height='40' style='margin-right: 5px;'> 
       Take-home Exercise"
         menu:
-          - text: "Take-home Exercise 1: Technical Report"
+          - text: "EX1: Technical Report-Unmasking Motor Insurance Risk Drivers"
             href: "Take-home_Ex/Take-home_Ex01/Technical_Report.html"
             
-          - text: "Take-home Exercise 1: Executive Summary"
+          - text: "EX1: Executive Summary-Unmasking Motor Insurance Risk Drivers"
             href: "Take-home_Ex/Take-home_Ex01/Executive_Summary.html"
             
           

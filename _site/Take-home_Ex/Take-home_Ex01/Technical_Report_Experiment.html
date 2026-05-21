@@ -195,11 +195,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <ul class="dropdown-menu" aria-labelledby="nav-menu-img-srcimagesshark.png-width40-height40-stylemargin-right-5px--take-home-exercise">    
         <li>
     <a class="dropdown-item" href="../../Take-home_Ex/Take-home_Ex01/Technical_Report.html">
- <span class="dropdown-text">Take-home Exercise 1: Technical Report</span></a>
+ <span class="dropdown-text">EX1: Technical Report-Unmasking Motor Insurance Risk Drivers</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../../Take-home_Ex/Take-home_Ex01/Executive_Summary.html">
- <span class="dropdown-text">Take-home Exercise 1: Executive Summary</span></a>
+ <span class="dropdown-text">EX1: Executive Summary-Unmasking Motor Insurance Risk Drivers</span></a>
   </li>  
     </ul>
   </li>
@@ -251,6 +251,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#univariate-analysis" id="toc-univariate-analysis" class="nav-link" data-scroll-target="#univariate-analysis">Univariate Analysis</a>
   <ul class="collapse">
   <li><a href="#categorical-variables" id="toc-categorical-variables" class="nav-link" data-scroll-target="#categorical-variables">Categorical variables</a></li>
+  <li><a href="#numerical-variables" id="toc-numerical-variables" class="nav-link" data-scroll-target="#numerical-variables">Numerical variables</a></li>
   </ul></li>
   </ul></li>
   </ul>
@@ -285,7 +286,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">May 15, 2026</p>
+      <p class="date-modified">May 21, 2026</p>
     </div>
   </div>
     
@@ -855,8 +856,9 @@ Tip
 <span class="screen-reader-only">Note</span>Insights:
 </div>
 </div>
-<section id="policy-business-characteristics" class="level3 callout-body-container callout-body">
-<h3 class="anchored" data-anchor-id="policy-business-characteristics">Policy &amp; Business Characteristics</h3>
+<div class="callout-body-container callout-body">
+<section id="policy-business-characteristics" class="level4">
+<h4 class="anchored" data-anchor-id="policy-business-characteristics">Policy &amp; Business Characteristics</h4>
 <ul>
 <li><strong>Year</strong>: Data is unbalanced - 2024 (47.4%) has the most records, likely because policies accumulate over time. Dataset covers 3 years of a growing portfolio.</li>
 <li><strong>Policy type</strong>: CC dominates (58%), meaning most customers choose combined third-party + additional coverage. Pure TP is rare (1.6%) - customers prefer more protection.</li>
@@ -865,6 +867,7 @@ Tip
 <li><strong>Payment frequency</strong>: 81.3% pay annually (A) - most customers prefer single payment, simplifying cash flow for the insurer.</li>
 <li><strong>Bonus score</strong>: 96.5% have score G (good/favorable claims history) - the portfolio is dominated by low-risk customers historically.</li>
 </ul>
+</section>
 <section id="vehicle-characteristics" class="level4">
 <h4 class="anchored" data-anchor-id="vehicle-characteristics">Vehicle Characteristics</h4>
 <ul>
@@ -879,7 +882,7 @@ Tip
 <li><strong>Circulation area</strong>: Nearly split between U (53.8%) and R (46.2%) - urban vs rural almost balanced, suggesting national coverage.</li>
 </ul>
 </section>
-</section>
+</div>
 </div>
 <p>Vehicle brand distribution show high fragmentation with top brand ~10%, many brands with &lt;1%. We will combine all brands excluding RENAULT, CITROEN, PEUGEOT, VOLKSWAGEN, FORD, SEAT, and OPEL.</p>
 <div class="cell">
@@ -902,28 +905,29 @@ Tip
 </div>
 </div>
 </div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>top_brands <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"RENAULT"</span>, <span class="st">"CITROEN"</span>, <span class="st">"PEUGEOT"</span>, <span class="st">"VOLKSWAGEN"</span>, <span class="st">"FORD"</span>, <span class="st">"SEAT"</span>, <span class="st">"OPEL"</span>)</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>motoinsu <span class="ot">&lt;-</span> motoinsu <span class="sc">%&gt;%</span></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">vehicle_brand_grouped =</span> <span class="fu">fct_other</span>(vehicle_brand, </span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">keep =</span> top_brands, </span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">other_level =</span> <span class="st">"Others"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
 <p>Then plot them by distribution.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(motoinsu, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">fct_infreq</span>(vehicle_brand_grouped))) <span class="sc">+</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">after_stat</span>(count<span class="sc">/</span><span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>)), <span class="at">fill =</span> <span class="st">"steelblue"</span>) <span class="sc">+</span></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">after_stat</span>(count<span class="sc">/</span><span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>),</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(<span class="fu">after_stat</span>(count<span class="sc">/</span><span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>), <span class="dv">1</span>), <span class="st">"%"</span>)),</span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">stat =</span> <span class="st">"count"</span>, <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Distribution of Vehicle Brand"</span>, <span class="at">x =</span> <span class="st">"Vehicle Brand"</span>, <span class="at">y =</span> <span class="st">"Percentage (%)"</span>) <span class="sc">+</span></span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Bin</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>top_brands <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"RENAULT"</span>, <span class="st">"CITROEN"</span>, <span class="st">"PEUGEOT"</span>, <span class="st">"VOLKSWAGEN"</span>, <span class="st">"FORD"</span>, <span class="st">"SEAT"</span>, <span class="st">"OPEL"</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>motoinsu <span class="ot">&lt;-</span> motoinsu <span class="sc">%&gt;%</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">vehicle_brand_grouped =</span> <span class="fu">fct_other</span>(vehicle_brand, </span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">keep =</span> top_brands, </span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">other_level =</span> <span class="st">"Others"</span>))</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Draw chart</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(motoinsu, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">fct_infreq</span>(vehicle_brand_grouped))) <span class="sc">+</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">after_stat</span>(count<span class="sc">/</span><span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>)), <span class="at">fill =</span> <span class="st">"steelblue"</span>) <span class="sc">+</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">after_stat</span>(count<span class="sc">/</span><span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>),</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>                <span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(<span class="fu">after_stat</span>(count<span class="sc">/</span><span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>), <span class="dv">1</span>), <span class="st">"%"</span>)),</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>            <span class="at">stat =</span> <span class="st">"count"</span>, <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Distribution of Vehicle Brand"</span>, <span class="at">x =</span> <span class="st">"Vehicle Brand"</span>, <span class="at">y =</span> <span class="st">"Percentage (%)"</span>) <span class="sc">+</span></span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Technical_Report_Experiment_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="Technical_Report_Experiment_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="768"></p>
 </figure>
 </div>
 </div>
@@ -939,20 +943,253 @@ Tip
 </div>
 <div class="callout-body-container callout-body">
 <ul>
-<li>The near-equal spread among top brands means risk is not concentrated in any single brand’s characteristics.</li>
+<li>The near-equal spread among top brands means risk is <strong>not concentrated</strong> in any single brand’s characteristics.</li>
+<li>Among top 7, French brands (RENAULT, CITROEN, PEUGEOT) collectively represent ~27%, reflecting <strong>Spain’s strong preference for French</strong> automobiles.</li>
+<li>SEAT’s presence (~7.9%) is notable as a <strong>Spanish domestic brand</strong>, expected in a Spanish portfolio.</li>
+<li>The large “Others” group (40.6%) warrants further investigation - it contains luxury brands (BMW, MERCEDES, AUDI) and niche brands that <strong>may carry higher vehicle values and different risk profiles</strong>.</li>
 </ul>
-<!-- -->
+</div>
+</div>
+</section>
+<section id="numerical-variables" class="level3">
+<h3 class="anchored" data-anchor-id="numerical-variables">Numerical variables</h3>
+<p>Driver &amp; vehicle Distributions</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>num_vars <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"driver_age"</span>, <span class="st">"vehicle_age"</span>, <span class="st">"age_driving_licence"</span>,</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>              <span class="st">"vehicle_value"</span>, <span class="st">"power_to_weight_ratio"</span>)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>plots <span class="ot">&lt;-</span> <span class="fu">lapply</span>(num_vars, <span class="cf">function</span>(col) {</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(motoinsu, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">as.numeric</span>(<span class="sc">!!</span><span class="fu">sym</span>(col)))) <span class="sc">+</span> <span class="co"># as.numeric() inside aes() forces any discrete/factor columns to be treated as continuous</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_histogram</span>(<span class="at">fill =</span> <span class="st">"steelblue"</span>, <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">bins =</span> <span class="dv">30</span>) <span class="sc">+</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Distribution of"</span>, col), <span class="at">x =</span> col, <span class="at">y =</span> <span class="st">"Count"</span>) <span class="sc">+</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>()</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="fu">wrap_plots</span>(plots, <span class="at">ncol =</span> <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Technical_Report_Experiment_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="1536"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Insights
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<section id="driver-licence-characteristics" class="level4">
+<h4 class="anchored" data-anchor-id="driver-licence-characteristics">Driver &amp; Licence Characteristics</h4>
 <ul>
-<li>Among top 7, French brands (RENAULT, CITROEN, PEUGEOT) collectively represent ~27%, reflecting Spain’s strong preference for French automobiles.</li>
+<li><strong>driver_age</strong>: roughly bell-shaped, peaking around <strong>35–50 years</strong>. Young drivers (&lt;25) and elderly (&gt;70) are rare, suggesting the portfolio skews toward middle-aged, experienced drivers.</li>
+<li><strong>vehicle_age</strong>: bimodal distribution with peaks around <strong>5–10 years</strong> and <strong>20–25 years</strong>. Many both newer and older vehicles insured.</li>
+<li><strong>age_driving_licence</strong>: heavily right-skewed, most policyholders have held licences for <strong>less than 20 years</strong>, consistent with the driver age distribution.</li>
 </ul>
-<!-- -->
+</section>
+<section id="vehicle-characteristics-1" class="level4">
+<h4 class="anchored" data-anchor-id="vehicle-characteristics-1">Vehicle Characteristics</h4>
 <ul>
-<li>SEAT’s presence (~7.9%) is notable as a Spanish domestic brand, expected in a Spanish portfolio.</li>
+<li><strong>vehicle_value</strong>: extremely right-skewed with most values near <strong>zero</strong> and a long tail. Most insured vehicles are low-to-mid value; a small number are very high-value vehicles (potential outliers/luxury cars).</li>
+<li><strong>power_to_weight_ratio</strong>: right-skewed, concentrated around <strong>1000–2000</strong>, with a few extreme high-performance vehicles.</li>
 </ul>
-<!-- -->
+</section>
+</div>
+</div>
+<p>Premium, Claims &amp; Exposure Distributions</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>num_vars <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"total_premium"</span>, <span class="st">"liability_premium"</span>, <span class="st">"property_damage_premium"</span>,</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>              <span class="st">"theft_premium"</span>, <span class="st">"fire_premium"</span>, <span class="st">"glass_premium"</span>,</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>              <span class="st">"legal_protection_premium"</span>, <span class="st">"occupants_premium"</span>,</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>              <span class="st">"total_claims"</span>, <span class="st">"liability_claims"</span>, <span class="st">"property_claims"</span>,</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>              <span class="st">"total_incurred"</span>, <span class="st">"liability_incurred"</span>, <span class="st">"property_incurred"</span>,</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>              <span class="st">"total_exposure"</span>, <span class="st">"liability_exposure"</span>)</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>plots <span class="ot">&lt;-</span> <span class="fu">lapply</span>(num_vars, <span class="cf">function</span>(col) {</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(motoinsu, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">as.numeric</span>(<span class="sc">!!</span><span class="fu">sym</span>(col)))) <span class="sc">+</span> <span class="co"># as.numeric() inside aes() forces any discrete/factor columns to be treated as continuous</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_histogram</span>(<span class="at">fill =</span> <span class="st">"steelblue"</span>, <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">bins =</span> <span class="dv">30</span>) <span class="sc">+</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Distribution of"</span>, col), <span class="at">x =</span> col, <span class="at">y =</span> <span class="st">"Count"</span>) <span class="sc">+</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>()</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a><span class="fu">wrap_plots</span>(plots, <span class="at">ncol =</span> <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Technical_Report_Experiment_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="1440"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Insights
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<section id="premium-variables" class="level4">
+<h4 class="anchored" data-anchor-id="premium-variables">Premium Variables</h4>
 <ul>
-<li>The large “Others” group (40.6%) warrants further investigation - it contains luxury brands (BMW, MERCEDES, AUDI) and niche brands that may carry higher vehicle values and different risk profiles.</li>
+<li><strong>total_premium</strong>: right-skewed, most policies have low-to-mid premiums with a long tail of high-premium policies</li>
+<li><strong>liability_premium</strong>: concentrated around <strong>100–400</strong>, the most normally distributed of all premiums — makes sense as liability coverage is <strong>mandatory</strong> for all vehicles in Spain</li>
+<li><strong>property_damage_premium, theft_premium, fire_premium, glass_premium, legal_protection_premium, occupants_premium</strong>: all <strong>extremely right-skewed with mass at zero</strong>, meaning most policies <strong>do not include</strong> these optional coverages. This is consistent with CC being 58% of policies — only combined policies carry these extras.</li>
 </ul>
+</section>
+<section id="claims-variables" class="level4">
+<h4 class="anchored" data-anchor-id="claims-variables">Claims Variables</h4>
+<ul>
+<li><strong>total_claims, liability_claims, property_claims</strong>: <strong>overwhelming majority are zero</strong>. Rare claims events with counts of 1–2 for most claimants, very few exceed 3. Classic <strong>low-frequency</strong> insurance pattern.</li>
+</ul>
+</section>
+<section id="incurred-loss-variables" class="level4">
+<h4 class="anchored" data-anchor-id="incurred-loss-variables">Incurred Loss Variables</h4>
+<ul>
+<li><strong>total_incurred, liability_incurred, property_incurred</strong>: <strong>almost all zero</strong> with extreme outliers reaching 10^15. These extreme values are suspicious and may indicate <strong>data quality issues</strong> or very catastrophic events worth investigating.</li>
+</ul>
+</section>
+<section id="exposure-variables" class="level4">
+<h4 class="anchored" data-anchor-id="exposure-variables">Exposure Variables</h4>
+<ul>
+<li><p><strong>total_exposure &amp; liability_exposure</strong>: both show a <strong>U-shaped/bimodal pattern</strong> concentrated at <strong>0.25 and 1.0</strong>:</p>
+<ul>
+<li><strong>1.0</strong> = full year policy (annual payment, 81.3%)</li>
+<li><strong>0.25</strong> = quarterly payment (4.3%)</li>
+<li>Values between suggest mid-year cancellations (10.8% cancelled policies)</li>
+</ul></li>
+</ul>
+</section>
+</div>
+</div>
+<p>Have a closer look on outlier cases in all numerical variables. Seven features show abnormal maximum values comparing to quantile 99.9%, which are “total_incurred”, “liability_incurred”, “liability_property_incurred”, “liability_injury_incurred”, “property_incurred”, “glass_incurred”, “legal_protection_incurred”.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>incurred_vars <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"total_incurred"</span>, <span class="st">"liability_incurred"</span>, <span class="st">"liability_property_incurred"</span>,</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"liability_injury_incurred"</span>, <span class="st">"property_incurred"</span>, </span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"glass_incurred"</span>, <span class="st">"legal_protection_incurred"</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>                    )</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>motoinsu <span class="sc">%&gt;%</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">all_of</span>(incurred_vars), <span class="fu">list</span>(</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">max    =</span> <span class="sc">~</span><span class="fu">max</span>(., <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">p999 =</span> <span class="sc">~</span><span class="fu">quantile</span>(., <span class="fl">0.999</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">q99 =</span> <span class="sc">~</span><span class="fu">quantile</span>(., <span class="fl">0.99</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">q75 =</span> <span class="sc">~</span><span class="fu">quantile</span>(., <span class="fl">0.75</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">q50 =</span> <span class="sc">~</span><span class="fu">quantile</span>(., <span class="fl">0.50</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">q25 =</span> <span class="sc">~</span><span class="fu">quantile</span>(., <span class="fl">0.25</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  ))) <span class="sc">%&gt;%</span></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="fu">everything</span>(),</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_to =</span> <span class="fu">c</span>(<span class="st">"variable"</span>, <span class="st">"stat"</span>),</span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_sep =</span> <span class="st">"_(?=[^_]+$)"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> stat, <span class="at">values_from =</span> value) <span class="sc">%&gt;%</span></span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">where</span>(is.numeric), <span class="sc">~</span><span class="fu">round</span>(., <span class="dv">2</span>))) <span class="sc">%&gt;%</span></span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">","</span>, <span class="at">scientific =</span> <span class="cn">FALSE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="table table-striped table-hover table-condensed caption-top table-sm small">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">variable</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">max</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">p999</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">q99</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">q75</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">q50</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">q25</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">total_incurred</td>
+<td style="text-align: right;">999,350,000,000,006</td>
+<td style="text-align: right;">162,652,037</td>
+<td style="text-align: right;">22,343,883.6</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">liability_incurred</td>
+<td style="text-align: right;">999,350,000,000,006</td>
+<td style="text-align: right;">126,507,260</td>
+<td style="text-align: right;">9,946,833.0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">liability_property_incurred</td>
+<td style="text-align: right;">999,350,000,000,006</td>
+<td style="text-align: right;">43,385,092</td>
+<td style="text-align: right;">3,180,359.5</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">liability_injury_incurred</td>
+<td style="text-align: right;">114,999,999,999,895</td>
+<td style="text-align: right;">72,238,489</td>
+<td style="text-align: right;">666,978.8</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">property_incurred</td>
+<td style="text-align: right;">977,615,000,000,002</td>
+<td style="text-align: right;">39,396,027</td>
+<td style="text-align: right;">8,503,658.9</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">glass_incurred</td>
+<td style="text-align: right;">114,999,999,999,895</td>
+<td style="text-align: right;">7,845,542</td>
+<td style="text-align: right;">2,834,499.3</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">legal_protection_incurred</td>
+<td style="text-align: right;">993,254,999,999,999</td>
+<td style="text-align: right;">4,673,040</td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>They seem clearly data entry errors (likely missing decimal points). Therefore, we will remove them for not distort all analysis later. We use 0.999 threshold removes only the truly impossible values while keeping legitimate large claims, minimizing data loss (remove 0.5% of total rows). Such outliers need to inform to relevant stakeholders.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>original_n <span class="ot">&lt;-</span> <span class="dv">354140</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>motoinsu <span class="ot">&lt;-</span> motoinsu <span class="sc">%&gt;%</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">if_all</span>(<span class="fu">all_of</span>(incurred_vars), </span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>                <span class="sc">~</span> . <span class="sc">&lt;=</span> <span class="fu">quantile</span>(., <span class="fl">0.999</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)))</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Records before:"</span>, original_n, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Records after:"</span>, <span class="fu">nrow</span>(motoinsu), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Records removed:"</span>, original_n <span class="sc">-</span> <span class="fu">nrow</span>(motoinsu), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Percentage removed:"</span>, <span class="fu">round</span>((original_n <span class="sc">-</span> <span class="fu">nrow</span>(motoinsu))<span class="sc">/</span>original_n <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">3</span>), <span class="st">"%</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Records before: 354140 
+ Records after: 350563 
+ Records removed: 3577 
+ Percentage removed: 1.01 %</code></pre>
 </div>
 </div>
 
