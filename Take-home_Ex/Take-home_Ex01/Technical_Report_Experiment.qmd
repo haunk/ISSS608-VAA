@@ -8,6 +8,7 @@ execute:
   echo: true
   warning: false
   freeze: true
+bibliography: references.bib
 ---
 
 # Data wrangling
@@ -18,16 +19,21 @@ execute:
 pacman::p_load(tidyverse,
                psych,
                dplyr,
-               patchwork
+               patchwork,
+               corrplot,
+               RColorBrewer
                ) 
 ```
 
 The dataset contains anonymised microdata on automobile insurance policies and covers the main operations of the non-life portfolio from January 2022 to December 2024. The database shows 354,140 records and 47 variables, where each row corresponds to a policy transaction and each column to a specific attribute of that transaction.
 
-This dataset uses semicolon delimiters, we use read_csv2() that is a base R shortcut that assumes semicolon delimiters by default.
+This dataset uses semicolon delimiters, we use read_delim() to deal with semicolon delimiters.
 
 ```{r}
-motoinsu <- read_csv2("data/Motor_insurance_portfolio.csv")
+motoinsu <- read_delim(
+  "data/Motor_insurance_portfolio.csv",
+  delim = ";"
+)
 ```
 
 Out of a total of 47 attributes in the motoinsu tibble data frame, 29 of them are numerical data type (dbl - double) and 28 features are categorical data type (char - character).
@@ -126,13 +132,66 @@ colSums(is.na(motoinsu)) %>%
   .[. > 0]
 ```
 
+## Checking outliers
+
+To check whether we need to remove abnormal records, we use Z-score. It measures how many standard deviations a value is away from the mean.
+
+`z = (value - mean) / standard deviation`
+
+In general statistics, any data point with an absolute Z-score greater than 3 is widely flagged as an potential outlier, some researchs use threshold 3.5 (@1.3.5.17b). However in insurance field with heavy-tailed distributions, values far beyond 6 standard deviations occur with non-negligible probability (@embrechts1994).
+
+```{r}
+# Check all numeric variables at once
+numeric_vars <- motoinsu %>% 
+  select(where(is.numeric)) %>% 
+  names()
+
+outlier_summary <- map_dfr(numeric_vars, function(var) {
+  x <- motoinsu[[var]]
+  x_nonzero <- x[x > 0]  # for skewed insurance data, check non-zero only
+  
+  Q1  <- quantile(x, 0.25, na.rm = TRUE)
+  Q3  <- quantile(x, 0.75, na.rm = TRUE)
+  IQR_val <- Q3 - Q1
+  
+  tibble(
+    variable     = var,
+    max_val      = max(x, na.rm = TRUE),
+    p999         = quantile(x, 0.999, na.rm = TRUE),
+    max_z        = if(length(x_nonzero) > 1) max(abs(scale(x_nonzero))) else NA,
+    n_over_3sd   = if(length(x_nonzero) > 1) sum(abs(scale(x_nonzero)) > 3) else NA,
+    pct_over_3sd = if(length(x_nonzero) > 1) round(mean(abs(scale(x_nonzero)) > 3) * 100, 3) else NA,
+    iqr_fence    = Q3 + 3 * IQR_val,
+    n_beyond_iqr = sum(x > Q3 + 3 * IQR_val, na.rm = TRUE)
+  )
+})
+
+outlier_summary %>%
+  kable(format.args = list(big.mark = ",", scientific = FALSE)) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+
+# Flag variables that might need attention
+outlier_summary %>%
+  filter(
+    pct_over_3sd > 5 |        # more than 5% of non-zero rows are extreme
+    max_val > p999 * 100      # max is 100x higher than 99.9th percentile
+  )
+
+```
+
+So we are safe to move on further analysis.
+
 # Visual Analysis
 
 ## Univariate Analysis
 
+We demonstrate all distributions by each variable (categorical and numerical) to have a comprehensive analysis.
+
 ### Categorical variables
 
 Among 11 categorical columns, vehicle_brand has too many distinct values. Therefore we will visualize its distribution and impute it later. Following is the distributions of 10 categorical features.
+
+We mainly use histogram chart to demonstrate distrubutions in univariate analysis.
 
 ```{r}
 #| fig-width: 15 # Adjust width of canvas
@@ -160,7 +219,7 @@ wrap_plots(plots, ncol = 3)
 ```
 
 ::: callout-note
-## Insights:
+## Insights: Categorical variables
 
 #### Policy & Business Characteristics
 
@@ -226,7 +285,7 @@ ggplot(motoinsu, aes(x = fct_infreq(vehicle_brand_grouped))) +
 ```
 
 ::: callout-note
-## Insights:
+## Insights: Vehicle brand
 
 -   The near-equal spread among top brands means risk is **not concentrated** in any single brand's characteristics.
 -   Among top 7, French brands (RENAULT, CITROEN, PEUGEOT) collectively represent \~27%, reflecting **Spain's strong preference for French** automobiles.
@@ -236,7 +295,7 @@ ggplot(motoinsu, aes(x = fct_infreq(vehicle_brand_grouped))) +
 
 ### Numerical variables
 
-Driver & vehicle Distributions
+Driver & Vehicle Distributions
 
 ```{r}
 #| fig-width: 16
@@ -256,18 +315,18 @@ wrap_plots(plots, ncol = 3)
 ```
 
 ::: callout-note
-## Insights
+## Insights: Driver & Vehicle Distributions
 
 #### Driver & Licence Characteristics
 
 -   **driver_age**: roughly bell-shaped, peaking around **35–50 years**. Young drivers (\<25) and elderly (\>70) are rare, suggesting the portfolio skews toward middle-aged, experienced drivers.
--   **vehicle_age**: bimodal distribution with peaks around **5–10 years** and **20–25 years**. Many both newer and older vehicles insured.
+-   **vehicle_age**: bimodal with peaks around **10 and 25 years,** meaning the portfolio covers both newer and older vehicles almost equally.
 -   **age_driving_licence**: heavily right-skewed, most policyholders have held licences for **less than 20 years**, consistent with the driver age distribution.
 
 #### Vehicle Characteristics
 
--   **vehicle_value**: extremely right-skewed with most values near **zero** and a long tail. Most insured vehicles are low-to-mid value; a small number are very high-value vehicles (potential outliers/luxury cars).
--   **power_to_weight_ratio**: right-skewed, concentrated around **1000–2000**, with a few extreme high-performance vehicles.
+-   **vehicle_value**: heavily right-skewed, most vehicles are **low value under 50,000**, with a very long tail up to 300,000+ (luxury/high-end vehicles).
+-   **power_to_weight_ratio**: concentrated tightly between 10 and 20, with very few high-performance outliers above 40. Portfolio is dominated by **standard passenger cars**.
 :::
 
 Premium, Claims & Exposure Distributions
@@ -294,7 +353,7 @@ wrap_plots(plots, ncol = 3)
 ```
 
 ::: callout-note
-## Insights
+## Insights: Premium, Claims & Exposure Distributions
 
 #### Premium Variables
 
@@ -308,54 +367,342 @@ wrap_plots(plots, ncol = 3)
 
 #### Incurred Loss Variables
 
--   **total_incurred, liability_incurred, property_incurred**: **almost all zero** with extreme outliers reaching 10\^15. These extreme values are suspicious and may indicate **data quality issues** or very catastrophic events worth investigating.
+-   **total_incurred, liability_incurred, property_incurred**: mostly zero with **right tail** up to 600,000.
 
 #### Exposure Variables
 
--   **total_exposure & liability_exposure**: both show a **U-shaped/bimodal pattern** concentrated at **0.25 and 1.0**:
-
-    -   **1.0** = full year policy (annual payment, 81.3%)
-    -   **0.25** = quarterly payment (4.3%)
-    -   Values between suggest mid-year cancellations (10.8% cancelled policies)
+-   **total_exposure & liability_exposure**: U-shaped, **dominated by 1.0 (full year, annual payers)** and a smaller spike near 0.25 (quarterly). The spread between 0 and 1 represents mid-year cancellations, consistent with 10.8% cancellation rate.
 :::
 
-Have a closer look on outlier cases in all numerical variables. Seven features show abnormal maximum values comparing to quantile 99.9%, which are "total_incurred", "liability_incurred", "liability_property_incurred", "liability_injury_incurred", "property_incurred", "glass_incurred", "legal_protection_incurred".
+## Bivariate Analysis
+
+We run some experiments to find out which pairs are best to visualize and deliver significant insights.
+
+### Profitability Analysis: Incurred/Claims by Policy Type
+
+We using boxplot chart to show relationship of `total_incurred` by `policy_type`. Because numerical variables here are right-skewed with a dozen of zero and with long tail with very large number, scale_y_log10() is used to spaces them logarithmically while maintains real values. We will calculate median filtering out zero values.
 
 ```{r}
-incurred_vars <- c("total_incurred", "liability_incurred", "liability_property_incurred",
-                    "liability_injury_incurred", "property_incurred", 
-                    "glass_incurred", "legal_protection_incurred"
-                    )
+x_var <- "policy_type"
+y_var <- "total_incurred"
+
+median_labels <- motoinsu %>%
+  filter(!!sym(y_var) > 0) %>%         
+  group_by(!!sym(x_var)) %>%
+  summarise(med = median(!!sym(y_var)))
 
 motoinsu %>%
-  summarise(across(all_of(incurred_vars), list(
-    max    = ~max(., na.rm = TRUE),
-    p999 = ~quantile(., 0.999, na.rm = TRUE),
-    q99 = ~quantile(., 0.99, na.rm = TRUE),
-    q75 = ~quantile(., 0.75, na.rm = TRUE),
-    q50 = ~quantile(., 0.50, na.rm = TRUE),
-    q25 = ~quantile(., 0.25, na.rm = TRUE)
-  ))) %>%
-  pivot_longer(everything(),
-               names_to = c("variable", "stat"),
-               names_sep = "_(?=[^_]+$)") %>%
-  pivot_wider(names_from = stat, values_from = value) %>%
-  mutate(across(where(is.numeric), ~round(., 2))) %>%
-  kable(format.args = list(big.mark = ",", scientific = FALSE)) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+  filter(!!sym(y_var) > 0) %>%
+  ggplot(aes(y = !!sym(y_var), x = !!sym(x_var), fill = !!sym(x_var))) +
+  geom_boxplot(outlier.alpha = 0.2) +
+  geom_label(data = median_labels,
+             aes(x = !!sym(x_var), y = med,
+                 label = scales::comma(round(med, 0))),
+             fill = "white", size = 3, inherit.aes = FALSE) +
+  scale_y_log10(labels = scales::comma) +
+  labs(title = paste("Boxplot of", y_var, "by", x_var),
+       x = x_var, y = paste(y_var, "(log scale)")) +
+  theme_minimal()
+
 ```
 
-They seem clearly data entry errors (likely missing decimal points). Therefore, we will remove them for not distort all analysis later. We use 0.999 threshold removes only the truly impossible values while keeping legitimate large claims, minimizing data loss (remove 0.5% of total rows). Such outliers need to inform to relevant stakeholders.
+::: callout-note
+## Insights: Total Incurred by Policy Type
+
+-   **COMP_N** has the highest median incurred (1,392), consistent with no-excess comprehensive coverage encouraging more claims.
+-   **TP** surprisingly ranks second (1,114), suggesting liability-only claims tend to be costly when they do occur (bodily injury).
+-   **COMP_E** (954) is lower than TP despite broader coverage, likely because the excess/deductible filters out small claims.
+-   **CC** and **TPG** share the lowest median (882), high volume products with more mixed, smaller claims.
+:::
 
 ```{r}
-original_n <- 354140
+x_var <- "policy_type"
+y_var <- "total_claims"
 
-motoinsu <- motoinsu %>%
-  filter(if_all(all_of(incurred_vars), 
-                ~ . <= quantile(., 0.999, na.rm = TRUE)))
+median_labels <- motoinsu %>%
+  filter(!!sym(y_var) > 0) %>%         
+  group_by(!!sym(x_var)) %>%
+  summarise(med = median(!!sym(y_var)))
 
-cat("Records before:", original_n, "\n",
-    "Records after:", nrow(motoinsu), "\n",
-    "Records removed:", original_n - nrow(motoinsu), "\n",
-    "Percentage removed:", round((original_n - nrow(motoinsu))/original_n * 100, 3), "%\n")
+motoinsu %>%
+  filter(!!sym(y_var) > 0) %>%
+  ggplot(aes(y = !!sym(y_var), x = !!sym(x_var), fill = !!sym(x_var))) +
+  geom_boxplot(outlier.alpha = 0.2) +
+  geom_label(data = median_labels,
+             aes(x = !!sym(x_var), y = med,
+                 label = scales::comma(round(med, 0))),
+             fill = "white", size = 3, inherit.aes = FALSE) +
+  scale_y_log10(labels = scales::comma) +
+  labs(title = paste("Boxplot of", y_var, "by", x_var),
+       x = x_var, y = paste(y_var, "(log scale)")) +
+  theme_minimal()
 ```
+
+::: callout-note
+## Insights: Total Claims by Policy Type
+
+-   **CC and TP** median is at **1**, most policies only ever have 1 claim at most, very low frequency.
+-   **COMP_N shows the widest box** (highest IQR between 1–5), comprehensive without excess generates **more frequent claims**, likely because no excess/deductible discourages small claims
+-   **COMP_E** has more outliers reaching 10+ claims, excess policies attract higher-risk customers who still manage to claim frequently despite the deductible barrier.
+-   **TP and TPG** are nearly flat at 1, very low claim frequency for basic coverage.
+:::
+
+::: callout-warning
+**COMP_N is the most volatile product**: high claim frequency AND high incurred losses. The absence of excess (deductible) in COMP_N likely encourages policyholders to file more claims, driving up both frequency and severity.
+
+➨ The insurer should consider **reviewing COMP_N pricing strategy** as it appears to be the highest-risk product in the portfolio.
+:::
+
+### Temporal Analysis: performance by Year
+
+With line chart, we perform average of incurred amount, average of premium and loss ratio (total_incurred/total_premium) by year to see the temporal changes.
+
+```{r}
+motoinsu %>%
+  group_by(year) %>%
+  summarise(
+    avg_incurred = mean(total_incurred, na.rm = TRUE),
+    avg_premium  = mean(total_premium, na.rm = TRUE),
+    loss_ratio   = sum(total_incurred)/sum(total_premium)*100
+  ) %>%
+  pivot_longer(-year, names_to = "metric", values_to = "value") %>%
+  ggplot(aes(x = as.numeric(as.character(year)), y = value, 
+             color = metric, group = metric)) +
+  geom_line() + 
+  geom_point() +
+  facet_wrap(~metric, scales = "free_y", nrow = 3) +
+  scale_x_continuous(breaks = c(2022, 2023, 2024)) +
+  theme_minimal() +
+  labs(title = "Portfolio Performance Trend 2022-2024", x = "Year", y = "Value")
+
+```
+
+::: callout-note
+## Insights: performance by Year
+
+-   **avg_incurred (red)** shows a consistent upward trend from \~187 in 2022 to \~224 in 2024, meaning the average cost per claim is increasing every year - a clear sign of **growing claims severity**.
+-   **avg_premium (green)** peaked in 2023 then slightly declined in 2024, suggesting the insurer may have **reduced premiums to attract new business** (consistent with 69.3% new business ratio) while claims costs continued rising.
+-   **loss_ratio (blue)** increases from \~66.5% in 2022 to \~67% in 2023 to \~75% in 2024. The jump from 2023 to 2024 is the most alarming signal — a near 8 percentage point spike in a single year. The portfolio is becoming **less profitable at an accelerating rate**.
+:::
+
+::: callout-warning
+The combination of rising incurred losses, declining premiums, and worsening loss ratio suggests the portfolio is under increasing financial stress. The heavy reliance on **new business acquisition without sufficient premium adjustment** is a key risk driver the insurer should address urgently.
+:::
+
+### Loss Ratio Analysis: loss_ratio by policy_type/bonus_score
+
+```{r}
+#| fig-width: 13
+#| fig-height: 6
+
+group_var <- "policy_type"  
+
+motoinsu %>%
+  group_by(!!sym(group_var)) %>%
+  summarise(loss_ratio = sum(total_incurred)/sum(total_premium)*100) %>%
+  ggplot(aes(x = reorder(!!sym(group_var), loss_ratio), y = loss_ratio, fill = !!sym(group_var))) +
+  geom_col() +
+  geom_text(aes(label = paste0(round(loss_ratio, 1), "%")), hjust = -0.2) +
+  coord_flip() +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
+  labs(title = paste("Loss Ratio by", group_var)) +
+  theme_minimal()
+
+```
+
+::: callout-note
+## **Loss Ratio by Policy Type**
+
+-   COMP_N is the most unprofitable product at 93%, nearly breaking even on every euro collected - immediate repricing is needed. The 19-point gap between COMP_N (93%) and COMP_E (73.9%) demonstrates that the excess/deductible is highly effective at reducing claims cost.
+-   TP is the most profitable at 54.6%, low claim frequency from limited coverage scope offsets its high individual claim severity.
+-   TPG (69.6%) is surprisingly less profitable than CC (63.5%) despite simpler coverage, suggesting glass replacement costs are underpriced relative to their frequency.
+-   Overall, three out of five products sit above the 60-70% healthy benchmark, consistent with the worsening loss ratio trend seen in the temporal analysis.
+:::
+
+```{r}
+#| fig-width: 13
+#| fig-height: 6
+
+group_var <- "bonus_score" 
+
+motoinsu %>%
+  group_by(!!sym(group_var)) %>%
+  summarise(loss_ratio = sum(total_incurred)/sum(total_premium)*100) %>%
+  ggplot(aes(x = reorder(!!sym(group_var), loss_ratio), y = loss_ratio, fill = !!sym(group_var))) +
+  geom_col() +
+  geom_text(aes(label = paste0(round(loss_ratio, 1), "%")), hjust = -0.2) +
+  coord_flip() +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
+  labs(title = paste("Loss Ratio by", group_var)) +
+  theme_minimal()
+```
+
+::: callout-note
+## **Loss Ratio by Bonus Score**
+
+Results follow expected pattern - G (Good history) is most profitable at 69.7%, N (New) is most costly at 81.9%, with B (Bad) in between at 79.6%. The 12-point gap between G and N confirms claims history is a strong predictor of future loss.
+
+With 69.3% of the portfolio being new business, the insurer is heavily exposed to the highest-loss segment, directly contributing to the worsening loss ratio trend seen in 2022 to 2024.
+:::
+
+### Density plot: Driver Age by Bonus Score
+
+We use density plot to show if young/new drivers skew toward N/B scores.
+
+```{r}
+ggplot(motoinsu, 
+       aes(x = driver_age, 
+           fill = bonus_score)) +
+  geom_density(alpha = 0.4) +
+  theme_minimal()
+```
+
+::: callout-note
+-   **N (New, blue): youngest drivers**.
+    -   Peak sharply around age 33–35, very narrow distribution.
+
+    -   New policyholders skew younger - first-time insurance buyers.
+-   **B (Bad history, pink)**: **mirrors N almost exactly**.
+    -   Nearly identical age distribution to N.
+
+    -   Suggests bad-score customers are largely the same cohort as new customers - young drivers who recently accumulated claims.
+-   **G (Good history, green)**: **older and wider spread**.
+    -   Bimodal: one peak \~40, second bump around 55–65.
+
+    -   Experienced drivers with long clean records dominate the older age bands.
+
+    -   The long right tail to age 80+ is almost entirely G - elderly drivers have good bonus scores from decades of claim-free driving.
+:::
+
+### Correlation Matrix
+
+```{r}
+#| fig-width: 8
+#| fig-height: 6
+#| 
+ggstatsplot::ggcorrmat(
+  data = motoinsu, 
+  cor.vars = c(total_premium, total_incurred, total_claims,
+               total_exposure, vehicle_value, driver_age,
+               vehicle_age, age_driving_licence, power_to_weight_ratio),
+  title = "Correlation Matrix of Key Variables",
+  colors = c(RColorBrewer::brewer.pal(3, "BrBG")[c(1, 2, 3)]),
+  ggcorrplot.args = list(
+    lab_size = 4
+  )
+)
+```
+
+::: callout-note
+## Insights
+
+**Strong pairs:**
+
+-   `vehicle_age` and `age_driving_licence` (0.86): nearly duplicate variables
+
+-   `total_exposure` and `total_premium` (0.6): longer policies generate higher premiums, expected
+
+-   `vehicle_value` and `total_premium` (0.32): surprisingly weak, pricing is not strongly value-driven
+
+**Negative relationships:**
+
+-   `power_to_weight_ratio` and `vehicle_value` (-0.49): high-performance vehicles tend to be undervalued relative to their actual risk
+
+-   `power_to_weight_ratio` and `age_driving_licence` (-0.18): younger licence holders gravitate toward higher-performance vehicles
+:::
+
+::: callout-warning
+`total_incurred` shows near-zero correlation with almost everything individually, meaning claim severity is driven by variable interactions rather than single factors. Multivariate analysis is necessary.
+:::
+
+## Multivariate Analysis
+
+### Heatmap: Policy type vs Fuel type
+
+We use heatmap to visualize three variables.
+
+```{r}
+motoinsu %>%
+  group_by(policy_type, fuel_type) %>%
+  summarise(loss_ratio = sum(total_incurred) / sum(total_premium) * 100) %>%
+  ggplot(aes(x = fuel_type, y = policy_type, fill = loss_ratio)) +
+  geom_tile() +
+  scale_fill_gradient(low = "white", high = "red") +
+  labs(title = "Loss Ratio Heatmap: Policy Type vs Fuel Type") +
+  theme_minimal()
+
+
+
+```
+
+::: callout-note
+## Insights
+
+-   **COMP_N:** Has the highest loss ratio (\~90%+) for **both** fuel types, with Diesel (D) appearing even more extreme (deep red). This policy type is clearly underperforming and likely unprofitable.
+-   **Fuel type (D vs G):** has minimal impact across most policy types, it likely shouldn't be a primary rating factor in pricing models.
+:::
+
+### Bubble chart: Loss ratio by Vehicle brand
+
+Let's see the which vehicle brand has higher loss ratio. Note that we remove Others category from Vehicle brand group.
+
+```{r}
+#| fig-width: 8
+#| fig-height: 6
+#| 
+motoinsu %>%
+  group_by(vehicle_brand_grouped) %>%
+  summarise(
+    loss_ratio = sum(total_incurred)/sum(total_premium)*100,
+    total_premium = sum(total_premium)
+  ) %>%
+  filter(vehicle_brand_grouped != "Others") %>%
+  ggplot(aes(x = total_premium, y = loss_ratio,    # x = total_premium now
+             size = total_premium, color = vehicle_brand_grouped)) +
+  geom_point(alpha = 0.7) +
+  geom_text(aes(label = vehicle_brand_grouped),
+            vjust = -1.5, size = 3, color = "black") +
+  geom_text(aes(label = paste0("€", scales::comma(round(total_premium/1e6, 1)), "M")),
+            vjust = 2.5, size = 2.8, color = "grey30") +
+  scale_x_continuous(labels = scales::comma) +     # x-axis shows premium numbers like y-axis
+  scale_size_continuous(range = c(3, 18), guide = "none") +
+  labs(
+    title = "Loss Ratio vs Vehicle Brand (sized by Total Premium)",
+    x = "Total Premium (€)", y = "Loss Ratio (%)"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "none"
+  )
+
+
+```
+
+::: callout-note
+**High risk, low revenue — most concerning:**
+
+-    **OPEL** (77%, €7.4M) — highest loss ratio but one of the smallest bubbles. Worst combination: unprofitable AND small contributor
+-    **SEAT** (74%, €7.4M) — same story, small premium volume but elevated risk
+
+**Acceptable risk, decent revenue:**
+
+-   **VOLKSWAGEN** (71%, €8.7M) — largest bubble among named brands, moderate loss ratio. Most important brand to manage carefully given its revenue weight
+-   **CITROEN** (69%, €8.5M) — large bubble, below-average loss ratio. Best balance of volume and profitability among French brands
+
+**Best performers:**
+
+-   **PEUGEOT** (66%, €8.1M) and **RENAULT** (67%, €9.1M) — lowest loss ratios with solid premium volumes. RENAULT is particularly valuable: largest revenue among named brands AND most profitable French brand
+:::
+
+::: callout-warning
+-   Prioritize **RENAULT and PEUGEOT** for retention — high volume, low risk.
+-   Review **OPEL and SEAT** pricing urgently — they generate the least revenue while being the most unprofitable.
+:::
+
+```{}
+```
+
+**References**
+
+::: {#refs}
+:::
