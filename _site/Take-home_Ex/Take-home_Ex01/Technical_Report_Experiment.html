@@ -259,7 +259,8 @@ div.csl-indent {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#data-wrangling" id="toc-data-wrangling" class="nav-link active" data-scroll-target="#data-wrangling">Data wrangling</a>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">1. Overview</a></li>
+  <li><a href="#data-wrangling" id="toc-data-wrangling" class="nav-link" data-scroll-target="#data-wrangling">Data wrangling</a>
   <ul class="collapse">
   <li><a href="#importing-dataset" id="toc-importing-dataset" class="nav-link" data-scroll-target="#importing-dataset">Importing dataset</a></li>
   <li><a href="#conversing-datatype" id="toc-conversing-datatype" class="nav-link" data-scroll-target="#conversing-datatype">Conversing datatype</a></li>
@@ -279,6 +280,7 @@ div.csl-indent {
   <li><a href="#temporal-analysis-performance-by-year" id="toc-temporal-analysis-performance-by-year" class="nav-link" data-scroll-target="#temporal-analysis-performance-by-year">Temporal Analysis: performance by Year</a></li>
   <li><a href="#loss-ratio-analysis-loss_ratio-by-policy_typebonus_score" id="toc-loss-ratio-analysis-loss_ratio-by-policy_typebonus_score" class="nav-link" data-scroll-target="#loss-ratio-analysis-loss_ratio-by-policy_typebonus_score">Loss Ratio Analysis: loss_ratio by policy_type/bonus_score</a></li>
   <li><a href="#density-plot-driver-age-by-bonus-score" id="toc-density-plot-driver-age-by-bonus-score" class="nav-link" data-scroll-target="#density-plot-driver-age-by-bonus-score">Density plot: Driver Age by Bonus Score</a></li>
+  <li><a href="#violin-chart-by-premiumincurred-type" id="toc-violin-chart-by-premiumincurred-type" class="nav-link" data-scroll-target="#violin-chart-by-premiumincurred-type">Violin Chart by Premium/Incurred Type</a></li>
   <li><a href="#correlation-matrix" id="toc-correlation-matrix" class="nav-link" data-scroll-target="#correlation-matrix">Correlation Matrix</a></li>
   </ul></li>
   <li><a href="#multivariate-analysis" id="toc-multivariate-analysis" class="nav-link" data-scroll-target="#multivariate-analysis">Multivariate Analysis</a>
@@ -287,6 +289,7 @@ div.csl-indent {
   <li><a href="#bubble-chart-loss-ratio-by-vehicle-brand" id="toc-bubble-chart-loss-ratio-by-vehicle-brand" class="nav-link" data-scroll-target="#bubble-chart-loss-ratio-by-vehicle-brand">Bubble chart: Loss ratio by Vehicle brand</a></li>
   </ul></li>
   </ul></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><strong>References</strong></a></li>
   </ul>
 </nav>
     </div>
@@ -319,7 +322,7 @@ div.csl-indent {
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">May 21, 2026</p>
+      <p class="date-modified">May 23, 2026</p>
     </div>
   </div>
     
@@ -330,18 +333,16 @@ div.csl-indent {
 </header>
 
 
+<section id="overview" class="level1">
+<h1>1. Overview</h1>
+</section>
 <section id="data-wrangling" class="level1">
 <h1>Data wrangling</h1>
 <section id="importing-dataset" class="level2">
 <h2 class="anchored" data-anchor-id="importing-dataset">Importing dataset</h2>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyverse,</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>               psych,</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>               dplyr,</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>               patchwork,</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>               corrplot,</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>               RColorBrewer</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>               ) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyverse, readxl, tidyr, kableExtra, psych, dplyr, </span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>               patchwork, corrplot, RColorBrewer, gganimate, ggrepel) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The dataset contains anonymised microdata on automobile insurance policies and covers the main operations of the non-life portfolio from January 2022 to December 2024. The database shows 354,140 records and 47 variables, where each row corresponds to a policy transaction and each column to a specific attribute of that transaction.</p>
 <p>This dataset uses semicolon delimiters, we use read_delim() to deal with semicolon delimiters.</p>
@@ -353,10 +354,13 @@ div.csl-indent {
 </div>
 <p>Out of a total of 47 attributes in the motoinsu tibble data frame, 29 of them are numerical data type (dbl - double) and 28 features are categorical data type (char - character).</p>
 <div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">describe</span>(motoinsu <span class="sc">%&gt;%</span> </span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>           <span class="fu">select</span>(<span class="fu">where</span>(is.numeric)) <span class="co"># Only show numerical columns</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>         ) <span class="sc">%&gt;%</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(vars, min, max, mean, skew) <span class="co"># Only get desired columns</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>                            vars     min       max     mean   skew
 insured_id                     1    1.00 185678.00 76044.50   0.47
@@ -400,20 +404,18 @@ liability_exposure            38    0.00      1.00     0.71  -0.67</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>var_desc <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"data/Descriptive_of_variables.xlsx"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fill</span>(<span class="fu">everything</span>(), <span class="at">.direction =</span> <span class="st">"down"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Variables, Group) <span class="sc">%&gt;%</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">Description =</span> <span class="fu">paste</span>(Description, <span class="at">collapse =</span> <span class="st">" "</span>), <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>var_desc <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"data/Descriptive_of_variables.xlsx"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fill</span>(<span class="fu">everything</span>(), <span class="at">.direction =</span> <span class="st">"down"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Variables, Group) <span class="sc">%&gt;%</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">Description =</span> <span class="fu">paste</span>(Description, <span class="at">collapse =</span> <span class="st">" "</span>), <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>var_desc <span class="sc">%&gt;%</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span>),</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>                <span class="at">full_width =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>var_desc <span class="sc">%&gt;%</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span>),</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>                <span class="at">full_width =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 <div class="cell-output-display">
 <table class="table table-striped table-hover table-condensed caption-top table-sm small">
 <thead>
@@ -664,57 +666,21 @@ liability_exposure            38    0.00      1.00     0.71  -0.67</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(motoinsu)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(motoinsu, <span class="at">n=</span><span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Rows: 354,140
-Columns: 47
-$ insured_id                  &lt;dbl&gt; 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, …
-$ year                        &lt;dbl&gt; 2022, 2022, 2023, 2024, 2022, 2023, 2024, …
-$ policy_type                 &lt;chr&gt; "COMP_E", "COMP_E", "COMP_E", "COMP_E", "C…
-$ policy_status               &lt;chr&gt; "C", "A", "A", "A", "A", "A", "A", "A", "A…
-$ business_type               &lt;chr&gt; "NB", "P", "P", "P", "NB", "P", "P", "NB",…
-$ payment_frequency           &lt;chr&gt; "A", "A", "A", "A", "S", "S", "S", "A", "A…
-$ bonus_score                 &lt;chr&gt; "G", "G", "G", "G", "G", "G", "G", "G", "G…
-$ driver_age                  &lt;dbl&gt; 48, 43, 44, 45, 45, 46, 47, 32, 33, 34, 39…
-$ vehicle_age                 &lt;dbl&gt; 22, 24, 25, 26, 26, 27, 28, 12, 13, 14, 20…
-$ age_driving_licence         &lt;dbl&gt; 26, 19, 19, 18, 19, 19, 19, 19, 19, 19, 19…
-$ fuel_type                   &lt;chr&gt; "G", "D", "D", "D", "D", "D", "D", "D", "D…
-$ vehicle_value               &lt;dbl&gt; 149511.44, 65065.12, 65065.12, 65065.12, 5…
-$ seats                       &lt;dbl&gt; 4, 8, 8, 8, 7, 7, 7, 5, 5, 5, 5, 5, 5, 5, …
-$ power_to_weight_ratio       &lt;dbl&gt; 3.92, 10.15, 10.15, 10.15, 9.19, 9.19, 9.1…
-$ vehicle_brand               &lt;chr&gt; "PORSCHE", "MERCEDES", "MERCEDES", "MERCED…
-$ municipality_type           &lt;chr&gt; "I", "I", "I", "I", "I", "I", "I", "I", "I…
-$ circulation_area            &lt;chr&gt; "U", "U", "U", "U", "R", "R", "R", "R", "R…
-$ total_premium               &lt;dbl&gt; 279.5576, 546.6234, 548.7526, 584.6324, 68…
-$ liability_premium           &lt;dbl&gt; 30.60232, 114.33336, 110.66689, 122.09253,…
-$ property_damage_premium     &lt;dbl&gt; 121.9127, 303.1060, 304.9560, 305.2251, 35…
-$ theft_premium               &lt;dbl&gt; 112.361489, 80.784824, 83.521384, 107.8868…
-$ fire_premium                &lt;dbl&gt; 3.832441, 7.826861, 6.151465, 5.842892, 7.…
-$ glass_premium               &lt;dbl&gt; 8.305788, 30.091751, 32.861626, 31.101584,…
-$ legal_protection_premium    &lt;dbl&gt; 2.043622, 7.812747, 7.655637, 10.084173, 6…
-$ occupants_premium           &lt;dbl&gt; 0.4992053, 2.6679084, 2.9395659, 2.3992827…
-$ total_claims                &lt;dbl&gt; 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, …
-$ liability_claims            &lt;dbl&gt; 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
-$ liability_property_claims   &lt;dbl&gt; 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
-$ liability_injury_claims     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
-$ property_claims             &lt;dbl&gt; 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, …
-$ theft_claims                &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
-$ fire_claims                 &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
-$ glass_claims                &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
-$ legal_protection_claims     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
-$ occupants_claims            &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
-$ total_incurred              &lt;dbl&gt; 0.000, 0.000, 233.013, 2586.361, 0.000, 0.…
-$ liability_incurred          &lt;dbl&gt; 0.000, 0.000, 233.013, 1035.000, 0.000, 0.…
-$ liability_property_incurred &lt;dbl&gt; 0.000, 0.000, 233.013, 1035.000, 0.000, 0.…
-$ liability_injury_incurred   &lt;dbl&gt; 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, …
-$ property_incurred           &lt;dbl&gt; 0.000, 0.000, 0.000, 1551.361, 0.000, 0.00…
-$ theft_incurred              &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
-$ fire_incurred               &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
-$ glass_incurred              &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
-$ legal_protection_incurred   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
-$ occupants_incurred          &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
-$ total_exposure              &lt;dbl&gt; 0.09863014, 1.00000000, 1.00000000, 1.0000…
-$ liability_exposure          &lt;dbl&gt; 0.09863014, 1.00000000, 1.00000000, 1.0000…</code></pre>
+<pre><code># A tibble: 3 × 47
+  insured_id  year policy_type policy_status business_type payment_frequency
+       &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;       &lt;chr&gt;         &lt;chr&gt;         &lt;chr&gt;            
+1          1  2022 COMP_E      C             NB            A                
+2          2  2022 COMP_E      A             P             A                
+3          2  2023 COMP_E      A             P             A                
+# ℹ 41 more variables: bonus_score &lt;chr&gt;, driver_age &lt;dbl&gt;, vehicle_age &lt;dbl&gt;,
+#   age_driving_licence &lt;dbl&gt;, fuel_type &lt;chr&gt;, vehicle_value &lt;dbl&gt;,
+#   seats &lt;dbl&gt;, power_to_weight_ratio &lt;dbl&gt;, vehicle_brand &lt;chr&gt;,
+#   municipality_type &lt;chr&gt;, circulation_area &lt;chr&gt;, total_premium &lt;dbl&gt;,
+#   liability_premium &lt;dbl&gt;, property_damage_premium &lt;dbl&gt;,
+#   theft_premium &lt;dbl&gt;, fire_premium &lt;dbl&gt;, glass_premium &lt;dbl&gt;,
+#   legal_protection_premium &lt;dbl&gt;, occupants_premium &lt;dbl&gt;, …</code></pre>
 </div>
 </div>
 </section>
@@ -739,60 +705,7 @@ $ liability_exposure          &lt;dbl&gt; 0.09863014, 1.00000000, 1.00000000, 1.
 <span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>             legal_protection_premium, occupants_premium,</span>
 <span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>             total_exposure, liability_exposure), </span>
 <span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>           as.double)</span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(motoinsu)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Rows: 354,140
-Columns: 47
-$ insured_id                  &lt;chr&gt; "1", "2", "2", "2", "3", "3", "3", "4", "4…
-$ year                        &lt;fct&gt; 2022, 2022, 2023, 2024, 2022, 2023, 2024, …
-$ policy_type                 &lt;fct&gt; COMP_E, COMP_E, COMP_E, COMP_E, COMP_E, CO…
-$ policy_status               &lt;fct&gt; C, A, A, A, A, A, A, A, A, A, A, A, A, A, …
-$ business_type               &lt;fct&gt; NB, P, P, P, NB, P, P, NB, P, P, NB, P, P,…
-$ payment_frequency           &lt;fct&gt; A, A, A, A, S, S, S, A, A, A, A, A, A, A, …
-$ bonus_score                 &lt;fct&gt; G, G, G, G, G, G, G, G, G, G, G, G, G, G, …
-$ driver_age                  &lt;dbl&gt; 48, 43, 44, 45, 45, 46, 47, 32, 33, 34, 39…
-$ vehicle_age                 &lt;dbl&gt; 22, 24, 25, 26, 26, 27, 28, 12, 13, 14, 20…
-$ age_driving_licence         &lt;dbl&gt; 26, 19, 19, 18, 19, 19, 19, 19, 19, 19, 19…
-$ fuel_type                   &lt;fct&gt; G, D, D, D, D, D, D, D, D, D, D, D, D, D, …
-$ vehicle_value               &lt;dbl&gt; 149511.44, 65065.12, 65065.12, 65065.12, 5…
-$ seats                       &lt;fct&gt; 4, 8, 8, 8, 7, 7, 7, 5, 5, 5, 5, 5, 5, 5, …
-$ power_to_weight_ratio       &lt;dbl&gt; 3.92, 10.15, 10.15, 10.15, 9.19, 9.19, 9.1…
-$ vehicle_brand               &lt;fct&gt; PORSCHE, MERCEDES, MERCEDES, MERCEDES, KIA…
-$ municipality_type           &lt;fct&gt; I, I, I, I, I, I, I, I, I, I, C, I, I, C, …
-$ circulation_area            &lt;fct&gt; U, U, U, U, R, R, R, R, R, R, R, U, U, R, …
-$ total_premium               &lt;dbl&gt; 279.5576, 546.6234, 548.7526, 584.6324, 68…
-$ liability_premium           &lt;dbl&gt; 30.60232, 114.33336, 110.66689, 122.09253,…
-$ property_damage_premium     &lt;dbl&gt; 121.9127, 303.1060, 304.9560, 305.2251, 35…
-$ theft_premium               &lt;dbl&gt; 112.361489, 80.784824, 83.521384, 107.8868…
-$ fire_premium                &lt;dbl&gt; 3.832441, 7.826861, 6.151465, 5.842892, 7.…
-$ glass_premium               &lt;dbl&gt; 8.305788, 30.091751, 32.861626, 31.101584,…
-$ legal_protection_premium    &lt;dbl&gt; 2.043622, 7.812747, 7.655637, 10.084173, 6…
-$ occupants_premium           &lt;dbl&gt; 0.4992053, 2.6679084, 2.9395659, 2.3992827…
-$ total_claims                &lt;dbl&gt; 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, …
-$ liability_claims            &lt;dbl&gt; 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
-$ liability_property_claims   &lt;dbl&gt; 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
-$ liability_injury_claims     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
-$ property_claims             &lt;dbl&gt; 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, …
-$ theft_claims                &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
-$ fire_claims                 &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
-$ glass_claims                &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
-$ legal_protection_claims     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
-$ occupants_claims            &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
-$ total_incurred              &lt;dbl&gt; 0.000, 0.000, 233.013, 2586.361, 0.000, 0.…
-$ liability_incurred          &lt;dbl&gt; 0.000, 0.000, 233.013, 1035.000, 0.000, 0.…
-$ liability_property_incurred &lt;dbl&gt; 0.000, 0.000, 233.013, 1035.000, 0.000, 0.…
-$ liability_injury_incurred   &lt;dbl&gt; 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, …
-$ property_incurred           &lt;dbl&gt; 0.000, 0.000, 0.000, 1551.361, 0.000, 0.00…
-$ theft_incurred              &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
-$ fire_incurred               &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
-$ glass_incurred              &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
-$ legal_protection_incurred   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
-$ occupants_incurred          &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
-$ total_exposure              &lt;dbl&gt; 0.09863014, 1.00000000, 1.00000000, 1.0000…
-$ liability_exposure          &lt;dbl&gt; 0.09863014, 1.00000000, 1.00000000, 1.0000…</code></pre>
-</div>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -817,17 +730,17 @@ Tip
 <h2 class="anchored" data-anchor-id="handling-missing-values">Handling missing values</h2>
 <p>There are six features having missing values. Although all of these rates are small, under 1%, we treat them differently.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colSums</span>(<span class="fu">is.na</span>(motoinsu)) <span class="sc">%&gt;%</span> </span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  .[. <span class="sc">&gt;</span> <span class="dv">0</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colSums</span>(<span class="fu">is.na</span>(motoinsu)) <span class="sc">%&gt;%</span> </span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  .[. <span class="sc">&gt;</span> <span class="dv">0</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        vehicle_age age_driving_licence           fuel_type       vehicle_value 
                   2                   2                1287                 513 </code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colMeans</span>(<span class="fu">is.na</span>(motoinsu)) <span class="sc">%&gt;%</span> <span class="co"># Caculate missing rate in each column</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(<span class="dv">5</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  .[. <span class="sc">&gt;</span> <span class="dv">0</span>] <span class="co"># Filter ratio &gt; 0</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colMeans</span>(<span class="fu">is.na</span>(motoinsu)) <span class="sc">%&gt;%</span> <span class="co"># Caculate missing rate in each column</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(<span class="dv">5</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  .[. <span class="sc">&gt;</span> <span class="dv">0</span>] <span class="co"># Filter ratio &gt; 0</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        vehicle_age age_driving_licence           fuel_type       vehicle_value 
             0.00001             0.00001             0.00363             0.00145 </code></pre>
@@ -839,15 +752,15 @@ Tip
 <li><code>fuel_type</code>, <code>vehicle_value</code> have more missing values, which make I consider between using mode/medium or remove missing rows. Because they are seem important features, it is risky to impute data. This issue should be reported to the relevant stakeholders.</li>
 </ul>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>motoinsu <span class="ot">&lt;-</span> motoinsu <span class="sc">%&gt;%</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>(vehicle_age, age_driving_licence, fuel_type, vehicle_value ) <span class="sc">%&gt;%</span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">fire_incurred    =</span> <span class="fu">replace_na</span>(fire_incurred, <span class="dv">0</span>),</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">occupants_incurred =</span> <span class="fu">replace_na</span>(occupants_incurred, <span class="dv">0</span>)</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Check after modification</span></span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="fu">colSums</span>(<span class="fu">is.na</span>(motoinsu)) <span class="sc">%&gt;%</span> </span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  .[. <span class="sc">&gt;</span> <span class="dv">0</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>motoinsu <span class="ot">&lt;-</span> motoinsu <span class="sc">%&gt;%</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>(vehicle_age, age_driving_licence, fuel_type, vehicle_value ) <span class="sc">%&gt;%</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">fire_incurred    =</span> <span class="fu">replace_na</span>(fire_incurred, <span class="dv">0</span>),</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">occupants_incurred =</span> <span class="fu">replace_na</span>(occupants_incurred, <span class="dv">0</span>)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Check after modification</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="fu">colSums</span>(<span class="fu">is.na</span>(motoinsu)) <span class="sc">%&gt;%</span> </span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  .[. <span class="sc">&gt;</span> <span class="dv">0</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>named numeric(0)</code></pre>
 </div>
@@ -859,34 +772,37 @@ Tip
 <p><code>z = (value - mean) / standard deviation</code></p>
 <p>In general statistics, any data point with an absolute Z-score greater than 3 is widely flagged as an potential outlier, some researchs use threshold 3.5 (<span class="citation" data-cites="1.3.5.17b"><em>1.3.5.17. Detection of Outliers</em> (<a href="#ref-1.3.5.17b" role="doc-biblioref">n.d.</a>)</span>). However in insurance field with heavy-tailed distributions, values far beyond 6 standard deviations occur with non-negligible probability (<span class="citation" data-cites="embrechts1994">Embrechts and Schmidli (<a href="#ref-embrechts1994" role="doc-biblioref">1994</a>)</span>).</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check all numeric variables at once</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>numeric_vars <span class="ot">&lt;-</span> motoinsu <span class="sc">%&gt;%</span> </span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">where</span>(is.numeric)) <span class="sc">%&gt;%</span> </span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>()</span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>outlier_summary <span class="ot">&lt;-</span> <span class="fu">map_dfr</span>(numeric_vars, <span class="cf">function</span>(var) {</span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> motoinsu[[var]]</span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  x_nonzero <span class="ot">&lt;-</span> x[x <span class="sc">&gt;</span> <span class="dv">0</span>]  <span class="co"># for skewed insurance data, check non-zero only</span></span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  Q1  <span class="ot">&lt;-</span> <span class="fu">quantile</span>(x, <span class="fl">0.25</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  Q3  <span class="ot">&lt;-</span> <span class="fu">quantile</span>(x, <span class="fl">0.75</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>  IQR_val <span class="ot">&lt;-</span> Q3 <span class="sc">-</span> Q1</span>
-<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(</span>
-<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">variable     =</span> var,</span>
-<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">max_val      =</span> <span class="fu">max</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">p999         =</span> <span class="fu">quantile</span>(x, <span class="fl">0.999</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">max_z        =</span> <span class="cf">if</span>(<span class="fu">length</span>(x_nonzero) <span class="sc">&gt;</span> <span class="dv">1</span>) <span class="fu">max</span>(<span class="fu">abs</span>(<span class="fu">scale</span>(x_nonzero))) <span class="cf">else</span> <span class="cn">NA</span>,</span>
-<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_over_3sd   =</span> <span class="cf">if</span>(<span class="fu">length</span>(x_nonzero) <span class="sc">&gt;</span> <span class="dv">1</span>) <span class="fu">sum</span>(<span class="fu">abs</span>(<span class="fu">scale</span>(x_nonzero)) <span class="sc">&gt;</span> <span class="dv">3</span>) <span class="cf">else</span> <span class="cn">NA</span>,</span>
-<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">pct_over_3sd =</span> <span class="cf">if</span>(<span class="fu">length</span>(x_nonzero) <span class="sc">&gt;</span> <span class="dv">1</span>) <span class="fu">round</span>(<span class="fu">mean</span>(<span class="fu">abs</span>(<span class="fu">scale</span>(x_nonzero)) <span class="sc">&gt;</span> <span class="dv">3</span>) <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">3</span>) <span class="cf">else</span> <span class="cn">NA</span>,</span>
-<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">iqr_fence    =</span> Q3 <span class="sc">+</span> <span class="dv">3</span> <span class="sc">*</span> IQR_val,</span>
-<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_beyond_iqr =</span> <span class="fu">sum</span>(x <span class="sc">&gt;</span> Q3 <span class="sc">+</span> <span class="dv">3</span> <span class="sc">*</span> IQR_val, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a>outlier_summary <span class="sc">%&gt;%</span></span>
-<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">","</span>, <span class="at">scientific =</span> <span class="cn">FALSE</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check all numeric variables at once</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>numeric_vars <span class="ot">&lt;-</span> motoinsu <span class="sc">%&gt;%</span> </span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">where</span>(is.numeric)) <span class="sc">%&gt;%</span> </span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>()</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>outlier_summary <span class="ot">&lt;-</span> <span class="fu">map_dfr</span>(numeric_vars, <span class="cf">function</span>(var) {</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> motoinsu[[var]]</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  x_nonzero <span class="ot">&lt;-</span> x[x <span class="sc">&gt;</span> <span class="dv">0</span>]  <span class="co"># for skewed insurance data, check non-zero only</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>  Q1  <span class="ot">&lt;-</span> <span class="fu">quantile</span>(x, <span class="fl">0.25</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>  Q3  <span class="ot">&lt;-</span> <span class="fu">quantile</span>(x, <span class="fl">0.75</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>  IQR_val <span class="ot">&lt;-</span> Q3 <span class="sc">-</span> Q1</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">variable     =</span> var,</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">max_val      =</span> <span class="fu">max</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">p999         =</span> <span class="fu">quantile</span>(x, <span class="fl">0.999</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">max_z        =</span> <span class="cf">if</span>(<span class="fu">length</span>(x_nonzero) <span class="sc">&gt;</span> <span class="dv">1</span>) <span class="fu">max</span>(<span class="fu">abs</span>(<span class="fu">scale</span>(x_nonzero))) <span class="cf">else</span> <span class="cn">NA</span>,</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_over_3sd   =</span> <span class="cf">if</span>(<span class="fu">length</span>(x_nonzero) <span class="sc">&gt;</span> <span class="dv">1</span>) <span class="fu">sum</span>(<span class="fu">abs</span>(<span class="fu">scale</span>(x_nonzero)) <span class="sc">&gt;</span> <span class="dv">3</span>) <span class="cf">else</span> <span class="cn">NA</span>,</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">pct_over_3sd =</span> <span class="cf">if</span>(<span class="fu">length</span>(x_nonzero) <span class="sc">&gt;</span> <span class="dv">1</span>) <span class="fu">round</span>(<span class="fu">mean</span>(<span class="fu">abs</span>(<span class="fu">scale</span>(x_nonzero)) <span class="sc">&gt;</span> <span class="dv">3</span>) <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">3</span>) <span class="cf">else</span> <span class="cn">NA</span>,</span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">iqr_fence    =</span> Q3 <span class="sc">+</span> <span class="dv">3</span> <span class="sc">*</span> IQR_val,</span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_beyond_iqr =</span> <span class="fu">sum</span>(x <span class="sc">&gt;</span> Q3 <span class="sc">+</span> <span class="dv">3</span> <span class="sc">*</span> IQR_val, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a>outlier_summary <span class="sc">%&gt;%</span></span>
+<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">","</span>, <span class="at">scientific =</span> <span class="cn">FALSE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 <div class="cell-output-display">
 <table class="table table-striped table-hover table-condensed caption-top table-sm small">
 <thead>
@@ -1255,21 +1171,6 @@ Tip
 </tbody>
 </table>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Flag variables that might need attention</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>outlier_summary <span class="sc">%&gt;%</span></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    pct_over_3sd <span class="sc">&gt;</span> <span class="dv">5</span> <span class="sc">|</span>        <span class="co"># more than 5% of non-zero rows are extreme</span></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    max_val <span class="sc">&gt;</span> p999 <span class="sc">*</span> <span class="dv">100</span>      <span class="co"># max is 100x higher than 99.9th percentile</span></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 4 × 8
-  variable   max_val  p999  max_z n_over_3sd pct_over_3sd iqr_fence n_beyond_iqr
-  &lt;chr&gt;        &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;      &lt;int&gt;        &lt;dbl&gt;     &lt;dbl&gt;        &lt;int&gt;
-1 fire_clai…      1      0 NaN            NA        NA            0          100
-2 occupants…      1      0 NaN            NA        NA            0           43
-3 fire_incu…  28267.     0   6.23          2         2.02         0           99
-4 occupants…  69000      0   3.69          2         4.65         0           43</code></pre>
-</div>
 </div>
 <p>So we are safe to move on further analysis.</p>
 </section>
@@ -1284,26 +1185,29 @@ Tip
 <p>Among 11 categorical columns, vehicle_brand has too many distinct values. Therefore we will visualize its distribution and impute it later. Following is the distributions of 10 categorical features.</p>
 <p>We mainly use histogram chart to demonstrate distrubutions in univariate analysis.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># gom_bar():  counts rows automatically</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="co"># fct_infreq: reorder factor levels based on the frequency of values</span></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>cat_vars <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"year"</span>, <span class="st">"policy_type"</span>, <span class="st">"policy_status"</span>, <span class="st">"business_type"</span>,</span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>              <span class="st">"payment_frequency"</span>, <span class="st">"bonus_score"</span>, </span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>              <span class="st">"fuel_type"</span>, <span class="st">"seats"</span>,</span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>              <span class="st">"municipality_type"</span>, <span class="st">"circulation_area"</span>)</span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>plots <span class="ot">&lt;-</span> <span class="fu">lapply</span>(cat_vars, <span class="cf">function</span>(col) {</span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(motoinsu, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">fct_infreq</span>(<span class="sc">!!</span><span class="fu">sym</span>(col)))) <span class="sc">+</span></span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">after_stat</span>(count<span class="sc">/</span><span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>)), <span class="at">fill =</span> <span class="st">"steelblue"</span>) <span class="sc">+</span></span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">after_stat</span>(count<span class="sc">/</span><span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>),</span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>                  <span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(<span class="fu">after_stat</span>(count<span class="sc">/</span><span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>), <span class="dv">1</span>), <span class="st">"%"</span>)),</span>
-<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>              <span class="at">stat =</span> <span class="st">"count"</span>, <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Distribution of"</span>, col), <span class="at">x =</span> col, <span class="at">y =</span> <span class="st">"Percentage (%)"</span>) <span class="sc">+</span></span>
-<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span>
-<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a><span class="fu">wrap_plots</span>(plots, <span class="at">ncol =</span> <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># gom_bar():  counts rows automatically</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co"># fct_infreq: reorder factor levels based on the frequency of values</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>cat_vars <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"year"</span>, <span class="st">"policy_type"</span>, <span class="st">"policy_status"</span>, <span class="st">"business_type"</span>,</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>              <span class="st">"payment_frequency"</span>, <span class="st">"bonus_score"</span>, </span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>              <span class="st">"fuel_type"</span>, <span class="st">"seats"</span>,</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>              <span class="st">"municipality_type"</span>, <span class="st">"circulation_area"</span>)</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>plots <span class="ot">&lt;-</span> <span class="fu">lapply</span>(cat_vars, <span class="cf">function</span>(col) {</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(motoinsu, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">fct_infreq</span>(<span class="sc">!!</span><span class="fu">sym</span>(col)))) <span class="sc">+</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">after_stat</span>(count<span class="sc">/</span><span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>)), <span class="at">fill =</span> <span class="st">"steelblue"</span>) <span class="sc">+</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">after_stat</span>(count<span class="sc">/</span><span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>),</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>                  <span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(<span class="fu">after_stat</span>(count<span class="sc">/</span><span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>), <span class="dv">1</span>), <span class="st">"%"</span>)),</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>              <span class="at">stat =</span> <span class="st">"count"</span>, <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Distribution of"</span>, col), <span class="at">x =</span> col, <span class="at">y =</span> <span class="st">"Percentage (%)"</span>) <span class="sc">+</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a><span class="fu">wrap_plots</span>(plots, <span class="at">ncol =</span> <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1351,17 +1255,20 @@ Tip
 </div>
 <p>Vehicle brand distribution show high fragmentation with top brand ~10%, many brands with &lt;1%. We will combine all brands excluding RENAULT, CITROEN, PEUGEOT, VOLKSWAGEN, FORD, SEAT, and OPEL.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># gom_bar():  counts rows automatically</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="co"># fct_infreq: reorder factor levels based on the frequency of values</span></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(motoinsu, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">fct_infreq</span>(vehicle_brand))) <span class="sc">+</span></span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">after_stat</span>(count<span class="sc">/</span><span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>)), <span class="at">fill =</span> <span class="st">"steelblue"</span>) <span class="sc">+</span></span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">after_stat</span>(count<span class="sc">/</span><span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>),</span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>                <span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(<span class="fu">after_stat</span>(count<span class="sc">/</span><span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>), <span class="dv">1</span>), <span class="st">"%"</span>)),</span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">stat =</span> <span class="st">"count"</span>, <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Distribution of Vehicle Brand"</span>, <span class="at">x =</span> <span class="st">"Vehicle Brand"</span>, <span class="at">y =</span> <span class="st">"Percentage (%)"</span>) <span class="sc">+</span></span>
-<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># gom_bar():  counts rows automatically</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="co"># fct_infreq: reorder factor levels based on the frequency of values</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(motoinsu, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">fct_infreq</span>(vehicle_brand))) <span class="sc">+</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">after_stat</span>(count<span class="sc">/</span><span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>)), <span class="at">fill =</span> <span class="st">"steelblue"</span>) <span class="sc">+</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">after_stat</span>(count<span class="sc">/</span><span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>),</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>                <span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(<span class="fu">after_stat</span>(count<span class="sc">/</span><span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>), <span class="dv">1</span>), <span class="st">"%"</span>)),</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">stat =</span> <span class="st">"count"</span>, <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Distribution of Vehicle Brand"</span>, <span class="at">x =</span> <span class="st">"Vehicle Brand"</span>, <span class="at">y =</span> <span class="st">"Percentage (%)"</span>) <span class="sc">+</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1372,23 +1279,26 @@ Tip
 </div>
 <p>Then plot them by distribution.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Bin</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>top_brands <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"RENAULT"</span>, <span class="st">"CITROEN"</span>, <span class="st">"PEUGEOT"</span>, <span class="st">"VOLKSWAGEN"</span>, <span class="st">"FORD"</span>, <span class="st">"SEAT"</span>, <span class="st">"OPEL"</span>)</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>motoinsu <span class="ot">&lt;-</span> motoinsu <span class="sc">%&gt;%</span></span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">vehicle_brand_grouped =</span> <span class="fu">fct_other</span>(vehicle_brand, </span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">keep =</span> top_brands, </span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">other_level =</span> <span class="st">"Others"</span>))</span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Draw chart</span></span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(motoinsu, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">fct_infreq</span>(vehicle_brand_grouped))) <span class="sc">+</span></span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">after_stat</span>(count<span class="sc">/</span><span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>)), <span class="at">fill =</span> <span class="st">"steelblue"</span>) <span class="sc">+</span></span>
-<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">after_stat</span>(count<span class="sc">/</span><span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>),</span>
-<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>                <span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(<span class="fu">after_stat</span>(count<span class="sc">/</span><span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>), <span class="dv">1</span>), <span class="st">"%"</span>)),</span>
-<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>            <span class="at">stat =</span> <span class="st">"count"</span>, <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Distribution of Vehicle Brand"</span>, <span class="at">x =</span> <span class="st">"Vehicle Brand"</span>, <span class="at">y =</span> <span class="st">"Percentage (%)"</span>) <span class="sc">+</span></span>
-<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Bin</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>top_brands <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"RENAULT"</span>, <span class="st">"CITROEN"</span>, <span class="st">"PEUGEOT"</span>, <span class="st">"VOLKSWAGEN"</span>, <span class="st">"FORD"</span>, <span class="st">"SEAT"</span>, <span class="st">"OPEL"</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>motoinsu <span class="ot">&lt;-</span> motoinsu <span class="sc">%&gt;%</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">vehicle_brand_grouped =</span> <span class="fu">fct_other</span>(vehicle_brand, </span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">keep =</span> top_brands, </span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">other_level =</span> <span class="st">"Others"</span>))</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Draw chart</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(motoinsu, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">fct_infreq</span>(vehicle_brand_grouped))) <span class="sc">+</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">after_stat</span>(count<span class="sc">/</span><span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>)), <span class="at">fill =</span> <span class="st">"steelblue"</span>) <span class="sc">+</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">after_stat</span>(count<span class="sc">/</span><span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>),</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>                <span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(<span class="fu">after_stat</span>(count<span class="sc">/</span><span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>), <span class="dv">1</span>), <span class="st">"%"</span>)),</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>            <span class="at">stat =</span> <span class="st">"count"</span>, <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Distribution of Vehicle Brand"</span>, <span class="at">x =</span> <span class="st">"Vehicle Brand"</span>, <span class="at">y =</span> <span class="st">"Percentage (%)"</span>) <span class="sc">+</span></span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1420,17 +1330,20 @@ Tip
 <h3 class="anchored" data-anchor-id="numerical-variables">Numerical variables</h3>
 <p>Driver &amp; Vehicle Distributions</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>num_vars <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"driver_age"</span>, <span class="st">"vehicle_age"</span>, <span class="st">"age_driving_licence"</span>,</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>              <span class="st">"vehicle_value"</span>, <span class="st">"power_to_weight_ratio"</span>)</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>plots <span class="ot">&lt;-</span> <span class="fu">lapply</span>(num_vars, <span class="cf">function</span>(col) {</span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(motoinsu, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">as.numeric</span>(<span class="sc">!!</span><span class="fu">sym</span>(col)))) <span class="sc">+</span> <span class="co"># as.numeric() inside aes() forces any discrete/factor columns to be treated as continuous</span></span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_histogram</span>(<span class="at">fill =</span> <span class="st">"steelblue"</span>, <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">bins =</span> <span class="dv">30</span>) <span class="sc">+</span></span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Distribution of"</span>, col), <span class="at">x =</span> col, <span class="at">y =</span> <span class="st">"Count"</span>) <span class="sc">+</span></span>
-<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>()</span>
-<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a><span class="fu">wrap_plots</span>(plots, <span class="at">ncol =</span> <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>num_vars <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"driver_age"</span>, <span class="st">"vehicle_age"</span>, <span class="st">"age_driving_licence"</span>,</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>              <span class="st">"vehicle_value"</span>, <span class="st">"power_to_weight_ratio"</span>)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>plots <span class="ot">&lt;-</span> <span class="fu">lapply</span>(num_vars, <span class="cf">function</span>(col) {</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(motoinsu, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">as.numeric</span>(<span class="sc">!!</span><span class="fu">sym</span>(col)))) <span class="sc">+</span> <span class="co"># as.numeric() inside aes() forces any discrete/factor columns to be treated as continuous</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_histogram</span>(<span class="at">fill =</span> <span class="st">"steelblue"</span>, <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">bins =</span> <span class="dv">30</span>) <span class="sc">+</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Distribution of"</span>, col), <span class="at">x =</span> col, <span class="at">y =</span> <span class="st">"Count"</span>) <span class="sc">+</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>()</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="fu">wrap_plots</span>(plots, <span class="at">ncol =</span> <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1468,21 +1381,24 @@ Tip
 </div>
 <p>Premium, Claims &amp; Exposure Distributions</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>num_vars <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"total_premium"</span>, <span class="st">"liability_premium"</span>, <span class="st">"property_damage_premium"</span>,</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>              <span class="st">"theft_premium"</span>, <span class="st">"fire_premium"</span>, <span class="st">"glass_premium"</span>,</span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>              <span class="st">"legal_protection_premium"</span>, <span class="st">"occupants_premium"</span>,</span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>              <span class="st">"total_claims"</span>, <span class="st">"liability_claims"</span>, <span class="st">"property_claims"</span>,</span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>              <span class="st">"total_incurred"</span>, <span class="st">"liability_incurred"</span>, <span class="st">"property_incurred"</span>,</span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>              <span class="st">"total_exposure"</span>, <span class="st">"liability_exposure"</span>)</span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>plots <span class="ot">&lt;-</span> <span class="fu">lapply</span>(num_vars, <span class="cf">function</span>(col) {</span>
-<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(motoinsu, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">as.numeric</span>(<span class="sc">!!</span><span class="fu">sym</span>(col)))) <span class="sc">+</span> <span class="co"># as.numeric() inside aes() forces any discrete/factor columns to be treated as continuous</span></span>
-<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_histogram</span>(<span class="at">fill =</span> <span class="st">"steelblue"</span>, <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">bins =</span> <span class="dv">30</span>) <span class="sc">+</span></span>
-<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Distribution of"</span>, col), <span class="at">x =</span> col, <span class="at">y =</span> <span class="st">"Count"</span>) <span class="sc">+</span></span>
-<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>()</span>
-<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a><span class="fu">wrap_plots</span>(plots, <span class="at">ncol =</span> <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>num_vars <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"total_premium"</span>, <span class="st">"liability_premium"</span>, <span class="st">"property_damage_premium"</span>,</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>              <span class="st">"theft_premium"</span>, <span class="st">"fire_premium"</span>, <span class="st">"glass_premium"</span>,</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>              <span class="st">"legal_protection_premium"</span>, <span class="st">"occupants_premium"</span>,</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>              <span class="st">"total_claims"</span>, <span class="st">"liability_claims"</span>, <span class="st">"property_claims"</span>,</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>              <span class="st">"total_incurred"</span>, <span class="st">"liability_incurred"</span>, <span class="st">"property_incurred"</span>,</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>              <span class="st">"total_exposure"</span>, <span class="st">"liability_exposure"</span>)</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>plots <span class="ot">&lt;-</span> <span class="fu">lapply</span>(num_vars, <span class="cf">function</span>(col) {</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(motoinsu, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">as.numeric</span>(<span class="sc">!!</span><span class="fu">sym</span>(col)))) <span class="sc">+</span> <span class="co"># as.numeric() inside aes() forces any discrete/factor columns to be treated as continuous</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_histogram</span>(<span class="at">fill =</span> <span class="st">"steelblue"</span>, <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">bins =</span> <span class="dv">30</span>) <span class="sc">+</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Distribution of"</span>, col), <span class="at">x =</span> col, <span class="at">y =</span> <span class="st">"Count"</span>) <span class="sc">+</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>()</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a><span class="fu">wrap_plots</span>(plots, <span class="at">ncol =</span> <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1538,26 +1454,29 @@ Tip
 <h3 class="anchored" data-anchor-id="profitability-analysis-incurredclaims-by-policy-type">Profitability Analysis: Incurred/Claims by Policy Type</h3>
 <p>We using boxplot chart to show relationship of <code>total_incurred</code> by <code>policy_type</code>. Because numerical variables here are right-skewed with a dozen of zero and with long tail with very large number, scale_y_log10() is used to spaces them logarithmically while maintains real values. We will calculate median filtering out zero values.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>x_var <span class="ot">&lt;-</span> <span class="st">"policy_type"</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>y_var <span class="ot">&lt;-</span> <span class="st">"total_incurred"</span></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>median_labels <span class="ot">&lt;-</span> motoinsu <span class="sc">%&gt;%</span></span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!!</span><span class="fu">sym</span>(y_var) <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span>         </span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="sc">!!</span><span class="fu">sym</span>(x_var)) <span class="sc">%&gt;%</span></span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">med =</span> <span class="fu">median</span>(<span class="sc">!!</span><span class="fu">sym</span>(y_var)))</span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>motoinsu <span class="sc">%&gt;%</span></span>
-<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!!</span><span class="fu">sym</span>(y_var) <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">y =</span> <span class="sc">!!</span><span class="fu">sym</span>(y_var), <span class="at">x =</span> <span class="sc">!!</span><span class="fu">sym</span>(x_var), <span class="at">fill =</span> <span class="sc">!!</span><span class="fu">sym</span>(x_var))) <span class="sc">+</span></span>
-<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">outlier.alpha =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
-<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_label</span>(<span class="at">data =</span> median_labels,</span>
-<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">x =</span> <span class="sc">!!</span><span class="fu">sym</span>(x_var), <span class="at">y =</span> med,</span>
-<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>                 <span class="at">label =</span> scales<span class="sc">::</span><span class="fu">comma</span>(<span class="fu">round</span>(med, <span class="dv">0</span>))),</span>
-<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>             <span class="at">fill =</span> <span class="st">"white"</span>, <span class="at">size =</span> <span class="dv">3</span>, <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_log10</span>(<span class="at">labels =</span> scales<span class="sc">::</span>comma) <span class="sc">+</span></span>
-<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Boxplot of"</span>, y_var, <span class="st">"by"</span>, x_var),</span>
-<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> x_var, <span class="at">y =</span> <span class="fu">paste</span>(y_var, <span class="st">"(log scale)"</span>)) <span class="sc">+</span></span>
-<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>x_var <span class="ot">&lt;-</span> <span class="st">"policy_type"</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>y_var <span class="ot">&lt;-</span> <span class="st">"total_incurred"</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>median_labels <span class="ot">&lt;-</span> motoinsu <span class="sc">%&gt;%</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!!</span><span class="fu">sym</span>(y_var) <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span>         </span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="sc">!!</span><span class="fu">sym</span>(x_var)) <span class="sc">%&gt;%</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">med =</span> <span class="fu">median</span>(<span class="sc">!!</span><span class="fu">sym</span>(y_var)))</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>motoinsu <span class="sc">%&gt;%</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!!</span><span class="fu">sym</span>(y_var) <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">y =</span> <span class="sc">!!</span><span class="fu">sym</span>(y_var), <span class="at">x =</span> <span class="sc">!!</span><span class="fu">sym</span>(x_var), <span class="at">fill =</span> <span class="sc">!!</span><span class="fu">sym</span>(x_var))) <span class="sc">+</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">outlier.alpha =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_label</span>(<span class="at">data =</span> median_labels,</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">x =</span> <span class="sc">!!</span><span class="fu">sym</span>(x_var), <span class="at">y =</span> med,</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>                 <span class="at">label =</span> scales<span class="sc">::</span><span class="fu">comma</span>(<span class="fu">round</span>(med, <span class="dv">0</span>))),</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>             <span class="at">fill =</span> <span class="st">"white"</span>, <span class="at">size =</span> <span class="dv">3</span>, <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_log10</span>(<span class="at">labels =</span> scales<span class="sc">::</span>comma) <span class="sc">+</span></span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Boxplot of"</span>, y_var, <span class="st">"by"</span>, x_var),</span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> x_var, <span class="at">y =</span> <span class="fu">paste</span>(y_var, <span class="st">"(log scale)"</span>)) <span class="sc">+</span></span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1585,26 +1504,29 @@ Tip
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>x_var <span class="ot">&lt;-</span> <span class="st">"policy_type"</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>y_var <span class="ot">&lt;-</span> <span class="st">"total_claims"</span></span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>median_labels <span class="ot">&lt;-</span> motoinsu <span class="sc">%&gt;%</span></span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!!</span><span class="fu">sym</span>(y_var) <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span>         </span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="sc">!!</span><span class="fu">sym</span>(x_var)) <span class="sc">%&gt;%</span></span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">med =</span> <span class="fu">median</span>(<span class="sc">!!</span><span class="fu">sym</span>(y_var)))</span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>motoinsu <span class="sc">%&gt;%</span></span>
-<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!!</span><span class="fu">sym</span>(y_var) <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">y =</span> <span class="sc">!!</span><span class="fu">sym</span>(y_var), <span class="at">x =</span> <span class="sc">!!</span><span class="fu">sym</span>(x_var), <span class="at">fill =</span> <span class="sc">!!</span><span class="fu">sym</span>(x_var))) <span class="sc">+</span></span>
-<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">outlier.alpha =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
-<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_label</span>(<span class="at">data =</span> median_labels,</span>
-<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">x =</span> <span class="sc">!!</span><span class="fu">sym</span>(x_var), <span class="at">y =</span> med,</span>
-<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>                 <span class="at">label =</span> scales<span class="sc">::</span><span class="fu">comma</span>(<span class="fu">round</span>(med, <span class="dv">0</span>))),</span>
-<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>             <span class="at">fill =</span> <span class="st">"white"</span>, <span class="at">size =</span> <span class="dv">3</span>, <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_log10</span>(<span class="at">labels =</span> scales<span class="sc">::</span>comma) <span class="sc">+</span></span>
-<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Boxplot of"</span>, y_var, <span class="st">"by"</span>, x_var),</span>
-<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> x_var, <span class="at">y =</span> <span class="fu">paste</span>(y_var, <span class="st">"(log scale)"</span>)) <span class="sc">+</span></span>
-<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>x_var <span class="ot">&lt;-</span> <span class="st">"policy_type"</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>y_var <span class="ot">&lt;-</span> <span class="st">"total_claims"</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>median_labels <span class="ot">&lt;-</span> motoinsu <span class="sc">%&gt;%</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!!</span><span class="fu">sym</span>(y_var) <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span>         </span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="sc">!!</span><span class="fu">sym</span>(x_var)) <span class="sc">%&gt;%</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">med =</span> <span class="fu">median</span>(<span class="sc">!!</span><span class="fu">sym</span>(y_var)))</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>motoinsu <span class="sc">%&gt;%</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!!</span><span class="fu">sym</span>(y_var) <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">y =</span> <span class="sc">!!</span><span class="fu">sym</span>(y_var), <span class="at">x =</span> <span class="sc">!!</span><span class="fu">sym</span>(x_var), <span class="at">fill =</span> <span class="sc">!!</span><span class="fu">sym</span>(x_var))) <span class="sc">+</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">outlier.alpha =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_label</span>(<span class="at">data =</span> median_labels,</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">x =</span> <span class="sc">!!</span><span class="fu">sym</span>(x_var), <span class="at">y =</span> med,</span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>                 <span class="at">label =</span> scales<span class="sc">::</span><span class="fu">comma</span>(<span class="fu">round</span>(med, <span class="dv">0</span>))),</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>             <span class="at">fill =</span> <span class="st">"white"</span>, <span class="at">size =</span> <span class="dv">3</span>, <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_log10</span>(<span class="at">labels =</span> scales<span class="sc">::</span>comma) <span class="sc">+</span></span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Boxplot of"</span>, y_var, <span class="st">"by"</span>, x_var),</span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> x_var, <span class="at">y =</span> <span class="fu">paste</span>(y_var, <span class="st">"(log scale)"</span>)) <span class="sc">+</span></span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1650,22 +1572,25 @@ Warning
 <h3 class="anchored" data-anchor-id="temporal-analysis-performance-by-year">Temporal Analysis: performance by Year</h3>
 <p>With line chart, we perform average of incurred amount, average of premium and loss ratio (total_incurred/total_premium) by year to see the temporal changes.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>motoinsu <span class="sc">%&gt;%</span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(year) <span class="sc">%&gt;%</span></span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">avg_incurred =</span> <span class="fu">mean</span>(total_incurred, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">avg_premium  =</span> <span class="fu">mean</span>(total_premium, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">loss_ratio   =</span> <span class="fu">sum</span>(total_incurred)<span class="sc">/</span><span class="fu">sum</span>(total_premium)<span class="sc">*</span><span class="dv">100</span></span>
-<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="sc">-</span>year, <span class="at">names_to =</span> <span class="st">"metric"</span>, <span class="at">values_to =</span> <span class="st">"value"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">as.numeric</span>(<span class="fu">as.character</span>(year)), <span class="at">y =</span> value, </span>
-<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>             <span class="at">color =</span> metric, <span class="at">group =</span> metric)) <span class="sc">+</span></span>
-<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
-<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>metric, <span class="at">scales =</span> <span class="st">"free_y"</span>, <span class="at">nrow =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">2022</span>, <span class="dv">2023</span>, <span class="dv">2024</span>)) <span class="sc">+</span></span>
-<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Portfolio Performance Trend 2022-2024"</span>, <span class="at">x =</span> <span class="st">"Year"</span>, <span class="at">y =</span> <span class="st">"Value"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>motoinsu <span class="sc">%&gt;%</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(year) <span class="sc">%&gt;%</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">avg_incurred =</span> <span class="fu">mean</span>(total_incurred, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">avg_premium  =</span> <span class="fu">mean</span>(total_premium, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">loss_ratio   =</span> <span class="fu">sum</span>(total_incurred)<span class="sc">/</span><span class="fu">sum</span>(total_premium)<span class="sc">*</span><span class="dv">100</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="sc">-</span>year, <span class="at">names_to =</span> <span class="st">"metric"</span>, <span class="at">values_to =</span> <span class="st">"value"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">as.numeric</span>(<span class="fu">as.character</span>(year)), <span class="at">y =</span> value, </span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>             <span class="at">color =</span> metric, <span class="at">group =</span> metric)) <span class="sc">+</span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>metric, <span class="at">scales =</span> <span class="st">"free_y"</span>, <span class="at">nrow =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">2022</span>, <span class="dv">2023</span>, <span class="dv">2024</span>)) <span class="sc">+</span></span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Portfolio Performance Trend 2022-2024"</span>, <span class="at">x =</span> <span class="st">"Year"</span>, <span class="at">y =</span> <span class="st">"Value"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1708,18 +1633,29 @@ Warning
 <section id="loss-ratio-analysis-loss_ratio-by-policy_typebonus_score" class="level3">
 <h3 class="anchored" data-anchor-id="loss-ratio-analysis-loss_ratio-by-policy_typebonus_score">Loss Ratio Analysis: loss_ratio by policy_type/bonus_score</h3>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>group_var <span class="ot">&lt;-</span> <span class="st">"policy_type"</span>  </span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>motoinsu <span class="sc">%&gt;%</span></span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="sc">!!</span><span class="fu">sym</span>(group_var)) <span class="sc">%&gt;%</span></span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">loss_ratio =</span> <span class="fu">sum</span>(total_incurred)<span class="sc">/</span><span class="fu">sum</span>(total_premium)<span class="sc">*</span><span class="dv">100</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(<span class="sc">!!</span><span class="fu">sym</span>(group_var), loss_ratio), <span class="at">y =</span> loss_ratio, <span class="at">fill =</span> <span class="sc">!!</span><span class="fu">sym</span>(group_var))) <span class="sc">+</span></span>
-<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
-<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(loss_ratio, <span class="dv">1</span>), <span class="st">"%"</span>)), <span class="at">hjust =</span> <span class="sc">-</span><span class="fl">0.2</span>) <span class="sc">+</span></span>
-<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
-<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.15</span>))) <span class="sc">+</span></span>
-<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Loss Ratio by"</span>, group_var)) <span class="sc">+</span></span>
-<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>group_var <span class="ot">&lt;-</span> <span class="st">"policy_type"</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>loss_data <span class="ot">&lt;-</span> motoinsu <span class="sc">%&gt;%</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="sc">!!</span><span class="fu">sym</span>(group_var)) <span class="sc">%&gt;%</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">loss_ratio =</span> <span class="fu">sum</span>(total_incurred)<span class="sc">/</span><span class="fu">sum</span>(total_premium)<span class="sc">*</span><span class="dv">100</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">status =</span> <span class="fu">ifelse</span>(loss_ratio <span class="sc">&gt;=</span> <span class="dv">70</span>, <span class="st">"Above 70%"</span>, <span class="st">"Below 70%"</span>))</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(loss_data, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(<span class="sc">!!</span><span class="fu">sym</span>(group_var), loss_ratio), </span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>                       <span class="at">y =</span> loss_ratio, <span class="at">fill =</span> status)) <span class="sc">+</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">70</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"grey30"</span>, <span class="at">linewidth =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> <span class="fl">0.5</span>, <span class="at">y =</span> <span class="dv">72</span>, <span class="at">label =</span> <span class="st">"70% Benchmark"</span>, </span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>           <span class="at">hjust =</span> <span class="dv">0</span>, <span class="at">size =</span> <span class="fl">3.5</span>, <span class="at">color =</span> <span class="st">"grey30"</span>) <span class="sc">+</span></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(loss_ratio, <span class="dv">1</span>), <span class="st">"%"</span>)), <span class="at">hjust =</span> <span class="sc">-</span><span class="fl">0.2</span>, <span class="at">size =</span> <span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Above 70%"</span> <span class="ot">=</span> <span class="st">"#F1948A"</span>, <span class="st">"Below 70%"</span> <span class="ot">=</span> <span class="st">"#AED6F1"</span>)) <span class="sc">+</span></span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.15</span>))) <span class="sc">+</span></span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Loss Ratio by"</span>, group_var), <span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Loss Ratio (%)"</span>) <span class="sc">+</span></span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1739,30 +1675,42 @@ Warning
 </div>
 <div class="callout-body-container callout-body">
 <ul>
-<li>COMP_N is the most unprofitable product at 93%, nearly breaking even on every euro collected - immediate repricing is needed. The 19-point gap between COMP_N (93%) and COMP_E (73.9%) demonstrates that the excess/deductible is highly effective at reducing claims cost.</li>
-<li>TP is the most profitable at 54.6%, low claim frequency from limited coverage scope offsets its high individual claim severity.</li>
-<li>TPG (69.6%) is surprisingly less profitable than CC (63.5%) despite simpler coverage, suggesting glass replacement costs are underpriced relative to their frequency.</li>
-<li>Overall, three out of five products sit above the 60-70% healthy benchmark, consistent with the worsening loss ratio trend seen in the temporal analysis.</li>
+<li>COMP_N is the most unprofitable product at 93.5%, far exceeding the 70% benchmark by 23.5 percentage points. Immediate repricing is needed. The 19 point gap between COMP_N (93.5%) and COMP_E (73.9%) demonstrates that the excess/deductible is highly effective at reducing claims cost.</li>
+<li>TP is the most profitable at 54.6%, sitting 15.4 points below the benchmark. Low claim frequency from limited coverage scope offsets its high individual claim severity.</li>
+<li>TPG (69.6%) falls just below the 70% threshold, appearing healthy but barely so. It is surprisingly less profitable than CC (63.5%) despite simpler coverage, suggesting glass replacement costs are underpriced relative to their frequency.</li>
+<li>Overall, two out of five products (COMP_N and COMP_E) exceed the 70% healthy benchmark, signaling underpricing in comprehensive coverage. The remaining three sit below the line but CC and TPG are not far from crossing it, consistent with the worsening loss ratio trend seen in the temporal analysis.</li>
 </ul>
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>group_var <span class="ot">&lt;-</span> <span class="st">"bonus_score"</span> </span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>motoinsu <span class="sc">%&gt;%</span></span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="sc">!!</span><span class="fu">sym</span>(group_var)) <span class="sc">%&gt;%</span></span>
-<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">loss_ratio =</span> <span class="fu">sum</span>(total_incurred)<span class="sc">/</span><span class="fu">sum</span>(total_premium)<span class="sc">*</span><span class="dv">100</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(<span class="sc">!!</span><span class="fu">sym</span>(group_var), loss_ratio), <span class="at">y =</span> loss_ratio, <span class="at">fill =</span> <span class="sc">!!</span><span class="fu">sym</span>(group_var))) <span class="sc">+</span></span>
-<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
-<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(loss_ratio, <span class="dv">1</span>), <span class="st">"%"</span>)), <span class="at">hjust =</span> <span class="sc">-</span><span class="fl">0.2</span>) <span class="sc">+</span></span>
-<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
-<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.15</span>))) <span class="sc">+</span></span>
-<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Loss Ratio by"</span>, group_var)) <span class="sc">+</span></span>
-<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>group_var <span class="ot">&lt;-</span> <span class="st">"bonus_score"</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>bonus_colors <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"G"</span> <span class="ot">=</span> <span class="st">"#F5B7B1"</span>,  <span class="co"># light red</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B"</span> <span class="ot">=</span> <span class="st">"#E74C3C"</span>,  <span class="co"># medium red</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"N"</span> <span class="ot">=</span> <span class="st">"#922B21"</span>   <span class="co"># dark red</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>motoinsu <span class="sc">%&gt;%</span></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="sc">!!</span><span class="fu">sym</span>(group_var)) <span class="sc">%&gt;%</span></span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">loss_ratio =</span> <span class="fu">sum</span>(total_incurred)<span class="sc">/</span><span class="fu">sum</span>(total_premium)<span class="sc">*</span><span class="dv">100</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(<span class="sc">!!</span><span class="fu">sym</span>(group_var), loss_ratio), </span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>             <span class="at">y =</span> loss_ratio, <span class="at">fill =</span> <span class="sc">!!</span><span class="fu">sym</span>(group_var))) <span class="sc">+</span></span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(loss_ratio, <span class="dv">1</span>), <span class="st">"%"</span>)), <span class="at">hjust =</span> <span class="sc">-</span><span class="fl">0.2</span>, <span class="at">size =</span> <span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> bonus_colors) <span class="sc">+</span></span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.15</span>))) <span class="sc">+</span></span>
+<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Loss Ratio by"</span>, group_var), <span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Loss Ratio (%)"</span>) <span class="sc">+</span></span>
+<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Technical_Report_Experiment_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="1248"></p>
+<p><img src="Technical_Report_Experiment_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="1152"></p>
 </figure>
 </div>
 </div>
@@ -1786,11 +1734,14 @@ Warning
 <h3 class="anchored" data-anchor-id="density-plot-driver-age-by-bonus-score">Density plot: Driver Age by Bonus Score</h3>
 <p>We use density plot to show if young/new drivers skew toward N/B scores.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(motoinsu, </span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> driver_age, </span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">fill =</span> bonus_score)) <span class="sc">+</span></span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
-<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(motoinsu, </span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> driver_age, </span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">fill =</span> bonus_score)) <span class="sc">+</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1830,24 +1781,151 @@ Note
 </div>
 </div>
 </section>
-<section id="correlation-matrix" class="level3">
-<h3 class="anchored" data-anchor-id="correlation-matrix">Correlation Matrix</h3>
+<section id="violin-chart-by-premiumincurred-type" class="level3">
+<h3 class="anchored" data-anchor-id="violin-chart-by-premiumincurred-type">Violin Chart by Premium/Incurred Type</h3>
+<p>Because most optional coverages contain a large proportion of zero values (policies without that coverage), we exclude zeros and apply a log scale to better visualize the spread and shape of non zero premium distributions.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>ggstatsplot<span class="sc">::</span><span class="fu">ggcorrmat</span>(</span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> motoinsu, </span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">cor.vars =</span> <span class="fu">c</span>(total_premium, total_incurred, total_claims,</span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>               total_exposure, vehicle_value, driver_age,</span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>               vehicle_age, age_driving_licence, power_to_weight_ratio),</span>
-<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">title =</span> <span class="st">"Correlation Matrix of Key Variables"</span>,</span>
-<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">colors =</span> <span class="fu">c</span>(RColorBrewer<span class="sc">::</span><span class="fu">brewer.pal</span>(<span class="dv">3</span>, <span class="st">"BrBG"</span>)[<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>)]),</span>
-<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">ggcorrplot.args =</span> <span class="fu">list</span>(</span>
-<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">lab_size =</span> <span class="dv">4</span></span>
-<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>premium_vars <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"total_premium"</span>, <span class="st">"liability_premium"</span>, <span class="st">"property_damage_premium"</span>,</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>                   <span class="st">"theft_premium"</span>, <span class="st">"fire_premium"</span>, <span class="st">"glass_premium"</span>,</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>                   <span class="st">"legal_protection_premium"</span>, <span class="st">"occupants_premium"</span>)</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>premium_long <span class="ot">&lt;-</span> motoinsu <span class="sc">%&gt;%</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">all_of</span>(premium_vars)) <span class="sc">%&gt;%</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">everything</span>(), </span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_to =</span> <span class="st">"premium_type"</span>, </span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>               <span class="at">values_to =</span> <span class="st">"premium_value"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(premium_value <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>median_labels <span class="ot">&lt;-</span> premium_long <span class="sc">%&gt;%</span></span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(premium_type) <span class="sc">%&gt;%</span></span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">median_val =</span> <span class="fu">median</span>(premium_value))</span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(premium_long, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(premium_type, premium_value, <span class="at">FUN =</span> median), </span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a>                          <span class="at">y =</span> premium_value, <span class="at">fill =</span> premium_type)) <span class="sc">+</span></span>
+<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_violin</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">scale =</span> <span class="st">"width"</span>) <span class="sc">+</span></span>
+<span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">width =</span> <span class="fl">0.1</span>, <span class="at">outlier.alpha =</span> <span class="fl">0.1</span>) <span class="sc">+</span></span>
+<span id="cb27-20"><a href="#cb27-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_label</span>(<span class="at">data =</span> median_labels,</span>
+<span id="cb27-21"><a href="#cb27-21" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">x =</span> premium_type, <span class="at">y =</span> median_val,</span>
+<span id="cb27-22"><a href="#cb27-22" aria-hidden="true" tabindex="-1"></a>                 <span class="at">label =</span> <span class="fu">round</span>(median_val, <span class="dv">1</span>)),</span>
+<span id="cb27-23"><a href="#cb27-23" aria-hidden="true" tabindex="-1"></a>             <span class="at">hjust =</span> <span class="sc">-</span><span class="fl">0.2</span>, <span class="at">size =</span> <span class="fl">3.5</span>, <span class="at">fontface =</span> <span class="st">"bold"</span>,</span>
+<span id="cb27-24"><a href="#cb27-24" aria-hidden="true" tabindex="-1"></a>             <span class="at">fill =</span> <span class="st">"white"</span>, <span class="at">alpha =</span> <span class="fl">0.8</span>, <span class="at">label.size =</span> <span class="dv">0</span>,</span>
+<span id="cb27-25"><a href="#cb27-25" aria-hidden="true" tabindex="-1"></a>             <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb27-26"><a href="#cb27-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_log10</span>(<span class="at">labels =</span> scales<span class="sc">::</span>comma) <span class="sc">+</span></span>
+<span id="cb27-27"><a href="#cb27-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">"Pastel1"</span>) <span class="sc">+</span></span>
+<span id="cb27-28"><a href="#cb27-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb27-29"><a href="#cb27-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Distribution of Premium Types"</span>,</span>
+<span id="cb27-30"><a href="#cb27-30" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Violin + Boxplot (log scale, zero values excluded)"</span>,</span>
+<span id="cb27-31"><a href="#cb27-31" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Premium (log scale)"</span>) <span class="sc">+</span></span>
+<span id="cb27-32"><a href="#cb27-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb27-33"><a href="#cb27-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb27-34"><a href="#cb27-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"none"</span>,</span>
+<span id="cb27-35"><a href="#cb27-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"transparent"</span>, <span class="at">color =</span> <span class="cn">NA</span>),</span>
+<span id="cb27-36"><a href="#cb27-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"transparent"</span>, <span class="at">color =</span> <span class="cn">NA</span>)</span>
+<span id="cb27-37"><a href="#cb27-37" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Technical_Report_Experiment_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" width="768"></p>
+<p><img src="Technical_Report_Experiment_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>incurred_vars <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"total_incurred"</span>, <span class="st">"liability_incurred"</span>, <span class="st">"liability_property_incurred"</span>,</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"liability_injury_incurred"</span>, <span class="st">"property_incurred"</span>, <span class="st">"theft_incurred"</span>,</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"fire_incurred"</span>, <span class="st">"glass_incurred"</span>, <span class="st">"legal_protection_incurred"</span>,</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"occupants_incurred"</span>)</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>incurred_long <span class="ot">&lt;-</span> motoinsu <span class="sc">%&gt;%</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">all_of</span>(incurred_vars)) <span class="sc">%&gt;%</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">everything</span>(), </span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_to =</span> <span class="st">"incurred_type"</span>, </span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>               <span class="at">values_to =</span> <span class="st">"incurred_value"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(incurred_value <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>median_labels <span class="ot">&lt;-</span> incurred_long <span class="sc">%&gt;%</span></span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(incurred_type) <span class="sc">%&gt;%</span></span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">median_val =</span> <span class="fu">median</span>(incurred_value))</span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(incurred_long, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(incurred_type, incurred_value, <span class="at">FUN =</span> median), </span>
+<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a>                           <span class="at">y =</span> incurred_value, <span class="at">fill =</span> incurred_type)) <span class="sc">+</span></span>
+<span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_violin</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">scale =</span> <span class="st">"width"</span>) <span class="sc">+</span></span>
+<span id="cb28-20"><a href="#cb28-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">width =</span> <span class="fl">0.1</span>, <span class="at">outlier.alpha =</span> <span class="fl">0.1</span>) <span class="sc">+</span></span>
+<span id="cb28-21"><a href="#cb28-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_label</span>(<span class="at">data =</span> median_labels,</span>
+<span id="cb28-22"><a href="#cb28-22" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">x =</span> incurred_type, <span class="at">y =</span> median_val,</span>
+<span id="cb28-23"><a href="#cb28-23" aria-hidden="true" tabindex="-1"></a>                 <span class="at">label =</span> <span class="fu">round</span>(median_val, <span class="dv">1</span>)),</span>
+<span id="cb28-24"><a href="#cb28-24" aria-hidden="true" tabindex="-1"></a>             <span class="at">hjust =</span> <span class="sc">-</span><span class="fl">0.2</span>, <span class="at">size =</span> <span class="fl">3.5</span>, <span class="at">fontface =</span> <span class="st">"bold"</span>,</span>
+<span id="cb28-25"><a href="#cb28-25" aria-hidden="true" tabindex="-1"></a>             <span class="at">fill =</span> <span class="st">"white"</span>, <span class="at">alpha =</span> <span class="fl">0.8</span>, <span class="at">label.size =</span> <span class="dv">0</span>,</span>
+<span id="cb28-26"><a href="#cb28-26" aria-hidden="true" tabindex="-1"></a>             <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb28-27"><a href="#cb28-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_log10</span>(<span class="at">labels =</span> scales<span class="sc">::</span>comma) <span class="sc">+</span></span>
+<span id="cb28-28"><a href="#cb28-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">"Pastel2"</span>) <span class="sc">+</span></span>
+<span id="cb28-29"><a href="#cb28-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb28-30"><a href="#cb28-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Distribution of Incurred Loss Types"</span>,</span>
+<span id="cb28-31"><a href="#cb28-31" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Violin + Boxplot (log scale, zero values excluded)"</span>,</span>
+<span id="cb28-32"><a href="#cb28-32" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Incurred Loss (log scale)"</span>) <span class="sc">+</span></span>
+<span id="cb28-33"><a href="#cb28-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb28-34"><a href="#cb28-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb28-35"><a href="#cb28-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"none"</span>,</span>
+<span id="cb28-36"><a href="#cb28-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"transparent"</span>, <span class="at">color =</span> <span class="cn">NA</span>),</span>
+<span id="cb28-37"><a href="#cb28-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"transparent"</span>, <span class="at">color =</span> <span class="cn">NA</span>)</span>
+<span id="cb28-38"><a href="#cb28-38" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Technical_Report_Experiment_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Key abnormalities:</strong></p>
+<ul>
+<li><p><strong>Fire:</strong> Premium median = 1, incurred median = 1,522.9. A 1,500x gap, the most extreme mismatch. The premium violin is flat and concentrated while the incurred violin is the widest in the chart, showing highly unpredictable claim costs against nearly zero pricing.</p></li>
+<li><p><strong>Occupants:</strong> Premium median = 1.8, incurred median = 635.7. A 350x gap. Premium has the narrowest violin (zero risk differentiation), yet incurred shows a broad, boxy shape suggesting varied claim severity.</p></li>
+<li><p><strong>Glass:</strong> Incurred violin has a distinctive diamond/star shape with a tight cluster around 387, suggesting standardized repair costs (windshield replacement at fixed rates). Premium (15.7) is too low relative to this.</p></li>
+<li><p><strong>Theft:</strong> Premium violin is wide and spread (7.2 median) showing some risk differentiation, but incurred (310.4) has a compact rectangular shape, meaning theft claims tend to fall within a predictable cost band. The pricing variation does not match the claim pattern.</p></li>
+<li><p><strong>Legal protection:</strong> The only coverage where shapes are somewhat proportional. Both violins are compact and narrow, suggesting this is the best priced optional coverage.</p>
+<p><strong>➨ Overall pattern:</strong> Mandatory coverages (liability, property damage) show wide, well shaped violins on both sides, indicating mature risk based pricing. Optional coverages show flat/narrow premium violins against much larger and varied incurred violins, confirming systematic underpricing of add on products.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="correlation-matrix" class="level3">
+<h3 class="anchored" data-anchor-id="correlation-matrix">Correlation Matrix</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>ggstatsplot<span class="sc">::</span><span class="fu">ggcorrmat</span>(</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> motoinsu, </span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">cor.vars =</span> <span class="fu">c</span>(total_premium, total_incurred, total_claims,</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>               total_exposure, vehicle_value, driver_age,</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>               vehicle_age, age_driving_licence, power_to_weight_ratio),</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">title =</span> <span class="st">"Correlation Matrix of Key Variables"</span>,</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">colors =</span> <span class="fu">c</span>(RColorBrewer<span class="sc">::</span><span class="fu">brewer.pal</span>(<span class="dv">3</span>, <span class="st">"BrBG"</span>)[<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>)]),</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">ggcorrplot.args =</span> <span class="fu">list</span>(</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">lab_size =</span> <span class="dv">4</span></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Technical_Report_Experiment_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid figure-img" width="768"></p>
 </figure>
 </div>
 </div>
@@ -1864,14 +1942,14 @@ Note
 <div class="callout-body-container callout-body">
 <p><strong>Strong pairs:</strong></p>
 <ul>
-<li><p><code>vehicle_age</code> and <code>age_driving_licence</code> (0.86): nearly duplicate variables</p></li>
-<li><p><code>total_exposure</code> and <code>total_premium</code> (0.6): longer policies generate higher premiums, expected</p></li>
-<li><p><code>vehicle_value</code> and <code>total_premium</code> (0.32): surprisingly weak, pricing is not strongly value-driven</p></li>
+<li><code>vehicle_age</code> and <code>age_driving_licence</code> (0.86): nearly duplicate variables</li>
+<li><code>total_exposure</code> and <code>total_premium</code> (0.6): longer policies generate higher premiums, expected</li>
+<li><code>vehicle_value</code> and <code>total_premium</code> (0.32): surprisingly weak, pricing is not strongly value-driven</li>
 </ul>
 <p><strong>Negative relationships:</strong></p>
 <ul>
-<li><p><code>power_to_weight_ratio</code> and <code>vehicle_value</code> (-0.49): high-performance vehicles tend to be undervalued relative to their actual risk</p></li>
-<li><p><code>power_to_weight_ratio</code> and <code>age_driving_licence</code> (-0.18): younger licence holders gravitate toward higher-performance vehicles</p></li>
+<li><code>power_to_weight_ratio</code> and <code>vehicle_value</code> (-0.49): high-performance vehicles tend to be undervalued relative to their actual risk</li>
+<li><code>power_to_weight_ratio</code> and <code>age_driving_licence</code> (-0.18): younger licence holders gravitate toward higher-performance vehicles</li>
 </ul>
 </div>
 </div>
@@ -1896,18 +1974,21 @@ Warning
 <h3 class="anchored" data-anchor-id="heatmap-policy-type-vs-fuel-type">Heatmap: Policy type vs Fuel type</h3>
 <p>We use heatmap to visualize three variables.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>motoinsu <span class="sc">%&gt;%</span></span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(policy_type, fuel_type) <span class="sc">%&gt;%</span></span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">loss_ratio =</span> <span class="fu">sum</span>(total_incurred) <span class="sc">/</span> <span class="fu">sum</span>(total_premium) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> fuel_type, <span class="at">y =</span> policy_type, <span class="at">fill =</span> loss_ratio)) <span class="sc">+</span></span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_tile</span>() <span class="sc">+</span></span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> <span class="st">"white"</span>, <span class="at">high =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
-<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Loss Ratio Heatmap: Policy Type vs Fuel Type"</span>) <span class="sc">+</span></span>
-<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>motoinsu <span class="sc">%&gt;%</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(policy_type, fuel_type) <span class="sc">%&gt;%</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">loss_ratio =</span> <span class="fu">sum</span>(total_incurred) <span class="sc">/</span> <span class="fu">sum</span>(total_premium) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> fuel_type, <span class="at">y =</span> policy_type, <span class="at">fill =</span> loss_ratio)) <span class="sc">+</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_tile</span>() <span class="sc">+</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> <span class="st">"white"</span>, <span class="at">high =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Loss Ratio Heatmap: Policy Type vs Fuel Type"</span>) <span class="sc">+</span></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Technical_Report_Experiment_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="Technical_Report_Experiment_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -1933,34 +2014,37 @@ Warning
 <h3 class="anchored" data-anchor-id="bubble-chart-loss-ratio-by-vehicle-brand">Bubble chart: Loss ratio by Vehicle brand</h3>
 <p>Let’s see the which vehicle brand has higher loss ratio. Note that we remove Others category from Vehicle brand group.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>motoinsu <span class="sc">%&gt;%</span></span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(vehicle_brand_grouped) <span class="sc">%&gt;%</span></span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">loss_ratio =</span> <span class="fu">sum</span>(total_incurred)<span class="sc">/</span><span class="fu">sum</span>(total_premium)<span class="sc">*</span><span class="dv">100</span>,</span>
-<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_premium =</span> <span class="fu">sum</span>(total_premium)</span>
-<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(vehicle_brand_grouped <span class="sc">!=</span> <span class="st">"Others"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> total_premium, <span class="at">y =</span> loss_ratio,    <span class="co"># x = total_premium now</span></span>
-<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>             <span class="at">size =</span> total_premium, <span class="at">color =</span> vehicle_brand_grouped)) <span class="sc">+</span></span>
-<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
-<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> vehicle_brand_grouped),</span>
-<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">1.5</span>, <span class="at">size =</span> <span class="dv">3</span>, <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
-<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">paste0</span>(<span class="st">"€"</span>, scales<span class="sc">::</span><span class="fu">comma</span>(<span class="fu">round</span>(total_premium<span class="sc">/</span><span class="fl">1e6</span>, <span class="dv">1</span>)), <span class="st">"M"</span>)),</span>
-<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>            <span class="at">vjust =</span> <span class="fl">2.5</span>, <span class="at">size =</span> <span class="fl">2.8</span>, <span class="at">color =</span> <span class="st">"grey30"</span>) <span class="sc">+</span></span>
-<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>comma) <span class="sc">+</span>     <span class="co"># x-axis shows premium numbers like y-axis</span></span>
-<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_size_continuous</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">18</span>), <span class="at">guide =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
-<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Loss Ratio vs Vehicle Brand (sized by Total Premium)"</span>,</span>
-<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Total Premium (€)"</span>, <span class="at">y =</span> <span class="st">"Loss Ratio (%)"</span></span>
-<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb32-23"><a href="#cb32-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"none"</span></span>
-<span id="cb32-24"><a href="#cb32-24" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>motoinsu <span class="sc">%&gt;%</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(vehicle_brand_grouped) <span class="sc">%&gt;%</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">loss_ratio =</span> <span class="fu">sum</span>(total_incurred)<span class="sc">/</span><span class="fu">sum</span>(total_premium)<span class="sc">*</span><span class="dv">100</span>,</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_premium =</span> <span class="fu">sum</span>(total_premium)</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(vehicle_brand_grouped <span class="sc">!=</span> <span class="st">"Others"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> total_premium, <span class="at">y =</span> loss_ratio,    <span class="co"># x = total_premium now</span></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>             <span class="at">size =</span> total_premium, <span class="at">color =</span> vehicle_brand_grouped)) <span class="sc">+</span></span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> vehicle_brand_grouped),</span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">1.5</span>, <span class="at">size =</span> <span class="dv">3</span>, <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">paste0</span>(<span class="st">"€"</span>, scales<span class="sc">::</span><span class="fu">comma</span>(<span class="fu">round</span>(total_premium<span class="sc">/</span><span class="fl">1e6</span>, <span class="dv">1</span>)), <span class="st">"M"</span>)),</span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>            <span class="at">vjust =</span> <span class="fl">2.5</span>, <span class="at">size =</span> <span class="fl">2.8</span>, <span class="at">color =</span> <span class="st">"grey30"</span>) <span class="sc">+</span></span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>comma) <span class="sc">+</span>     <span class="co"># x-axis shows premium numbers like y-axis</span></span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_size_continuous</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">18</span>), <span class="at">guide =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Loss Ratio vs Vehicle Brand (sized by Total Premium)"</span>,</span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Total Premium (€)"</span>, <span class="at">y =</span> <span class="st">"Loss Ratio (%)"</span></span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"none"</span></span>
+<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Technical_Report_Experiment_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid figure-img" width="768"></p>
+<p><img src="Technical_Report_Experiment_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid figure-img" width="768"></p>
 </figure>
 </div>
 </div>
@@ -1991,6 +2075,62 @@ Note
 </ul>
 </div>
 </div>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>anim_data <span class="ot">&lt;-</span> motoinsu <span class="sc">%&gt;%</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(vehicle_brand_grouped <span class="sc">!=</span> <span class="st">"Others"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(year, vehicle_brand_grouped) <span class="sc">%&gt;%</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">loss_ratio =</span> <span class="fu">sum</span>(total_incurred) <span class="sc">/</span> <span class="fu">sum</span>(total_premium) <span class="sc">*</span> <span class="dv">100</span>,</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">year_num =</span> <span class="fu">as.numeric</span>(<span class="fu">as.character</span>(year)))</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(anim_data, <span class="fu">aes</span>(<span class="at">x =</span> year_num, <span class="at">y =</span> loss_ratio, </span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>                            <span class="at">color =</span> vehicle_brand_grouped,</span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>                            <span class="at">group =</span> vehicle_brand_grouped)) <span class="sc">+</span></span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> vehicle_brand_grouped),</span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a>            <span class="at">vjust =</span> <span class="fl">1.5</span>, <span class="at">size =</span> <span class="dv">3</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>, <span class="at">fontface =</span> <span class="st">"bold"</span>) <span class="sc">+</span></span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">70</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"grey40"</span>) <span class="sc">+</span></span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">2022</span>, <span class="dv">2023</span>, <span class="dv">2024</span>)) <span class="sc">+</span></span>
+<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Loss Ratio Trend by Vehicle Brand (2022–2024)"</span>,</span>
+<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Year"</span>, <span class="at">y =</span> <span class="st">"Loss Ratio (%)"</span>, <span class="at">color =</span> <span class="st">"Brand"</span>) <span class="sc">+</span></span>
+<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transition_reveal</span>(year_num) <span class="sc">+</span></span>
+<span id="cb32-23"><a href="#cb32-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ease_aes</span>(<span class="st">"linear"</span>)</span>
+<span id="cb32-24"><a href="#cb32-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-25"><a href="#cb32-25" aria-hidden="true" tabindex="-1"></a><span class="fu">animate</span>(p, <span class="at">nframes =</span> <span class="dv">60</span>, <span class="at">fps =</span> <span class="dv">10</span>, <span class="at">width =</span> <span class="dv">800</span>, <span class="at">height =</span> <span class="dv">500</span>,</span>
+<span id="cb32-26"><a href="#cb32-26" aria-hidden="true" tabindex="-1"></a>        <span class="at">renderer =</span> <span class="fu">gifski_renderer</span>(),</span>
+<span id="cb32-27"><a href="#cb32-27" aria-hidden="true" tabindex="-1"></a>        <span class="at">res =</span> <span class="dv">100</span>, <span class="at">units =</span> <span class="st">"px"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Technical_Report_Experiment_files/figure-html/unnamed-chunk-27-1.gif" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><p>Across three year window, <strong>RENAULT and PEUGEOT</strong> are the most stable, staying in the 63 to 68% range. They are the safest brands in the portfolio and should be prioritized for customer retention.</p></li>
+<li><p><strong>OPEL</strong> continues to show warning to be the highest volatile brand. This instability suggests a small portfolio where a few large claims can swing the ratio wildly. Unpredictable and hard to price.</p></li>
+<li><p><strong>SEAT</strong> is consistently the worst among mid range brands, hovering around 70 to 80% across all three years. It never dips below the benchmark, confirming it is structurally underpriced.</p></li>
+</ul>
+</div>
+</div>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -2002,13 +2142,16 @@ Warning
 </div>
 <div class="callout-body-container callout-body">
 <ul>
-<li>Prioritize <strong>RENAULT and PEUGEOT</strong> for retention — high volume, low risk.</li>
-<li>Review <strong>OPEL and SEAT</strong> pricing urgently — they generate the least revenue while being the most unprofitable.</li>
+<li><strong>RENAULT and PEUGEOT</strong> are the most valuable brands, combining high premium volume with the lowest and most stable loss ratios across all three years. These should be prioritized for customer retention.</li>
+<li><strong>OPEL and SEAT</strong> generate the least revenue while being the most unprofitable. OPEL is extremely volatile year to year, while SEAT is consistently above the benchmark, confirming structural underpricing. Both require urgent pricing review.</li>
 </ul>
 </div>
 </div>
-<pre><code></code></pre>
-<p><strong>References</strong></p>
+</section>
+</section>
+</section>
+<section id="references" class="level1">
+<h1><strong>References</strong></h1>
 <div id="refs" class="references csl-bib-body hanging-indent" role="list">
 <div id="ref-1.3.5.17b" class="csl-entry" role="listitem">
 <em>1.3.5.17. Detection of Outliers</em>. n.d. <a href="https://www.itl.nist.gov/div898/handbook/eda/section3/eda35h.htm">https://www.itl.nist.gov/div898/handbook/eda/section3/eda35h.htm</a>.
@@ -2019,8 +2162,6 @@ Embrechts, Paul, and Hanspeter Schmidli. 1994. <span>“Modelling of Extremal Ev
 </div>
 
 
-</section>
-</section>
 </section>
 
 </main> <!-- /main -->

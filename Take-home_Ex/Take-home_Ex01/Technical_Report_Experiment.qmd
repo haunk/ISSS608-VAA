@@ -8,21 +8,22 @@ execute:
   echo: true
   warning: false
   freeze: true
+format:
+  html:
+    code-fold: true
+    code-summary: "Show the code"
 bibliography: references.bib
 ---
+
+# 1. Overview
 
 # Data wrangling
 
 ## Importing dataset
 
 ```{r}
-pacman::p_load(tidyverse,
-               psych,
-               dplyr,
-               patchwork,
-               corrplot,
-               RColorBrewer
-               ) 
+pacman::p_load(tidyverse, readxl, tidyr, kableExtra, psych, dplyr, 
+               patchwork, corrplot, RColorBrewer, gganimate, ggrepel) 
 ```
 
 The dataset contains anonymised microdata on automobile insurance policies and covers the main operations of the non-life portfolio from January 2022 to December 2024. The database shows 354,140 records and 47 variables, where each row corresponds to a policy transaction and each column to a specific attribute of that transaction.
@@ -39,6 +40,8 @@ motoinsu <- read_delim(
 Out of a total of 47 attributes in the motoinsu tibble data frame, 29 of them are numerical data type (dbl - double) and 28 features are categorical data type (char - character).
 
 ```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
 describe(motoinsu %>% 
            select(where(is.numeric)) # Only show numerical columns
          ) %>%
@@ -46,11 +49,9 @@ describe(motoinsu %>%
 ```
 
 ```{r}
-library(readxl)
-library(tidyr)
-library(dplyr)
-library(kableExtra)
-
+#| code-fold: true
+#| code-summary: "Show the code"
+#| 
 var_desc <- read_excel("data/Descriptive_of_variables.xlsx") %>%
   fill(everything(), .direction = "down") %>%
   group_by(Variables, Group) %>%
@@ -63,7 +64,7 @@ var_desc %>%
 ```
 
 ```{r}
-glimpse(motoinsu)
+head(motoinsu, n=3)
 ```
 
 ## Conversing datatype
@@ -89,8 +90,6 @@ motoinsu <- motoinsu %>%
              total_exposure, liability_exposure), 
            as.double)
   )
-
-glimpse(motoinsu)
 ```
 
 ::: callout-tip
@@ -141,6 +140,8 @@ To check whether we need to remove abnormal records, we use Z-score. It measures
 In general statistics, any data point with an absolute Z-score greater than 3 is widely flagged as an potential outlier, some researchs use threshold 3.5 (@1.3.5.17b). However in insurance field with heavy-tailed distributions, values far beyond 6 standard deviations occur with non-negligible probability (@embrechts1994).
 
 ```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
 # Check all numeric variables at once
 numeric_vars <- motoinsu %>% 
   select(where(is.numeric)) %>% 
@@ -169,14 +170,6 @@ outlier_summary <- map_dfr(numeric_vars, function(var) {
 outlier_summary %>%
   kable(format.args = list(big.mark = ",", scientific = FALSE)) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
-
-# Flag variables that might need attention
-outlier_summary %>%
-  filter(
-    pct_over_3sd > 5 |        # more than 5% of non-zero rows are extreme
-    max_val > p999 * 100      # max is 100x higher than 99.9th percentile
-  )
-
 ```
 
 So we are safe to move on further analysis.
@@ -194,6 +187,8 @@ Among 11 categorical columns, vehicle_brand has too many distinct values. Theref
 We mainly use histogram chart to demonstrate distrubutions in univariate analysis.
 
 ```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
 #| fig-width: 15 # Adjust width of canvas
 #| fig-height: 15 # Adjust height of canvas
 # gom_bar():  counts rows automatically
@@ -244,6 +239,8 @@ wrap_plots(plots, ncol = 3)
 Vehicle brand distribution show high fragmentation with top brand \~10%, many brands with \<1%. We will combine all brands excluding RENAULT, CITROEN, PEUGEOT, VOLKSWAGEN, FORD, SEAT, and OPEL.
 
 ```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
 #| fig-width: 15
 #| fig-height: 6
 # gom_bar():  counts rows automatically
@@ -262,6 +259,8 @@ ggplot(motoinsu, aes(x = fct_infreq(vehicle_brand))) +
 Then plot them by distribution.
 
 ```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
 #| fig-width: 8
 #| fig-height: 4
 
@@ -298,6 +297,8 @@ ggplot(motoinsu, aes(x = fct_infreq(vehicle_brand_grouped))) +
 Driver & Vehicle Distributions
 
 ```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
 #| fig-width: 16
 #| fig-height: 8
 
@@ -332,6 +333,8 @@ wrap_plots(plots, ncol = 3)
 Premium, Claims & Exposure Distributions
 
 ```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
 #| fig-width: 15
 #| fig-height: 15
 
@@ -383,6 +386,8 @@ We run some experiments to find out which pairs are best to visualize and delive
 We using boxplot chart to show relationship of `total_incurred` by `policy_type`. Because numerical variables here are right-skewed with a dozen of zero and with long tail with very large number, scale_y_log10() is used to spaces them logarithmically while maintains real values. We will calculate median filtering out zero values.
 
 ```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
 x_var <- "policy_type"
 y_var <- "total_incurred"
 
@@ -416,6 +421,8 @@ motoinsu %>%
 :::
 
 ```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
 x_var <- "policy_type"
 y_var <- "total_claims"
 
@@ -458,6 +465,8 @@ motoinsu %>%
 With line chart, we perform average of incurred amount, average of premium and loss ratio (total_incurred/total_premium) by year to see the temporal changes.
 
 ```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
 motoinsu %>%
   group_by(year) %>%
   summarise(
@@ -492,49 +501,70 @@ The combination of rising incurred losses, declining premiums, and worsening los
 ### Loss Ratio Analysis: loss_ratio by policy_type/bonus_score
 
 ```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
 #| fig-width: 13
 #| fig-height: 6
 
-group_var <- "policy_type"  
+group_var <- "policy_type"
 
-motoinsu %>%
+loss_data <- motoinsu %>%
   group_by(!!sym(group_var)) %>%
   summarise(loss_ratio = sum(total_incurred)/sum(total_premium)*100) %>%
-  ggplot(aes(x = reorder(!!sym(group_var), loss_ratio), y = loss_ratio, fill = !!sym(group_var))) +
+  mutate(status = ifelse(loss_ratio >= 70, "Above 70%", "Below 70%"))
+
+ggplot(loss_data, aes(x = reorder(!!sym(group_var), loss_ratio), 
+                       y = loss_ratio, fill = status)) +
   geom_col() +
-  geom_text(aes(label = paste0(round(loss_ratio, 1), "%")), hjust = -0.2) +
+  geom_hline(yintercept = 70, linetype = "dashed", color = "grey30", linewidth = 0.8) +
+  annotate("text", x = 0.5, y = 72, label = "70% Benchmark", 
+           hjust = 0, size = 3.5, color = "grey30") +
+  geom_text(aes(label = paste0(round(loss_ratio, 1), "%")), hjust = -0.2, size = 4) +
   coord_flip() +
+  scale_fill_manual(values = c("Above 70%" = "#F1948A", "Below 70%" = "#AED6F1")) +
   scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
-  labs(title = paste("Loss Ratio by", group_var)) +
-  theme_minimal()
+  labs(title = paste("Loss Ratio by", group_var), x = NULL, y = "Loss Ratio (%)") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
 
 ```
 
 ::: callout-note
 ## **Loss Ratio by Policy Type**
 
--   COMP_N is the most unprofitable product at 93%, nearly breaking even on every euro collected - immediate repricing is needed. The 19-point gap between COMP_N (93%) and COMP_E (73.9%) demonstrates that the excess/deductible is highly effective at reducing claims cost.
--   TP is the most profitable at 54.6%, low claim frequency from limited coverage scope offsets its high individual claim severity.
--   TPG (69.6%) is surprisingly less profitable than CC (63.5%) despite simpler coverage, suggesting glass replacement costs are underpriced relative to their frequency.
--   Overall, three out of five products sit above the 60-70% healthy benchmark, consistent with the worsening loss ratio trend seen in the temporal analysis.
+-   COMP_N is the most unprofitable product at 93.5%, far exceeding the 70% benchmark by 23.5 percentage points. Immediate repricing is needed. The 19 point gap between COMP_N (93.5%) and COMP_E (73.9%) demonstrates that the excess/deductible is highly effective at reducing claims cost.
+-   TP is the most profitable at 54.6%, sitting 15.4 points below the benchmark. Low claim frequency from limited coverage scope offsets its high individual claim severity.
+-   TPG (69.6%) falls just below the 70% threshold, appearing healthy but barely so. It is surprisingly less profitable than CC (63.5%) despite simpler coverage, suggesting glass replacement costs are underpriced relative to their frequency.
+-   Overall, two out of five products (COMP_N and COMP_E) exceed the 70% healthy benchmark, signaling underpricing in comprehensive coverage. The remaining three sit below the line but CC and TPG are not far from crossing it, consistent with the worsening loss ratio trend seen in the temporal analysis.
 :::
 
 ```{r}
-#| fig-width: 13
+#| code-fold: true
+#| code-summary: "Show the code"
+#| fig-width: 12
 #| fig-height: 6
 
-group_var <- "bonus_score" 
+group_var <- "bonus_score"
+
+bonus_colors <- c(
+  "G" = "#F5B7B1",  # light red
+  "B" = "#E74C3C",  # medium red
+  "N" = "#922B21"   # dark red
+)
 
 motoinsu %>%
   group_by(!!sym(group_var)) %>%
   summarise(loss_ratio = sum(total_incurred)/sum(total_premium)*100) %>%
-  ggplot(aes(x = reorder(!!sym(group_var), loss_ratio), y = loss_ratio, fill = !!sym(group_var))) +
+  ggplot(aes(x = reorder(!!sym(group_var), loss_ratio), 
+             y = loss_ratio, fill = !!sym(group_var))) +
   geom_col() +
-  geom_text(aes(label = paste0(round(loss_ratio, 1), "%")), hjust = -0.2) +
+  geom_text(aes(label = paste0(round(loss_ratio, 1), "%")), hjust = -0.2, size = 4) +
   coord_flip() +
+  scale_fill_manual(values = bonus_colors) +
   scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
-  labs(title = paste("Loss Ratio by", group_var)) +
-  theme_minimal()
+  labs(title = paste("Loss Ratio by", group_var), x = NULL, y = "Loss Ratio (%)") +
+  theme_minimal() +
+  theme(legend.position = "none")
 ```
 
 ::: callout-note
@@ -550,6 +580,8 @@ With 69.3% of the portfolio being new business, the insurer is heavily exposed t
 We use density plot to show if young/new drivers skew toward N/B scores.
 
 ```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
 ggplot(motoinsu, 
        aes(x = driver_age, 
            fill = bonus_score)) +
@@ -574,9 +606,122 @@ ggplot(motoinsu,
     -   The long right tail to age 80+ is almost entirely G - elderly drivers have good bonus scores from decades of claim-free driving.
 :::
 
+### Violin Chart by Premium/Incurred Type
+
+Because most optional coverages contain a large proportion of zero values (policies without that coverage), we exclude zeros and apply a log scale to better visualize the spread and shape of non zero premium distributions.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| fig-width: 12
+#| fig-height: 6
+
+premium_vars <- c("total_premium", "liability_premium", "property_damage_premium",
+                   "theft_premium", "fire_premium", "glass_premium",
+                   "legal_protection_premium", "occupants_premium")
+
+premium_long <- motoinsu %>%
+  select(all_of(premium_vars)) %>%
+  pivot_longer(cols = everything(), 
+               names_to = "premium_type", 
+               values_to = "premium_value") %>%
+  filter(premium_value > 0)
+
+median_labels <- premium_long %>%
+  group_by(premium_type) %>%
+  summarise(median_val = median(premium_value))
+
+ggplot(premium_long, aes(x = reorder(premium_type, premium_value, FUN = median), 
+                          y = premium_value, fill = premium_type)) +
+  geom_violin(alpha = 0.5, scale = "width") +
+  geom_boxplot(width = 0.1, outlier.alpha = 0.1) +
+  geom_label(data = median_labels,
+             aes(x = premium_type, y = median_val,
+                 label = round(median_val, 1)),
+             hjust = -0.2, size = 3.5, fontface = "bold",
+             fill = "white", alpha = 0.8, label.size = 0,
+             inherit.aes = FALSE) +
+  scale_y_log10(labels = scales::comma) +
+  scale_fill_brewer(palette = "Pastel1") +
+  coord_flip() +
+  labs(title = "Distribution of Premium Types",
+       subtitle = "Violin + Boxplot (log scale, zero values excluded)",
+       x = NULL, y = "Premium (log scale)") +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    panel.background = element_rect(fill = "transparent", color = NA),
+    plot.background = element_rect(fill = "transparent", color = NA)
+  )
+```
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| fig-width: 12
+#| fig-height: 6
+
+incurred_vars <- c("total_incurred", "liability_incurred", "liability_property_incurred",
+                    "liability_injury_incurred", "property_incurred", "theft_incurred",
+                    "fire_incurred", "glass_incurred", "legal_protection_incurred",
+                    "occupants_incurred")
+
+incurred_long <- motoinsu %>%
+  select(all_of(incurred_vars)) %>%
+  pivot_longer(cols = everything(), 
+               names_to = "incurred_type", 
+               values_to = "incurred_value") %>%
+  filter(incurred_value > 0)
+
+median_labels <- incurred_long %>%
+  group_by(incurred_type) %>%
+  summarise(median_val = median(incurred_value))
+
+ggplot(incurred_long, aes(x = reorder(incurred_type, incurred_value, FUN = median), 
+                           y = incurred_value, fill = incurred_type)) +
+  geom_violin(alpha = 0.5, scale = "width") +
+  geom_boxplot(width = 0.1, outlier.alpha = 0.1) +
+  geom_label(data = median_labels,
+             aes(x = incurred_type, y = median_val,
+                 label = round(median_val, 1)),
+             hjust = -0.2, size = 3.5, fontface = "bold",
+             fill = "white", alpha = 0.8, label.size = 0,
+             inherit.aes = FALSE) +
+  scale_y_log10(labels = scales::comma) +
+  scale_fill_brewer(palette = "Pastel2") +
+  coord_flip() +
+  labs(title = "Distribution of Incurred Loss Types",
+       subtitle = "Violin + Boxplot (log scale, zero values excluded)",
+       x = NULL, y = "Incurred Loss (log scale)") +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    panel.background = element_rect(fill = "transparent", color = NA),
+    plot.background = element_rect(fill = "transparent", color = NA)
+  )
+```
+
+::: callout-note
+**Key abnormalities:**
+
+-   **Fire:** Premium median = 1, incurred median = 1,522.9. A 1,500x gap, the most extreme mismatch. The premium violin is flat and concentrated while the incurred violin is the widest in the chart, showing highly unpredictable claim costs against nearly zero pricing.
+
+-   **Occupants:** Premium median = 1.8, incurred median = 635.7. A 350x gap. Premium has the narrowest violin (zero risk differentiation), yet incurred shows a broad, boxy shape suggesting varied claim severity.
+
+-   **Glass:** Incurred violin has a distinctive diamond/star shape with a tight cluster around 387, suggesting standardized repair costs (windshield replacement at fixed rates). Premium (15.7) is too low relative to this.
+
+-   **Theft:** Premium violin is wide and spread (7.2 median) showing some risk differentiation, but incurred (310.4) has a compact rectangular shape, meaning theft claims tend to fall within a predictable cost band. The pricing variation does not match the claim pattern.
+
+-   **Legal protection:** The only coverage where shapes are somewhat proportional. Both violins are compact and narrow, suggesting this is the best priced optional coverage.
+
+    **➨ Overall pattern:** Mandatory coverages (liability, property damage) show wide, well shaped violins on both sides, indicating mature risk based pricing. Optional coverages show flat/narrow premium violins against much larger and varied incurred violins, confirming systematic underpricing of add on products.
+:::
+
 ### Correlation Matrix
 
 ```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
 #| fig-width: 8
 #| fig-height: 6
 #| 
@@ -599,15 +744,12 @@ ggstatsplot::ggcorrmat(
 **Strong pairs:**
 
 -   `vehicle_age` and `age_driving_licence` (0.86): nearly duplicate variables
-
 -   `total_exposure` and `total_premium` (0.6): longer policies generate higher premiums, expected
-
 -   `vehicle_value` and `total_premium` (0.32): surprisingly weak, pricing is not strongly value-driven
 
 **Negative relationships:**
 
 -   `power_to_weight_ratio` and `vehicle_value` (-0.49): high-performance vehicles tend to be undervalued relative to their actual risk
-
 -   `power_to_weight_ratio` and `age_driving_licence` (-0.18): younger licence holders gravitate toward higher-performance vehicles
 :::
 
@@ -622,6 +764,8 @@ ggstatsplot::ggcorrmat(
 We use heatmap to visualize three variables.
 
 ```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
 motoinsu %>%
   group_by(policy_type, fuel_type) %>%
   summarise(loss_ratio = sum(total_incurred) / sum(total_premium) * 100) %>%
@@ -647,6 +791,8 @@ motoinsu %>%
 Let's see the which vehicle brand has higher loss ratio. Note that we remove Others category from Vehicle brand group.
 
 ```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
 #| fig-width: 8
 #| fig-height: 6
 #| 
@@ -674,15 +820,13 @@ motoinsu %>%
   theme(
     legend.position = "none"
   )
-
-
 ```
 
 ::: callout-note
 **High risk, low revenue — most concerning:**
 
--    **OPEL** (77%, €7.4M) — highest loss ratio but one of the smallest bubbles. Worst combination: unprofitable AND small contributor
--    **SEAT** (74%, €7.4M) — same story, small premium volume but elevated risk
+-   **OPEL** (77%, €7.4M) — highest loss ratio but one of the smallest bubbles. Worst combination: unprofitable AND small contributor
+-   **SEAT** (74%, €7.4M) — same story, small premium volume but elevated risk
 
 **Acceptable risk, decent revenue:**
 
@@ -694,15 +838,55 @@ motoinsu %>%
 -   **PEUGEOT** (66%, €8.1M) and **RENAULT** (67%, €9.1M) — lowest loss ratios with solid premium volumes. RENAULT is particularly valuable: largest revenue among named brands AND most profitable French brand
 :::
 
-::: callout-warning
--   Prioritize **RENAULT and PEUGEOT** for retention — high volume, low risk.
--   Review **OPEL and SEAT** pricing urgently — they generate the least revenue while being the most unprofitable.
-:::
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| fig-width: 12
+#| fig-height: 7
 
-```{}
+anim_data <- motoinsu %>%
+  filter(vehicle_brand_grouped != "Others") %>%
+  group_by(year, vehicle_brand_grouped) %>%
+  summarise(
+    loss_ratio = sum(total_incurred) / sum(total_premium) * 100,
+    .groups = "drop"
+  ) %>%
+  mutate(year_num = as.numeric(as.character(year)))
+
+p <- ggplot(anim_data, aes(x = year_num, y = loss_ratio, 
+                            color = vehicle_brand_grouped,
+                            group = vehicle_brand_grouped)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 3) +
+  geom_text(aes(label = vehicle_brand_grouped),
+            vjust = 1.5, size = 3, show.legend = FALSE, fontface = "bold") +
+  geom_hline(yintercept = 70, linetype = "dashed", color = "grey40") +
+  scale_x_continuous(breaks = c(2022, 2023, 2024)) +
+  labs(title = "Loss Ratio Trend by Vehicle Brand (2022–2024)",
+       x = "Year", y = "Loss Ratio (%)", color = "Brand") +
+  theme_minimal() +
+  transition_reveal(year_num) +
+  ease_aes("linear")
+
+animate(p, nframes = 60, fps = 10, width = 800, height = 500,
+        renderer = gifski_renderer(),
+        res = 100, units = "px")
 ```
 
-**References**
+::: callout-note
+-   Across three year window, **RENAULT and PEUGEOT** are the most stable, staying in the 63 to 68% range. They are the safest brands in the portfolio and should be prioritized for customer retention.
+
+-   **OPEL** continues to show warning to be the highest volatile brand. This instability suggests a small portfolio where a few large claims can swing the ratio wildly. Unpredictable and hard to price.
+
+-   **SEAT** is consistently the worst among mid range brands, hovering around 70 to 80% across all three years. It never dips below the benchmark, confirming it is structurally underpriced.
+:::
+
+::: callout-warning
+-   **RENAULT and PEUGEOT** are the most valuable brands, combining high premium volume with the lowest and most stable loss ratios across all three years. These should be prioritized for customer retention.
+-   **OPEL and SEAT** generate the least revenue while being the most unprofitable. OPEL is extremely volatile year to year, while SEAT is consistently above the benchmark, confirming structural underpricing. Both require urgent pricing review.
+:::
+
+# **References**
 
 ::: {#refs}
 :::
