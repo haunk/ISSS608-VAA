@@ -47,7 +47,7 @@ The code chunk below uses the p_load() function in the pacman package to check i
 #| code-fold: false
 
 pacman::p_load(tidyverse, readxl, tidyr, kableExtra, psych, dplyr, 
-               patchwork, corrplot, RColorBrewer, gganimate, ggrepel) 
+               patchwork, corrplot, RColorBrewer, gganimate, ggrepel, ggimage) 
 ```
 
 ```{r}
@@ -56,7 +56,7 @@ pacman::p_load(tidyverse, readxl, tidyr, kableExtra, psych, dplyr,
 
 library_desc <- tibble(
   Package = c("tidyverse", "readxl", "tidyr", "kableExtra", "psych", "dplyr",
-              "patchwork", "corrplot", "RColorBrewer", "gganimate", "ggrepel"),
+              "patchwork", "corrplot", "RColorBrewer", "gganimate", "ggrepel", "ggimage"),
   Purpose = c(
     "A collection of R packages for data science including ggplot2, dplyr, tidyr, readr, and others.",
     "Read Excel files (.xls and .xlsx) into R.",
@@ -68,7 +68,8 @@ library_desc <- tibble(
     "Visualize correlation matrices with customizable styles.",
     "Provide color palettes for maps and charts.",
     "Create animated ggplot2 visualizations with frame transitions.",
-    "Automatically position text labels in ggplot2 to avoid overlapping."
+    "Automatically position text labels in ggplot2 to avoid overlapping.",
+    "Display images and logos as data points in ggplot2 charts"
   )
 )
 
@@ -663,12 +664,11 @@ With 69.3% of the portfolio being new business, the insurer is heavily exposed t
 We use density plot to show if young/new drivers skew toward N/B scores.
 
 ```{r}
-#| code-fold: true
-#| code-summary: "Show the code"
 ggplot(motoinsu, 
        aes(x = driver_age, 
            fill = bonus_score)) +
   geom_density(alpha = 0.4) +
+  labs(title = "Density plot: Driver Age by Bonus Score", x = "Age", y = "Loss Ratio (%)") +
   theme_minimal()
 ```
 
@@ -895,31 +895,38 @@ Let's see the which vehicle brand has higher loss ratio. Note that we remove Oth
 #| code-summary: "Show the code"
 #| fig-width: 8
 #| fig-height: 6
-#| 
-motoinsu %>%
+
+brand_data <- motoinsu %>%
   group_by(vehicle_brand_grouped) %>%
   summarise(
     loss_ratio = sum(total_incurred)/sum(total_premium)*100,
     total_premium = sum(total_premium)
   ) %>%
   filter(vehicle_brand_grouped != "Others") %>%
-  ggplot(aes(x = total_premium, y = loss_ratio,    # x = total_premium now
-             size = total_premium, color = vehicle_brand_grouped)) +
-  geom_point(alpha = 0.7) +
-  geom_text(aes(label = vehicle_brand_grouped),
-            vjust = -1.5, size = 3, color = "black") +
+  mutate(logo = case_when(
+    vehicle_brand_grouped == "RENAULT"    ~ "images/renault.png",
+    vehicle_brand_grouped == "CITROEN"    ~ "images/citroen.png",
+    vehicle_brand_grouped == "PEUGEOT"    ~ "images/peugeot.png",
+    vehicle_brand_grouped == "VOLKSWAGEN" ~ "images/volkswagen.png",
+    vehicle_brand_grouped == "FORD"       ~ "images/ford.png",
+    vehicle_brand_grouped == "SEAT"       ~ "images/seat.png",
+    vehicle_brand_grouped == "OPEL"       ~ "images/opel.png"
+  ))
+
+ggplot(brand_data, aes(x = total_premium, y = loss_ratio)) +
+  geom_image(aes(image = logo), size = 0.08) +
+  geom_text(aes(label = paste0(round(loss_ratio, 1), "%")),
+            vjust = -2, size = 3, fontface = "bold") +
   geom_text(aes(label = paste0("€", scales::comma(round(total_premium/1e6, 1)), "M")),
-            vjust = 2.5, size = 2.8, color = "grey30") +
-  scale_x_continuous(labels = scales::comma) +    
-  scale_size_continuous(range = c(3, 18), guide = "none") +
+            vjust = 3, size = 2.8, color = "grey30") +
+  scale_x_continuous(labels = scales::comma) +
+  scale_y_continuous(expand = expansion(mult = c(0.2, 0.1))) +
   labs(
     title = "Loss Ratio vs Vehicle Brand (sized by Total Premium)",
     x = "Total Premium (€)", y = "Loss Ratio (%)"
   ) +
   theme_minimal() +
-  theme(
-    legend.position = "none"
-  )
+  theme(legend.position = "none")
 ```
 
 ::: callout-note
@@ -992,16 +999,16 @@ animate(p, nframes = 60, fps = 10, width = 800, height = 500,
 
 This study applied visual analytics techniques to a real world motor vehicle insurance portfolio dataset from a Spanish insurer, covering 354,140 policy records across 47 variables from 2022 to 2024. Through systematic univariate, bivariate, and multivariate analysis, several critical findings emerged.
 
-### Key Findings: {.unnumbered}
+### Key Findings {.unnumbered}
 
--   The portfolio is growing but increasingly unprofitable, with loss ratio worsening sharply from 2022 to 2024 driven by rising claims severity alongside declining premiums.
--   The insurer relies heavily on new business acquisition over renewals, and new customers consistently carry the worst loss ratios, directly contributing to portfolio deterioration.
--   COMP_N is the most dangerous product with both the highest claim frequency and highest incurred losses, confirming that the absence of a deductible encourages excessive claiming. The gap with COMP_E proves deductibles are highly effective.
--   Optional coverages are systematically underpriced, with fire showing the most extreme mismatch between what is charged and what is paid out, followed by occupants and glass. Only legal protection appears adequately priced. Mandatory coverages show mature pricing.
--   Younger drivers cluster in the new and bad bonus score categories, suggesting these are largely the same cohort of first time buyers who quickly accumulate claims.
--   RENAULT and PEUGEOT are the most valuable brands, combining high revenue with the lowest and most stable loss ratios across all three years. OPEL and SEAT are the opposite: low revenue, high loss ratios, and in OPEL's case extreme volatility.
+-   The portfolio is growing but **increasingly unprofitable**, with loss ratio worsening sharply from 2022 to 2024 driven by rising claims severity alongside declining premiums.
+-   The insurer **relies heavily on new business** acquisition over renewals, and new customers consistently carry the worst loss ratios, directly contributing to portfolio deterioration.
+-   **COMP_N is the most dangerous product** with both the highest claim frequency and highest incurred losses, confirming that the absence of a deductible encourages excessive claiming. The gap with COMP_E proves deductibles are highly effective.
+-   **Optional coverages are systematically underpriced**, with fire showing the most extreme mismatch between what is charged and what is paid out, followed by occupants and glass. Only legal protection appears adequately priced. Mandatory coverages show mature pricing.
+-   **Younger drivers cluster in the new and bad bonus score** categories, suggesting these are largely the same cohort of first time buyers who quickly accumulate claims.
+-   **RENAULT and PEUGEOT are the most valuable brands**, combining high revenue with the lowest and most stable loss ratios across all three years. **OPEL and SEAT are the opposite:** low revenue, high loss ratios, and in OPEL's case extreme volatility.
 
-### Recommendations for future research: {.unnumbered}
+### Recommendations for future research {.unnumbered}
 
 -   **Confirmatory statistical analysis:** Future studies should incorporate formal hypothesis testing and regression modeling to validate these exploratory findings and establish causal relationships between risk factors and profitability.
 -   **Temporal granularity:** Extending the analysis to monthly or quarterly intervals could reveal seasonal patterns in claims frequency and severity that annual aggregation may obscure.

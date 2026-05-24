@@ -33,7 +33,7 @@
       vertical-align: middle;
     }
   </style>
-  <link rel="stylesheet" href="../../site_libs/revealjs/dist/theme/quarto-34dbd99a358dac3857e85ff7afe1e9d8.css">
+  <link rel="stylesheet" href="../../site_libs/revealjs/dist/theme/quarto-ab4715bbfc477a5ec2e0c1215ca29334.css">
   <link href="../../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="../../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="../../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -132,7 +132,7 @@
 
 <section id="title-slide" class="quarto-title-block center">
   <h1 class="title">Unmasking Motor Insurance Risk Drivers</h1>
-  <p class="subtitle">Executive Summary</p>
+  <p class="subtitle">Take-home Ex01: Visual Analytics for Data Discovery</p>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
@@ -148,34 +148,55 @@ Nguyen Kim Hau
 <h2>Contents</h2>
 <div class="columns">
 <div class="column" style="width:50%;">
-<p><strong>Portfolio Profile</strong></p>
 <ol type="1">
-<li>Dataset and Portfolio Overview</li>
-<li>Categorical Variable Distributions</li>
-<li>Numerical Variable Distributions</li>
-</ol>
-<p><strong>Risk and Profitability</strong></p>
-<ol start="4" type="1">
-<li>Temporal Performance Trend</li>
-<li>Loss Ratio by Policy Type</li>
-<li>Loss Ratio by Bonus Score</li>
+<li><p>Overview</p>
+<ul>
+<li><a href="#/overview">Context &amp; Objectives</a> 👈</li>
+</ul></li>
+<li><p>Visual Analysis</p>
+<ul>
+<li><a href="#/insight1">Dataset &amp; Portfolio Overview</a></li>
+<li><a href="#/insight2">Correlation Structure</a></li>
+<li><a href="#/insight3">Loss Ratio by Policy Type</a></li>
+<li><a href="#/insight4">Optional Coverage Pricing Mismatch</a></li>
+</ul></li>
 </ol>
 </div><div class="column" style="width:50%;">
-<p><strong>Deep Dive Analysis</strong></p>
-<ol start="7" type="1">
-<li>Optional Coverage Pricing Mismatch</li>
-<li>Vehicle Brand Risk Analysis</li>
-<li>Driver Age and Bonus Score Patterns</li>
-<li>Correlation Structure</li>
-</ol>
-<p><strong>Conclusion</strong></p>
-<ol start="11" type="1">
-<li>Key Findings and Recommendations</li>
+<ol start="2" type="1">
+<li><p>Visual Analysis (cont.)</p>
+<ul>
+<li><a href="#/insight5">Vehicle Brand Risk</a></li>
+<li><a href="#/insight6">Temporal Analysis by Year</a></li>
+<li><a href="#/insight7">Loss Ratio by Bonus Score</a></li>
+<li><a href="#/insight8">Loss Ratio by Fuel Type</a></li>
+</ul></li>
+<li><p>Summary</p>
+<ul>
+<li><a href="#/summary">Key Findings &amp; Recommendations</a></li>
+</ul></li>
 </ol>
 </div></div>
 </section>
-<section id="insight-1-dataset-and-portfolio-overview" class="slide level2">
-<h2>Insight 1: Dataset and Portfolio Overview</h2>
+<section id="overview" class="slide level2">
+<h2>Context &amp; Objectives</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><img data-src="images/clipboard-2866203017.png"></p>
+</div><div class="column" style="font-size: 0.7em;">
+<p><strong>Context:</strong></p>
+<ul>
+<li><p>Insurers often carry <strong>underperforming portfolios</strong> with unknown root causes of poor profitability and high volatility.</p></li>
+<li><p>Traditional visual analytics in insurance is <strong>limited to dashboard reporting</strong>, lacking advanced analytical capabilities beyond tools like Tableau and Power BI.</p></li>
+</ul>
+<p><strong>Objectives:</strong></p>
+<ul>
+<li><p>Apply <strong>univariate</strong> visual analytics to explore distributions of numerical, categorical, and temporal variables.</p></li>
+<li><p>Apply <strong>bivariate</strong> visual analytics to identify and validate <strong>key factors influencing profitability and volatility</strong> of the motor insurance portfolio.</p></li>
+</ul>
+</div></div>
+</section>
+<section id="insight1" class="slide level2">
+<h2>Insight 1: Dataset &amp; Portfolio Overview</h2>
 <div class="columns">
 <div class="column" style="width:50%;">
 <div class="cell">
@@ -206,10 +227,42 @@ Nguyen Kim Hau
 </ul>
 </div>
 </section>
-<section id="insight-2-loss-ratio-by-policy-type" class="slide level2">
-<h2>Insight 2: Loss Ratio by Policy Type</h2>
+<section id="insight2" class="slide level2">
+<h2>Insight 2: Correlation Structure</h2>
+<div class="columns">
+<div class="column" style="font-size: 0.5em;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="Executive_Summary_files/figure-revealjs/unnamed-chunk-2-1.png" width="480"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="font-size: 0.5em;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="Executive_Summary_files/figure-revealjs/unnamed-chunk-3-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+<div style="font-size: 0.6em; margin-top: 40px;">
+<ul>
+<li>Municipality type: 64.6% type I (Inland) where typically have higher accident/theft risk than coastal and island areas. - <strong>Strong:</strong> vehicle_age and age_driving_licence (0.86) are <strong>nearly duplicate</strong>. Pricing is <strong>not strongly value driven</strong> (vehicle_value vs premium only 0.32).</li>
+<li><strong>Negative:</strong> High performance vehicles tend to be <strong>undervalued for risk</strong> ( 0.49), and younger drivers prefer <strong>higher performance cars</strong> ( 0.18).</li>
+<li><strong>Key finding:</strong> total_incurred has <strong>near zero correlation</strong> with all single variables, confirming <strong>multivariate analysis is necessary</strong>.</li>
+</ul>
+</div>
+</section>
+<section id="insight3" class="slide level2">
+<h2>Insight 3: Loss Ratio by Policy Type</h2>
 
-<img data-src="Executive_Summary_files/figure-revealjs/unnamed-chunk-2-1.png" width="1728" class="r-stretch"><div style="font-size: 0.5em;">
+<img data-src="Executive_Summary_files/figure-revealjs/unnamed-chunk-4-1.png" width="1728" class="r-stretch"><div style="font-size: 0.5em;">
 <ul>
 <li><strong>COMP_N</strong>: <strong>Most dangerous product</strong>. Highest median incurred (1,392) and widest claim frequency (IQR 1 to 5). No deductible encourages excessive claiming, driving up both frequency and severity. <strong>Immediate repricing needed</strong>.</li>
 <li><strong>COMP_E</strong>: Median incurred (954) is lower than TP despite broader coverage, proving the deductible effectively filters small claims. However, more outliers reach 10+ claims, suggesting it attracts <strong>higher risk customers</strong>.</li>
@@ -219,15 +272,15 @@ Nguyen Kim Hau
 </ul>
 </div>
 </section>
-<section id="insight-3-optional-coverage-pricing-mismatch" class="slide level2">
-<h2>Insight 3: Optional Coverage Pricing Mismatch</h2>
+<section id="insight4" class="slide level2">
+<h2>Insight 4: Optional Coverage Pricing Mismatch</h2>
 <div class="columns">
 <div class="column" style="width:50%;">
 <div class="cell">
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="Executive_Summary_files/figure-revealjs/unnamed-chunk-3-1.png" width="576"></p>
+<p><img data-src="Executive_Summary_files/figure-revealjs/unnamed-chunk-5-1.png" width="576"></p>
 </figure>
 </div>
 </div>
@@ -237,7 +290,7 @@ Nguyen Kim Hau
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="Executive_Summary_files/figure-revealjs/unnamed-chunk-4-1.png" width="576"></p>
+<p><img data-src="Executive_Summary_files/figure-revealjs/unnamed-chunk-6-1.png" width="576"></p>
 </figure>
 </div>
 </div>
@@ -260,15 +313,15 @@ Nguyen Kim Hau
 </div>
 </div>
 </section>
-<section id="insight-4-vehicle-brand-risk" class="slide level2">
-<h2>Insight 4: Vehicle Brand Risk</h2>
+<section id="insight5" class="slide level2">
+<h2>Insight 5: Vehicle Brand Risk</h2>
 <div class="columns">
 <div class="column" style="font-size: 0.5em;">
 <div class="cell">
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="Executive_Summary_files/figure-revealjs/unnamed-chunk-5-1.png" width="576"></p>
+<p><img data-src="Executive_Summary_files/figure-revealjs/unnamed-chunk-7-1.png" width="576"></p>
 </figure>
 </div>
 </div>
@@ -284,7 +337,7 @@ Nguyen Kim Hau
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="Executive_Summary_files/figure-revealjs/unnamed-chunk-6-1.png" width="576"></p>
+<p><img data-src="Executive_Summary_files/figure-revealjs/unnamed-chunk-8-1.png" width="576"></p>
 </figure>
 </div>
 </div>
@@ -296,15 +349,15 @@ Nguyen Kim Hau
 </ul>
 </div></div>
 </section>
-<section id="insight-5-temporal-analysis-by-year" class="slide level2">
-<h2>Insight 5: Temporal Analysis by Year</h2>
+<section id="insight6" class="slide level2">
+<h2>Insight 6: Temporal Analysis by Year</h2>
 <div class="columns">
 <div class="column" style="font-size: 0.5em;">
 <div class="cell">
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="Executive_Summary_files/figure-revealjs/unnamed-chunk-7-1.png" width="576"></p>
+<p><img data-src="Executive_Summary_files/figure-revealjs/unnamed-chunk-9-1.png" width="576"></p>
 </figure>
 </div>
 </div>
@@ -320,7 +373,7 @@ Nguyen Kim Hau
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="Executive_Summary_files/figure-revealjs/unnamed-chunk-8-1.gif"></p>
+<p><img data-src="Executive_Summary_files/figure-revealjs/unnamed-chunk-10-1.gif"></p>
 </figure>
 </div>
 </div>
@@ -331,6 +384,95 @@ Nguyen Kim Hau
 <li><strong>SEAT</strong> is consistently the worst among mid range brands, hovering around 70 to 80% across all three years. It never dips below the benchmark, confirming it is structurally underpriced.</li>
 </ul>
 </div></div>
+</section>
+<section id="insight7" class="slide level2">
+<h2>Insight 7: Loss Ratio by Bonus Score</h2>
+<div class="columns">
+<div class="column" style="font-size: 0.5em;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="Executive_Summary_files/figure-revealjs/unnamed-chunk-11-1.png" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><strong>G (Good history) is most profitable</strong> at 69.7%, <strong>N (New) is most costly</strong> at 81.9%, with B (Bad) in between at 79.6%. The 12 point gap between G and N confirms claims history is a strong predictor of future loss.</li>
+<li>With 69.3% of the portfolio being <strong>new business</strong>, the insurer is <strong>heavily exposed to the highest loss segment</strong>, directly contributing to the worsening loss ratio trend seen in 2022 to 2024.</li>
+</ul>
+</div><div class="column" style="font-size: 0.5em;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="Executive_Summary_files/figure-revealjs/unnamed-chunk-12-1.png" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><strong>N (New)</strong> and <strong>B (Bad)</strong> share nearly identical age distributions, peaking sharply around 33 to 35, suggesting they are largely the <strong>same cohort</strong>: young, first time buyers who quickly accumulate claims.</li>
+<li><strong>G (Good)</strong> is older and bimodal, peaking at ~40 and 55 to 65, with a long right tail to 80+, reflecting <strong>experienced drivers with decades of claim free history</strong>.</li>
+</ul>
+</div></div>
+</section>
+<section id="insight8" class="slide level2">
+<h2>Insight 8: Loss Ratio by Fuel Type</h2>
+<div class="columns">
+<div class="column" style="font-size: 0.6em;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="Executive_Summary_files/figure-revealjs/unnamed-chunk-13-1.png" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="font-size: 0.6em;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="Executive_Summary_files/figure-revealjs/unnamed-chunk-14-1.png" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+<div style="font-size: 0.6em;">
+<ul>
+<li>Fuel type splits 64.2% diesel versus 35.8% gasoline, consistent with Spain’s historical diesel preference.</li>
+<li><strong>COMP_N:</strong> Has the highest loss ratio (~90%+) for <strong>both</strong> fuel types, with Diesel (D) appearing even more extreme (deep red). This policy type is clearly underperforming and likely unprofitable.</li>
+<li><strong>Fuel type (D vs G):</strong> has minimal impact across most policy types, it likely shouldn’t be a primary rating factor in pricing models.</li>
+</ul>
+</div>
+</section>
+<section id="summary" class="slide level2">
+<h2>Key Findings</h2>
+<div style="font-size: 0.7em;">
+<ul>
+<li>The portfolio is growing but <strong>increasingly unprofitable</strong>, with loss ratio worsening sharply from 2022 to 2024 driven by rising claims severity alongside declining premiums.</li>
+<li>The insurer <strong>relies heavily on new business</strong> acquisition over renewals, and new customers consistently carry the worst loss ratios, directly contributing to portfolio deterioration.</li>
+<li><strong>COMP_N is the most dangerous product</strong> with both the highest claim frequency and highest incurred losses, confirming that the absence of a deductible encourages excessive claiming. The gap with COMP_E proves deductibles are highly effective.</li>
+<li><strong>Optional coverages are systematically underpriced</strong>, with fire showing the most extreme mismatch between what is charged and what is paid out, followed by occupants and glass. Only legal protection appears adequately priced. Mandatory coverages show mature pricing.</li>
+<li><strong>Younger drivers cluster in the new and bad bonus score</strong> categories, suggesting these are largely the same cohort of first time buyers who quickly accumulate claims.</li>
+<li><strong>RENAULT and PEUGEOT are the most valuable brands</strong>, combining high revenue with the lowest and most stable loss ratios across all three years. <strong>OPEL and SEAT are the opposite:</strong> low revenue, high loss ratios, and in OPEL’s case extreme volatility.</li>
+</ul>
+</div>
+</section>
+<section id="recommendations" class="slide level2">
+<h2>Recommendations</h2>
+<div style="font-size: 0.7em;">
+<ul>
+<li><strong>Confirmatory statistical analysis:</strong> Future studies should incorporate formal hypothesis testing and regression modeling to validate these exploratory findings and establish causal relationships between risk factors and profitability.</li>
+<li><strong>Temporal granularity:</strong> Extending the analysis to monthly or quarterly intervals could reveal seasonal patterns in claims frequency and severity that annual aggregation may obscure.</li>
+<li><strong>Customer retention analysis:</strong> Investigating the relationship between cancellation behavior, policy tenure, and profitability would help design better retention strategies for low risk segments.</li>
+<li><strong>External data enrichment:</strong> Incorporating macroeconomic indicators such as inflation rates, repair cost indices, and regional accident statistics could improve understanding of the drivers behind rising claims severity.</li>
+</ul>
+</div>
 
 
 </section>

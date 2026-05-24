@@ -1,6 +1,6 @@
 ---
 title: "Unmasking Motor Insurance Risk Drivers"
-subtitle: "Executive Summary"
+subtitle: "Take-home Ex01: Visual Analytics for Data Discovery"
 author: "Nguyen Kim Hau"
 date: "May 24, 2026"
 date-modified: "last-modified"
@@ -26,7 +26,7 @@ execute:
 #| include: false
 
 pacman::p_load(tidyverse, readxl, tidyr, kableExtra, psych, dplyr, 
-               patchwork, corrplot, RColorBrewer, gganimate, ggrepel)
+               patchwork, corrplot, RColorBrewer, gganimate, ggrepel, ggimage)
 
 motoinsu <- read_delim("data/Motor_insurance_portfolio.csv", delim = ";")
 
@@ -72,34 +72,55 @@ theme_exec <- theme_minimal(base_size = 14) +
 
 ::::: columns
 ::: {.column width="50%"}
-**Portfolio Profile**
+1.  Overview
 
-1.  Dataset and Portfolio Overview
-2.  Categorical Variable Distributions
-3.  Numerical Variable Distributions
+    -   [Context & Objectives](#overview) 👈
 
-**Risk and Profitability**
+2.  Visual Analysis
 
-4.  Temporal Performance Trend
-5.  Loss Ratio by Policy Type
-6.  Loss Ratio by Bonus Score
+    -   [Dataset & Portfolio Overview](#insight1)
+    -   [Correlation Structure](#insight2)
+    -   [Loss Ratio by Policy Type](#insight3)
+    -   [Optional Coverage Pricing Mismatch](#insight4)
 :::
 
 ::: {.column width="50%"}
-**Deep Dive Analysis**
+2.  Visual Analysis (cont.)
 
-7.  Optional Coverage Pricing Mismatch
-8.  Vehicle Brand Risk Analysis
-9.  Driver Age and Bonus Score Patterns
-10. Correlation Structure
+    -   [Vehicle Brand Risk](#insight5)
+    -   [Temporal Analysis by Year](#insight6)
+    -   [Loss Ratio by Bonus Score](#insight7)
+    -   [Loss Ratio by Fuel Type](#insight8)
 
-**Conclusion**
+3.  Summary
 
-11. Key Findings and Recommendations
+    -   [Key Findings & Recommendations](#summary)
 :::
 :::::
 
-## Insight 1: Dataset and Portfolio Overview
+## Context & Objectives {#overview}
+
+::::: columns
+::: {.column width="50%"}
+![](images/clipboard-2866203017.png)
+:::
+
+::: {.column width="50%" style="font-size: 0.7em;"}
+**Context:**
+
+-   Insurers often carry **underperforming portfolios** with unknown root causes of poor profitability and high volatility.
+
+-   Traditional visual analytics in insurance is **limited to dashboard reporting**, lacking advanced analytical capabilities beyond tools like Tableau and Power BI.
+
+**Objectives:**
+
+-   Apply **univariate** visual analytics to explore distributions of numerical, categorical, and temporal variables.
+
+-   Apply **bivariate** visual analytics to identify and validate **key factors influencing profitability and volatility** of the motor insurance portfolio.
+:::
+:::::
+
+## Insight 1: Dataset & Portfolio Overview {#insight1}
 
 ::::: columns
 ::: {.column width="50%"}
@@ -147,7 +168,57 @@ ggplot(motoinsu, aes(x = fct_rev(fct_infreq(business_type)))) +
 -   **Business type**: 69.3% new business (NB) vs 30.7% portfolio (P), which means the insurer is heavily acquiring new customers rather than renewing existing ones. This is a risk signal, new customers have unknown claims history.
 :::
 
-## Insight 2: Loss Ratio by Policy Type
+## Insight 2: Correlation Structure {#insight2}
+
+::::: columns
+::: {.column width="40%" style="font-size: 0.5em;"}
+```{r}
+#| fig-width: 5
+#| fig-height: 3
+
+ggplot(motoinsu, aes(x = fct_rev(fct_infreq(municipality_type)))) +
+  geom_bar(aes(y = after_stat(count/sum(count) * 100)), fill = "steelblue") +
+  geom_text(aes(y = after_stat(count/sum(count) * 100),
+                label = paste0(round(after_stat(count/sum(count) * 100), 1), "%")),
+            stat = "count", hjust = -0.2, size = 3) +
+  coord_flip() +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.12))) +
+  labs(title = "Distribution of Municipality Type", x = "municipality_type", y = "Percentage (%)") +
+  theme_minimal() +
+  theme(axis.text.x = element_blank(),
+        axis.title.x = element_blank()
+        )
+  
+```
+:::
+
+::: {.column width="60%" style="font-size: 0.5em;"}
+```{r}
+#| fig-width: 10
+#| fig-height: 6
+#| 
+ggstatsplot::ggcorrmat(
+  data = motoinsu, 
+  cor.vars = c(total_premium, total_incurred, total_claims,
+               total_exposure, vehicle_value, driver_age,
+               vehicle_age, age_driving_licence, power_to_weight_ratio),
+  title = "Correlation Matrix of Key Variables",
+  colors = c(RColorBrewer::brewer.pal(3, "BrBG")[c(1, 2, 3)]),
+  ggcorrplot.args = list(
+    lab_size = 3
+  )
+)
+```
+:::
+:::::
+
+::: {style="font-size: 0.6em; margin-top: 40px;"}
+-   Municipality type: 64.6% type I (Inland) where typically have higher accident/theft risk than coastal and island areas. - **Strong:** vehicle_age and age_driving_licence (0.86) are **nearly duplicate**. Pricing is **not strongly value driven** (vehicle_value vs premium only 0.32).
+-   **Negative:** High performance vehicles tend to be **undervalued for risk** ( 0.49), and younger drivers prefer **higher performance cars** ( 0.18).
+-   **Key finding:** total_incurred has **near zero correlation** with all single variables, confirming **multivariate analysis is necessary**.
+:::
+
+## Insight 3: Loss Ratio by Policy Type {#insight3}
 
 ```{r}
 #| fig-width: 18
@@ -233,7 +304,7 @@ p1 + p2 + p3 + plot_layout(ncol = 3)
 -   **TPG**: Same low median incurred (882) and flat claim frequency as CC. Glass coverage adds **minimal risk** to the base product.
 :::
 
-## Insight 3: Optional Coverage Pricing Mismatch
+## Insight 4: Optional Coverage Pricing Mismatch {#insight4}
 
 :::::: columns
 ::: {.column width="50%"}
@@ -354,7 +425,7 @@ ggplot(incurred_long, aes(x = reorder(incurred_type, incurred_value, FUN = media
 :::
 ::::::
 
-## Insight 4: Vehicle Brand Risk
+## Insight 5: Vehicle Brand Risk {#insight5}
 
 ::::: columns
 ::: {.column width="50%" style="font-size: 0.5em;"}
@@ -362,22 +433,29 @@ ggplot(incurred_long, aes(x = reorder(incurred_type, incurred_value, FUN = media
 #| fig-width: 6
 #| fig-height: 3
 #| 
-motoinsu %>%
+brand_data <- motoinsu %>%
   group_by(vehicle_brand_grouped) %>%
   summarise(
     loss_ratio = sum(total_incurred)/sum(total_premium)*100,
     total_premium = sum(total_premium)
   ) %>%
   filter(vehicle_brand_grouped != "Others") %>%
-  ggplot(aes(x = total_premium, y = loss_ratio,    # x = total_premium now
-             size = total_premium, color = vehicle_brand_grouped)) +
-  geom_point(alpha = 0.7) +
-  geom_text(aes(label = vehicle_brand_grouped),
-            vjust = -1.5, size = 3, color = "black") +
+  mutate(logo = case_when(
+    vehicle_brand_grouped == "RENAULT"    ~ "images/renault.png",
+    vehicle_brand_grouped == "CITROEN"    ~ "images/citroen.png",
+    vehicle_brand_grouped == "PEUGEOT"    ~ "images/peugeot.png",
+    vehicle_brand_grouped == "VOLKSWAGEN" ~ "images/volkswagen.png",
+    vehicle_brand_grouped == "FORD"       ~ "images/ford.png",
+    vehicle_brand_grouped == "SEAT"       ~ "images/seat.png",
+    vehicle_brand_grouped == "OPEL"       ~ "images/opel.png"
+  ))
+
+ggplot(brand_data, aes(x = total_premium, y = loss_ratio)) +
+  geom_image(aes(image = logo), size = 0.1) +
   geom_text(aes(label = paste0("€", scales::comma(round(total_premium/1e6, 1)), "M")),
             vjust = 2.5, size = 2.8, color = "grey30") +
-  scale_x_continuous(labels = scales::comma) +    
-  scale_size_continuous(range = c(3, 18), guide = "none") +
+  scale_x_continuous(labels = scales::comma) +
+  scale_y_continuous(expand = expansion(mult = c(0.2, 0.1))) +
   labs(
     title = "Loss Ratio vs Vehicle Brand (sized by Total Premium)",
     x = "Total Premium (€)", y = "Loss Ratio (%)"
@@ -431,7 +509,7 @@ ggplot(motoinsu, aes(x = fct_infreq(vehicle_brand_grouped))) +
 :::
 :::::
 
-## Insight 5: Temporal Analysis by Year
+## Insight 6: Temporal Analysis by Year {#insight6}
 
 ::::: columns
 ::: {.column width="50%" style="font-size: 0.5em;"}
@@ -506,3 +584,133 @@ animate(p, nframes = 60, fps = 10, width = 800, height = 500,
 -   **SEAT** is consistently the worst among mid range brands, hovering around 70 to 80% across all three years. It never dips below the benchmark, confirming it is structurally underpriced.
 :::
 :::::
+
+## Insight 7: Loss Ratio by Bonus Score {#insight7}
+
+::::: columns
+::: {.column width="50%" style="font-size: 0.5em;"}
+```{r}
+#| fig-width: 6
+#| fig-height: 4
+#| 
+group_var <- "bonus_score"
+
+bonus_colors <- c(
+  "G" = "#F5B7B1",  # light red
+  "B" = "#E74C3C",  # medium red
+  "N" = "#922B21"   # dark red
+)
+
+motoinsu %>%
+  group_by(!!sym(group_var)) %>%
+  summarise(loss_ratio = sum(total_incurred)/sum(total_premium)*100) %>%
+  ggplot(aes(x = reorder(!!sym(group_var), loss_ratio), 
+             y = loss_ratio, fill = !!sym(group_var))) +
+  geom_col() +
+  geom_text(aes(label = paste0(round(loss_ratio, 1), "%")), hjust = -0.2, size = 4) +
+  coord_flip() +
+  scale_fill_manual(values = bonus_colors) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
+  labs(title = paste("Loss Ratio by", group_var), x = NULL, y = "Loss Ratio (%)") +
+  theme_minimal() +
+  theme(legend.position = "none",
+        axis.text.x = element_blank(),
+        axis.title.x = element_blank())
+```
+
+-   **G (Good history) is most profitable** at 69.7%, **N (New) is most costly** at 81.9%, with B (Bad) in between at 79.6%. The 12 point gap between G and N confirms claims history is a strong predictor of future loss.
+-   With 69.3% of the portfolio being **new business**, the insurer is **heavily exposed to the highest loss segment**, directly contributing to the worsening loss ratio trend seen in 2022 to 2024.
+:::
+
+::: {.column width="50%" style="font-size: 0.5em;"}
+```{r}
+#| fig-width: 6
+#| fig-height: 4
+
+ggplot(motoinsu, 
+       aes(x = driver_age, 
+           fill = bonus_score)) +
+  geom_density(alpha = 0.4) +
+  labs(title = "Density plot: Driver Age by Bonus Score", x = "Age", y = "Loss Ratio (%)") +
+  theme_minimal()
+```
+
+-   **N (New)** and **B (Bad)** share nearly identical age distributions, peaking sharply around 33 to 35, suggesting they are largely the **same cohort**: young, first time buyers who quickly accumulate claims.
+-   **G (Good)** is older and bimodal, peaking at \~40 and 55 to 65, with a long right tail to 80+, reflecting **experienced drivers with decades of claim free history**.
+:::
+:::::
+
+## Insight 8: Loss Ratio by Fuel Type {#insight8}
+
+::::: columns
+::: {.column width="50%" style="font-size: 0.6em;"}
+```{r}
+#| fig-width: 6
+#| fig-height: 4
+
+motoinsu %>%
+  count(fuel_type) %>%
+  mutate(pct = n / sum(n) * 100,
+         label = paste0(fuel_type, "\n", round(pct, 1), "%")) %>%
+  ggplot(aes(x = 2, y = pct, fill = fuel_type)) +
+  geom_col(width = 1) +
+  coord_polar(theta = "y") +
+  geom_text(aes(label = label),
+            position = position_stack(vjust = 0.5), size = 3.5) +
+  scale_fill_manual(values = c("D" = "steelblue", "G" = "#AED6F1")) +
+  xlim(0.5, 2.5) +
+  labs(title = "Distribution of Fuel Type") +
+  theme_void() +
+  theme(legend.position = "none")
+  
+```
+:::
+
+::: {.column width="50%" style="font-size: 0.6em;"}
+```{r}
+#| fig-width: 6
+#| fig-height: 4
+
+loss_heatmap <- motoinsu %>%
+  group_by(policy_type, fuel_type) %>%
+  summarise(loss_ratio = sum(total_incurred) / sum(total_premium) * 100, .groups = "drop")
+
+ggplot(loss_heatmap, aes(x = fuel_type, y = policy_type, fill = loss_ratio)) +
+  geom_tile(color = "white", linewidth = 1.5) +
+  geom_text(aes(label = paste0(round(loss_ratio, 1), "%")), 
+            size = 4.5, fontface = "bold", color = "white") +
+  scale_fill_gradient(low = "#F9E79F", high = "#C0392B") +
+  labs(title = "Loss Ratio: Policy Type vs Fuel Type", 
+       x = "Fuel Type", y = NULL, fill = "Loss Ratio (%)") +
+  theme(legend.position = "right") +
+  theme_exec
+
+```
+:::
+:::::
+
+::: {style="font-size: 0.6em;"}
+-   Fuel type splits 64.2% diesel versus 35.8% gasoline, consistent with Spain's historical diesel preference.
+-   **COMP_N:** Has the highest loss ratio (\~90%+) for **both** fuel types, with Diesel (D) appearing even more extreme (deep red). This policy type is clearly underperforming and likely unprofitable.
+-   **Fuel type (D vs G):** has minimal impact across most policy types, it likely shouldn’t be a primary rating factor in pricing models.
+:::
+
+## Key Findings {#summary}
+
+::: {style="font-size: 0.7em;"}
+-   The portfolio is growing but **increasingly unprofitable**, with loss ratio worsening sharply from 2022 to 2024 driven by rising claims severity alongside declining premiums.
+-   The insurer **relies heavily on new business** acquisition over renewals, and new customers consistently carry the worst loss ratios, directly contributing to portfolio deterioration.
+-   **COMP_N is the most dangerous product** with both the highest claim frequency and highest incurred losses, confirming that the absence of a deductible encourages excessive claiming. The gap with COMP_E proves deductibles are highly effective.
+-   **Optional coverages are systematically underpriced**, with fire showing the most extreme mismatch between what is charged and what is paid out, followed by occupants and glass. Only legal protection appears adequately priced. Mandatory coverages show mature pricing.
+-   **Younger drivers cluster in the new and bad bonus score** categories, suggesting these are largely the same cohort of first time buyers who quickly accumulate claims.
+-   **RENAULT and PEUGEOT are the most valuable brands**, combining high revenue with the lowest and most stable loss ratios across all three years. **OPEL and SEAT are the opposite:** low revenue, high loss ratios, and in OPEL's case extreme volatility.
+:::
+
+## Recommendations
+
+::: {style="font-size: 0.7em;"}
+-   **Confirmatory statistical analysis:** Future studies should incorporate formal hypothesis testing and regression modeling to validate these exploratory findings and establish causal relationships between risk factors and profitability.
+-   **Temporal granularity:** Extending the analysis to monthly or quarterly intervals could reveal seasonal patterns in claims frequency and severity that annual aggregation may obscure.
+-   **Customer retention analysis:** Investigating the relationship between cancellation behavior, policy tenure, and profitability would help design better retention strategies for low risk segments.
+-   **External data enrichment:** Incorporating macroeconomic indicators such as inflation rates, repair cost indices, and regional accident statistics could improve understanding of the drivers behind rising claims severity.
+:::
