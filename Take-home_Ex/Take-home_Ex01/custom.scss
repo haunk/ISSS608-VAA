@@ -3,13 +3,13 @@
 $presentation-heading-color: #1B2A4A;
 $body-color: #2C3E50;
 $link-color: #3D5A99;
-$font-family-sans-serif: "Calibri", "Segoe UI", sans-serif;
+$font-family-sans-serif: "Segoe UI", "Arial", sans-serif;
 
 /*-- scss:rules --*/
 
 .reveal .slide-number {
   color: #5D6D7E;
-  font-size: 0.7em;
+  font-size: 0.5em;
 }
 
 .reveal h1, .reveal h2 {
@@ -23,7 +23,7 @@ $font-family-sans-serif: "Calibri", "Segoe UI", sans-serif;
 }
 
 .reveal .slides section {
-  font-size: 0.85em;
+  font-size: 0.8em;
 }
 
 .reveal table {

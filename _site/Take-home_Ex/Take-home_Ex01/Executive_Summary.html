@@ -33,7 +33,7 @@
       vertical-align: middle;
     }
   </style>
-  <link rel="stylesheet" href="../../site_libs/revealjs/dist/theme/quarto-122ed1685974b7058367038f81d54760.css">
+  <link rel="stylesheet" href="../../site_libs/revealjs/dist/theme/quarto-34dbd99a358dac3857e85ff7afe1e9d8.css">
   <link href="../../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="../../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="../../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -173,6 +173,164 @@ Nguyen Kim Hau
 <li>Key Findings and Recommendations</li>
 </ol>
 </div></div>
+</section>
+<section id="insight-1-dataset-and-portfolio-overview" class="slide level2">
+<h2>Insight 1: Dataset and Portfolio Overview</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="Executive_Summary_files/figure-revealjs/unnamed-chunk-1-1.png" width="528"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="Executive_Summary_files/figure-revealjs/overview-business-1.png" width="528"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+<div style="font-size: 0.5em;">
+<ul>
+<li>The portfolio contains <strong>354,140 records</strong> from a Spanish motor insurance company, across <strong>47 variables</strong> (11 categorical, 35 numerical) from <strong>Jan 2022 to Dec 2024</strong> .</li>
+<li><strong>Policy type</strong>: CC dominates (58%), meaning most customers choose combined third-party + additional coverage. Pure TP is rare (1.6%) - customers prefer more protection.</li>
+<li><strong>Business type</strong>: 69.3% new business (NB) vs 30.7% portfolio (P), which means the insurer is heavily acquiring new customers rather than renewing existing ones. This is a risk signal, new customers have unknown claims history.</li>
+</ul>
+</div>
+</section>
+<section id="insight-2-loss-ratio-by-policy-type" class="slide level2">
+<h2>Insight 2: Loss Ratio by Policy Type</h2>
+
+<img data-src="Executive_Summary_files/figure-revealjs/unnamed-chunk-2-1.png" width="1728" class="r-stretch"><div style="font-size: 0.5em;">
+<ul>
+<li><strong>COMP_N</strong>: <strong>Most dangerous product</strong>. Highest median incurred (1,392) and widest claim frequency (IQR 1 to 5). No deductible encourages excessive claiming, driving up both frequency and severity. <strong>Immediate repricing needed</strong>.</li>
+<li><strong>COMP_E</strong>: Median incurred (954) is lower than TP despite broader coverage, proving the deductible effectively filters small claims. However, more outliers reach 10+ claims, suggesting it attracts <strong>higher risk customers</strong>.</li>
+<li><strong>TP</strong>: <strong>Most profitable</strong> by loss ratio, but surprisingly second highest median incurred (1,114). Low frequency (median 1) but <strong>costly when claims occur</strong> due to bodily injury liability.</li>
+<li><strong>CC</strong>: Lowest median incurred (882) with median 1 claim. High volume product with mixed, smaller claims. <strong>Stable and well priced</strong>.</li>
+<li><strong>TPG</strong>: Same low median incurred (882) and flat claim frequency as CC. Glass coverage adds <strong>minimal risk</strong> to the base product.</li>
+</ul>
+</div>
+</section>
+<section id="insight-3-optional-coverage-pricing-mismatch" class="slide level2">
+<h2>Insight 3: Optional Coverage Pricing Mismatch</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="Executive_Summary_files/figure-revealjs/unnamed-chunk-3-1.png" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="Executive_Summary_files/figure-revealjs/unnamed-chunk-4-1.png" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div style="font-size: 0.4em;">
+<p><strong>Safe (well priced)</strong>:</p>
+<ul>
+<li><p><strong>Property Damage</strong>: Most balanced coverage. Both violins are wide and well spread, showing effective risk segmentation in pricing that matches actual claim variation.</p></li>
+<li><p><strong>Liability</strong>: Mature pricing with a broad, full bodied premium violin showing good differentiation. Incurred violin is also wide with a long right tail, reflecting inherently high bodily injury severity.</p></li>
+<li><p><strong>Legal Protection</strong>: Only optional coverage adequately priced. Both violins are compact and narrow, meaning low variation on both sides and proportional shapes.</p></li>
+</ul>
+<p><strong>Risky (underpriced)</strong>:</p>
+<ul>
+<li><p><strong>Fire</strong>: Most critical. Premium violin is flat and concentrated near zero, while incurred violin is the widest in the entire chart, showing highly unpredictable expensive claims against nearly no pricing.</p></li>
+<li><p><strong>Occupants</strong>: Premium violin is the narrowest (no risk differentiation at all), yet incurred violin is broad and boxy, suggesting wide variation in claim severity.</p></li>
+<li><p><strong>Glass</strong>: Incurred violin has a distinctive diamond/star shape tightly clustered around a fixed cost, suggesting standardized repairs. Premium violin is thin and low, still too small to cover them.</p></li>
+<li><p><strong>Theft</strong>: Premium violin is wide and spread showing some differentiation, but incurred violin is a compact rectangle in a predictable band. The shapes do not match, pricing variation is misaligned with actual claim patterns.</p></li>
+</ul>
+<p><strong>Overall</strong>: Mandatory coverages have wide, full bodied violins on both sides, confirming mature pricing. Optional coverages have flat/narrow premium violins against much larger and varied incurred violins, confirming systematic underpricing.</p>
+</div>
+</div>
+</section>
+<section id="insight-4-vehicle-brand-risk" class="slide level2">
+<h2>Insight 4: Vehicle Brand Risk</h2>
+<div class="columns">
+<div class="column" style="font-size: 0.5em;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="Executive_Summary_files/figure-revealjs/unnamed-chunk-5-1.png" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><p><strong>OPEL</strong> (77%) and <strong>SEAT</strong> (74%) have the <strong>highest loss ratios</strong> with the <strong>smallest premium volumes</strong>, making them the <strong>most concerning</strong> brands.</p></li>
+<li><p><strong>VOLKSWAGEN</strong> (71%) carries the <strong>largest premium volume</strong> among named brands, requiring <strong>careful management</strong> given its revenue weight.</p></li>
+<li><p><strong>CITROEN</strong> (69%) offers the <strong>best balance</strong> of volume and profitability among French brands.</p></li>
+<li><p><strong>PEUGEOT</strong> (66%) and <strong>RENAULT</strong> (67%) deliver the <strong>lowest loss ratios</strong> with <strong>strong premium volumes</strong>, making them the <strong>most profitable</strong> brands in the portfolio.</p></li>
+</ul>
+</div><div class="column" style="font-size: 0.5em;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="Executive_Summary_files/figure-revealjs/unnamed-chunk-6-1.png" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>The near-equal spread among top brands means risk is <strong>not concentrated</strong> in any single brand’s characteristics.</li>
+<li>Among top 7, French brands (RENAULT, CITROEN, PEUGEOT) collectively represent ~27%, reflecting <strong>Spain’s strong preference for French</strong> automobiles.</li>
+<li>SEAT’s presence (~7.9%) is notable as a <strong>Spanish domestic brand</strong>, expected in a Spanish portfolio.</li>
+</ul>
+</div></div>
+</section>
+<section id="insight-5-temporal-analysis-by-year" class="slide level2">
+<h2>Insight 5: Temporal Analysis by Year</h2>
+<div class="columns">
+<div class="column" style="font-size: 0.5em;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="Executive_Summary_files/figure-revealjs/unnamed-chunk-7-1.png" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><p><strong>Average incurred</strong> rose steadily from ~187 to ~224, signaling <strong>growing claims severity</strong> year over year.</p></li>
+<li><p><strong>Average premium</strong> peaked in 2023 then declined, suggesting <strong>premium cuts to attract new business</strong> while claims costs kept rising.</p></li>
+<li><p><strong>Loss ratio</strong> jumped from ~66.5% to ~75%, with the <strong>sharpest spike in 2024</strong> (~8 percentage points in one year).</p></li>
+</ul>
+<p>=&gt; <strong>Warning:</strong> Rising claims, declining premiums, and worsening loss ratio indicate <strong>accelerating financial stress</strong>. Heavy new business acquisition without adequate premium adjustment is an <strong>urgent risk</strong> requiring immediate repricing action.</p>
+</div><div class="column" style="font-size: 0.5em;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="Executive_Summary_files/figure-revealjs/unnamed-chunk-8-1.gif"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Across three year window, <strong>RENAULT and PEUGEOT</strong> are the most stable, staying in the 63 to 68% range. They are the safest brands in the portfolio and should be prioritized for customer retention.</li>
+<li><strong>OPEL</strong> continues to show warning to be the highest volatile brand. This instability suggests a small portfolio where a few large claims can swing the ratio wildly. Unpredictable and hard to price.</li>
+<li><strong>SEAT</strong> is consistently the worst among mid range brands, hovering around 70 to 80% across all three years. It never dips below the benchmark, confirming it is structurally underpriced.</li>
+</ul>
+</div></div>
 
 
 </section>
@@ -235,7 +393,7 @@ Nguyen Kim Hau
         slideNumber: 'c/t',
 
         // 'all', 'print', or 'speaker'
-        showSlideNumber: 'print',
+        showSlideNumber: 'all',
 
         // Add the current slide number to the URL hash so that reloading the
         // page/copying the URL will return you to the same slide

@@ -1066,9 +1066,9 @@
   {
     "objectID": "Take-home_Ex/Take-home_Ex01/Executive_Summary.html",
     "href": "Take-home_Ex/Take-home_Ex01/Executive_Summary.html",
-    "title": "Executive Summary: Unmasking Motor Insurance Risk Drivers",
+    "title": "Unmasking Motor Insurance Risk Drivers",
     "section": "",
-    "text": "fdfsfs"
+    "text": "Portfolio Profile\n\nDataset and Portfolio Overview\nCategorical Variable Distributions\nNumerical Variable Distributions\n\nRisk and Profitability\n\nTemporal Performance Trend\nLoss Ratio by Policy Type\nLoss Ratio by Bonus Score\n\n\nDeep Dive Analysis\n\nOptional Coverage Pricing Mismatch\nVehicle Brand Risk Analysis\nDriver Age and Bonus Score Patterns\nCorrelation Structure\n\nConclusion\n\nKey Findings and Recommendations"
   },
   {
     "objectID": "Take-home_Ex/Take-home_Ex01/ExecutiveSummary.html",
@@ -1237,5 +1237,40 @@
     "title": "Unmasking Motor Insurance Risk Drivers",
     "section": "Contents",
     "text": "Contents\n\n\nPortfolio Profile\n\nDataset and Portfolio Overview\nCategorical Variable Distributions\nNumerical Variable Distributions\n\nRisk and Profitability\n\nTemporal Performance Trend\nLoss Ratio by Policy Type\nLoss Ratio by Bonus Score\n\n\nDeep Dive Analysis\n\nOptional Coverage Pricing Mismatch\nVehicle Brand Risk Analysis\nDriver Age and Bonus Score Patterns\nCorrelation Structure\n\nConclusion\n\nKey Findings and Recommendations"
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex01/Executive_Summary.html#insight-1-dataset-and-portfolio-overview",
+    "href": "Take-home_Ex/Take-home_Ex01/Executive_Summary.html#insight-1-dataset-and-portfolio-overview",
+    "title": "Unmasking Motor Insurance Risk Drivers",
+    "section": "Insight 1: Dataset and Portfolio Overview",
+    "text": "Insight 1: Dataset and Portfolio Overview\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nThe portfolio contains 354,140 records from a Spanish motor insurance company, across 47 variables (11 categorical, 35 numerical) from Jan 2022 to Dec 2024 .\nPolicy type: CC dominates (58%), meaning most customers choose combined third-party + additional coverage. Pure TP is rare (1.6%) - customers prefer more protection.\nBusiness type: 69.3% new business (NB) vs 30.7% portfolio (P), which means the insurer is heavily acquiring new customers rather than renewing existing ones. This is a risk signal, new customers have unknown claims history."
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex01/Executive_Summary.html#insight-2-loss-ratio-by-policy-type",
+    "href": "Take-home_Ex/Take-home_Ex01/Executive_Summary.html#insight-2-loss-ratio-by-policy-type",
+    "title": "Unmasking Motor Insurance Risk Drivers",
+    "section": "Insight 2: Loss Ratio by Policy Type",
+    "text": "Insight 2: Loss Ratio by Policy Type\n\n\n\nCOMP_N: Most dangerous product. Highest median incurred (1,392) and widest claim frequency (IQR 1 to 5). No deductible encourages excessive claiming, driving up both frequency and severity. Immediate repricing needed.\nCOMP_E: Median incurred (954) is lower than TP despite broader coverage, proving the deductible effectively filters small claims. However, more outliers reach 10+ claims, suggesting it attracts higher risk customers.\nTP: Most profitable by loss ratio, but surprisingly second highest median incurred (1,114). Low frequency (median 1) but costly when claims occur due to bodily injury liability.\nCC: Lowest median incurred (882) with median 1 claim. High volume product with mixed, smaller claims. Stable and well priced.\nTPG: Same low median incurred (882) and flat claim frequency as CC. Glass coverage adds minimal risk to the base product."
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex01/Executive_Summary.html#insight-3-optional-coverage-pricing-mismatch",
+    "href": "Take-home_Ex/Take-home_Ex01/Executive_Summary.html#insight-3-optional-coverage-pricing-mismatch",
+    "title": "Unmasking Motor Insurance Risk Drivers",
+    "section": "Insight 3: Optional Coverage Pricing Mismatch",
+    "text": "Insight 3: Optional Coverage Pricing Mismatch\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nSafe (well priced):\n\nProperty Damage: Most balanced coverage. Both violins are wide and well spread, showing effective risk segmentation in pricing that matches actual claim variation.\nLiability: Mature pricing with a broad, full bodied premium violin showing good differentiation. Incurred violin is also wide with a long right tail, reflecting inherently high bodily injury severity.\nLegal Protection: Only optional coverage adequately priced. Both violins are compact and narrow, meaning low variation on both sides and proportional shapes.\n\nRisky (underpriced):\n\nFire: Most critical. Premium violin is flat and concentrated near zero, while incurred violin is the widest in the entire chart, showing highly unpredictable expensive claims against nearly no pricing.\nOccupants: Premium violin is the narrowest (no risk differentiation at all), yet incurred violin is broad and boxy, suggesting wide variation in claim severity.\nGlass: Incurred violin has a distinctive diamond/star shape tightly clustered around a fixed cost, suggesting standardized repairs. Premium violin is thin and low, still too small to cover them.\nTheft: Premium violin is wide and spread showing some differentiation, but incurred violin is a compact rectangle in a predictable band. The shapes do not match, pricing variation is misaligned with actual claim patterns.\n\nOverall: Mandatory coverages have wide, full bodied violins on both sides, confirming mature pricing. Optional coverages have flat/narrow premium violins against much larger and varied incurred violins, confirming systematic underpricing."
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex01/Executive_Summary.html#insight-4-vehicle-brand-risk",
+    "href": "Take-home_Ex/Take-home_Ex01/Executive_Summary.html#insight-4-vehicle-brand-risk",
+    "title": "Unmasking Motor Insurance Risk Drivers",
+    "section": "Insight 4: Vehicle Brand Risk",
+    "text": "Insight 4: Vehicle Brand Risk\n\n\n\n\n\n\n\n\n\n\n\n\nOPEL (77%) and SEAT (74%) have the highest loss ratios with the smallest premium volumes, making them the most concerning brands.\nVOLKSWAGEN (71%) carries the largest premium volume among named brands, requiring careful management given its revenue weight.\nCITROEN (69%) offers the best balance of volume and profitability among French brands.\nPEUGEOT (66%) and RENAULT (67%) deliver the lowest loss ratios with strong premium volumes, making them the most profitable brands in the portfolio.\n\n\n\n\n\n\n\n\n\n\n\n\nThe near-equal spread among top brands means risk is not concentrated in any single brand’s characteristics.\nAmong top 7, French brands (RENAULT, CITROEN, PEUGEOT) collectively represent ~27%, reflecting Spain’s strong preference for French automobiles.\nSEAT’s presence (~7.9%) is notable as a Spanish domestic brand, expected in a Spanish portfolio."
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex01/Executive_Summary.html#insight-5-temporal-analysis-by-year",
+    "href": "Take-home_Ex/Take-home_Ex01/Executive_Summary.html#insight-5-temporal-analysis-by-year",
+    "title": "Unmasking Motor Insurance Risk Drivers",
+    "section": "Insight 5: Temporal Analysis by Year",
+    "text": "Insight 5: Temporal Analysis by Year\n\n\n\n\n\n\n\n\n\n\n\n\nAverage incurred rose steadily from ~187 to ~224, signaling growing claims severity year over year.\nAverage premium peaked in 2023 then declined, suggesting premium cuts to attract new business while claims costs kept rising.\nLoss ratio jumped from ~66.5% to ~75%, with the sharpest spike in 2024 (~8 percentage points in one year).\n\n=&gt; Warning: Rising claims, declining premiums, and worsening loss ratio indicate accelerating financial stress. Heavy new business acquisition without adequate premium adjustment is an urgent risk requiring immediate repricing action.\n\n\n\n\n\n\n\n\n\n\n\nAcross three year window, RENAULT and PEUGEOT are the most stable, staying in the 63 to 68% range. They are the safest brands in the portfolio and should be prioritized for customer retention.\nOPEL continues to show warning to be the highest volatile brand. This instability suggests a small portfolio where a few large claims can swing the ratio wildly. Unpredictable and hard to price.\nSEAT is consistently the worst among mid range brands, hovering around 70 to 80% across all three years. It never dips below the benchmark, confirming it is structurally underpriced."
   }
 ]
