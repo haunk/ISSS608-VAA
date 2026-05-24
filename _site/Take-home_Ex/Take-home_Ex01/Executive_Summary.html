@@ -10,7 +10,8 @@
   <meta name="generator" content="quarto-1.9.37">
 
   <meta name="author" content="Nguyen Kim Hau">
-  <title>ISSS608-VAA – Executive Summary</title>
+  <meta name="dcterms.date" content="2026-05-24">
+  <title>ISSS608-VAA – Unmasking Motor Insurance Risk Drivers</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -32,7 +33,7 @@
       vertical-align: middle;
     }
   </style>
-  <link rel="stylesheet" href="../../site_libs/revealjs/dist/theme/quarto-2740581606dc327e82f18f789b69d8a0.css">
+  <link rel="stylesheet" href="../../site_libs/revealjs/dist/theme/quarto-122ed1685974b7058367038f81d54760.css">
   <link href="../../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="../../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="../../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -130,7 +131,8 @@
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title">Executive Summary</h1>
+  <h1 class="title">Unmasking Motor Insurance Risk Drivers</h1>
+  <p class="subtitle">Executive Summary</p>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
@@ -140,9 +142,37 @@ Nguyen Kim Hau
 </div>
 </div>
 
+  <p class="date">2026-05-24</p>
 </section>
-<section class="slide level2">
-
+<section id="contents" class="slide level2">
+<h2>Contents</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>Portfolio Profile</strong></p>
+<ol type="1">
+<li>Dataset and Portfolio Overview</li>
+<li>Categorical Variable Distributions</li>
+<li>Numerical Variable Distributions</li>
+</ol>
+<p><strong>Risk and Profitability</strong></p>
+<ol start="4" type="1">
+<li>Temporal Performance Trend</li>
+<li>Loss Ratio by Policy Type</li>
+<li>Loss Ratio by Bonus Score</li>
+</ol>
+</div><div class="column" style="width:50%;">
+<p><strong>Deep Dive Analysis</strong></p>
+<ol start="7" type="1">
+<li>Optional Coverage Pricing Mismatch</li>
+<li>Vehicle Brand Risk Analysis</li>
+<li>Driver Age and Bonus Score Patterns</li>
+<li>Correlation Structure</li>
+</ol>
+<p><strong>Conclusion</strong></p>
+<ol start="11" type="1">
+<li>Key Findings and Recommendations</li>
+</ol>
+</div></div>
 
 
 </section>
@@ -202,10 +232,10 @@ Nguyen Kim Hau
         progress: true,
 
         // Display the page number of the current slide
-        slideNumber: false,
+        slideNumber: 'c/t',
 
         // 'all', 'print', or 'speaker'
-        showSlideNumber: 'all',
+        showSlideNumber: 'print',
 
         // Add the current slide number to the URL hash so that reloading the
         // page/copying the URL will return you to the same slide
@@ -307,7 +337,7 @@ Nguyen Kim Hau
         previewLinks: false,
 
         // Transition style (none/fade/slide/convex/concave/zoom)
-        transition: 'none',
+        transition: 'slide',
 
         // Transition speed (default/fast/slow)
         transitionSpeed: 'default',
@@ -327,9 +357,9 @@ Nguyen Kim Hau
         // The "normal" size of the presentation, aspect ratio will be preserved
         // when the presentation is scaled to fit different resolutions. Can be
         // specified using percentage units.
-        width: 1050,
+        width: 1280,
 
-        height: 700,
+        height: 720,
 
         // Factor of the display size that should remain empty around the content
         margin: 0.1,
@@ -361,6 +391,82 @@ Nguyen Kim Hau
         ]
       });
     </script>
+    
+
+    <script>
+
+      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
+
+      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
+
+      // slide changes (different for each slide format).
+
+      (function () {
+
+        // dispatch for htmlwidgets
+
+        function fireSlideEnter() {
+
+          const event = window.document.createEvent("Event");
+
+          event.initEvent("slideenter", true, true);
+
+          window.document.dispatchEvent(event);
+
+        }
+
+    
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+
+          fireSlideEnter();
+
+    
+
+          // dispatch for shiny
+
+          if (window.jQuery) {
+
+            if (previousSlide) {
+
+              window.jQuery(previousSlide).trigger("hidden");
+
+            }
+
+            if (currentSlide) {
+
+              window.jQuery(currentSlide).trigger("shown");
+
+            }
+
+          }
+
+        }
+
+    
+
+        // hookup for slidy
+
+        if (window.w3c_slidy) {
+
+          window.w3c_slidy.add_observer(function (slide_num) {
+
+            // slide_num starts at position 1
+
+            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
+
+          });
+
+        }
+
+    
+
+      })();
+
+    </script>
+
+    
+
     <script id="quarto-html-after-body" type="application/javascript">
       window.document.addEventListener("DOMContentLoaded", function (event) {
         const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")

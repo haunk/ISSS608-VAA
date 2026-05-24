@@ -1,5 +1,146 @@
 ---
-title: "Executive Summary"
+title: "Unmasking Motor Insurance Risk Drivers"
+subtitle: "Executive Summary"
 author: "Nguyen Kim Hau"
-format: revealjs
+date: "May 24, 2026"
+date-modified: "last-modified"
+format:
+  revealjs: 
+    theme: [default, custom.scss]
+    slide-number: true
+    show-slide-number: print
+    transition: slide
+    width: 1280
+    height: 720
+    code-fold: true
+    code-summary: "Show the code"
+    fig-align: center
+execute:
+  echo: false
+  warning: false
+  message: false
 ---
+
+```{r}
+#| label: setup
+#| include: false
+
+pacman::p_load(tidyverse, readxl, kableExtra, patchwork, 
+               ggrepel, scales, RColorBrewer)
+
+motoinsu <- read_delim("data/Motor_insurance_portfolio.csv", delim = ";")
+
+motoinsu <- motoinsu %>%
+  mutate(
+    insured_id = as.character(insured_id),
+    across(c(year, policy_type, policy_status, business_type,
+             payment_frequency, bonus_score, fuel_type, seats,
+             vehicle_brand, municipality_type, circulation_area), 
+           as.factor),
+    across(c(liability_premium, property_damage_premium,
+             theft_premium, fire_premium, glass_premium,
+             legal_protection_premium, occupants_premium,
+             total_exposure, liability_exposure), 
+           as.double)
+  )
+
+motoinsu <- motoinsu %>%
+  drop_na(vehicle_age, age_driving_licence, fuel_type, vehicle_value) %>%
+  mutate(
+    fire_incurred = replace_na(fire_incurred, 0),
+    occupants_incurred = replace_na(occupants_incurred, 0)
+  )
+
+top_brands <- c("RENAULT", "CITROEN", "PEUGEOT", "VOLKSWAGEN", "FORD", "SEAT", "OPEL")
+motoinsu <- motoinsu %>%
+  mutate(vehicle_brand_grouped = fct_other(vehicle_brand, 
+                                            keep = top_brands, 
+                                            other_level = "Others"))
+
+theme_exec <- theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(face = "bold", size = 16, color = "#1B2A4A"),
+    plot.subtitle = element_text(size = 12, color = "#5D6D7E"),
+    axis.text = element_text(color = "#5D6D7E"),
+    panel.grid.minor = element_blank(),
+    legend.position = "bottom"
+  )
+
+```
+## Contents
+
+::::: columns
+::: {.column width="50%"}
+**Portfolio Profile**
+
+1.  Dataset and Portfolio Overview
+2.  Categorical Variable Distributions
+3.  Numerical Variable Distributions
+
+**Risk and Profitability**
+
+4.  Temporal Performance Trend
+5.  Loss Ratio by Policy Type
+6.  Loss Ratio by Bonus Score
+:::
+
+::: {.column width="50%"}
+**Deep Dive Analysis**
+
+7.  Optional Coverage Pricing Mismatch
+8.  Vehicle Brand Risk Analysis
+9.  Driver Age and Bonus Score Patterns
+10. Correlation Structure
+
+**Conclusion**
+
+11. Key Findings and Recommendations
+:::
+:::::
+## Insight 1: Dataset and Portfolio Overview
+
+::::: columns
+::: {.column width="50%"}
+```{r}
+#| label: overview-policy
+#| fig-width: 5.5
+#| fig-height: 3.8
+
+comp_data <- tibble(
+  Category = c("CC", "TPG", "COMP_E", "COMP_N", "TP"),
+  Percentage = c(58.0, 20.7, 12.2, 7.5, 1.6)
+)
+
+ggplot(comp_data, aes(x = reorder(Category, Percentage), y = Percentage, fill = Category)) +
+  geom_col(width = 0.65) +
+  geom_text(aes(label = paste0(Percentage, "%")), hjust = -0.15, size = 4, fontface = "bold") +
+  coord_flip() +
+  scale_fill_manual(values = c("CC" = "#3D5A99", "TPG" = "#5B8DB8", 
+                                "COMP_E" = "#E8913A", "COMP_N" = "#C0392B", "TP" = "#27AE60")) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.18))) +
+  labs(title = "Policy Type Distribution", x = NULL, y = "Percentage (%)") +
+  theme_exec + theme(legend.position = "none")
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+#| label: overview-business
+#| fig-width: 5.5
+#| fig-height: 3.8
+
+biz_data <- tibble(
+  Type = c("New Business", "Portfolio Renewal"),
+  Pct = c(69.3, 30.7)
+)
+
+ggplot(biz_data, aes(x = reorder(Type, Pct), y = Pct, fill = Type)) +
+  geom_col(width = 0.5) +
+  geom_text(aes(label = paste0(Pct, "%")), hjust = -0.15, size = 4.5, fontface = "bold") +
+  coord_flip() +
+  scale_fill_manual(values = c("New Business" = "#C0392B", "Portfolio Renewal" = "#3D5A99")) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.18))) +
+  labs(title = "Business Type Composition", x = NULL, y = "Percentage (%)") +
+  theme_exec + theme(legend.position = "none")
+```
+:::
