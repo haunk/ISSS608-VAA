@@ -9,7 +9,7 @@
 <meta name="author" content="Nguyen Kim Hau">
 <meta name="dcterms.date" content="2026-05-15">
 
-<title>Technical Report: Unmasking Motor Insurance Risk Drivers – ISSS608-VAA</title>
+<title>Unmasking Motor Insurance Risk Drivers – ISSS608-VAA</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -312,7 +312,7 @@ div.csl-indent {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Technical Report: Unmasking Motor Insurance Risk Drivers</h1>
+<h1 class="title">Unmasking Motor Insurance Risk Drivers</h1>
 <p class="subtitle lead">Technical Report</p>
 </div>
 
@@ -1900,7 +1900,7 @@ Note
 <div class="cell">
 <details class="code-fold">
 <summary>Show the code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>premium_vars <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"total_premium"</span>, <span class="st">"liability_premium"</span>, <span class="st">"property_damage_premium"</span>,</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>premium_vars <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"liability_premium"</span>, <span class="st">"property_damage_premium"</span>,</span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>                   <span class="st">"theft_premium"</span>, <span class="st">"fire_premium"</span>, <span class="st">"glass_premium"</span>,</span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>                   <span class="st">"legal_protection_premium"</span>, <span class="st">"occupants_premium"</span>)</span>
 <span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -1949,7 +1949,7 @@ Note
 <div class="cell">
 <details class="code-fold">
 <summary>Show the code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>incurred_vars <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"total_incurred"</span>, <span class="st">"liability_incurred"</span>, <span class="st">"liability_property_incurred"</span>,</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>incurred_vars <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"liability_incurred"</span>, <span class="st">"liability_property_incurred"</span>,</span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"liability_injury_incurred"</span>, <span class="st">"property_incurred"</span>, <span class="st">"theft_incurred"</span>,</span>
 <span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"fire_incurred"</span>, <span class="st">"glass_incurred"</span>, <span class="st">"legal_protection_incurred"</span>,</span>
 <span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"occupants_incurred"</span>)</span>
@@ -2012,7 +2012,9 @@ Note
 <li><p><strong>Occupants:</strong> Premium median = 1.8, incurred median = 635.7. A 350x gap. Premium has the narrowest violin (zero risk differentiation), yet incurred shows a broad, boxy shape suggesting varied claim severity.</p></li>
 <li><p><strong>Glass:</strong> Incurred violin has a distinctive diamond/star shape with a tight cluster around 387, suggesting standardized repair costs (windshield replacement at fixed rates). Premium (15.7) is too low relative to this.</p></li>
 <li><p><strong>Theft:</strong> Premium violin is wide and spread (7.2 median) showing some risk differentiation, but incurred (310.4) has a compact rectangular shape, meaning theft claims tend to fall within a predictable cost band. The pricing variation does not match the claim pattern.</p></li>
-<li><p><strong>Legal protection:</strong> The only coverage where shapes are somewhat proportional. Both violins are compact and narrow, suggesting this is the best priced optional coverage.</p>
+<li><p><strong>Legal protection:</strong> The only coverage where shapes are somewhat proportional. Both violins are compact and narrow, suggesting this is the best priced optional coverage.</p></li>
+<li><p><strong>Liability</strong>: Premium median = 165.9, incurred median = 1,114. The premium violin shows a well shaped, wide distribution indicating mature risk based pricing with differentiation across policyholders. The incurred violin is also wide with a long right tail, reflecting the inherently high severity of bodily injury claims. Liability injury incurred (1,662.6) is the highest median across all types, confirming that personal injury drives the most expensive claims in the portfolio.</p></li>
+<li><p><strong>Property Damage</strong>: Premium median = 201.9, incurred median = 1,000.3. Both violins display broad, well spread shapes, confirming effective risk segmentation in pricing. The relatively close alignment between premium and incurred distributions makes this the most balanced mandatory coverage.</p>
 <p><strong>➨ Overall pattern:</strong> Mandatory coverages (liability, property damage) show wide, well shaped violins on both sides, indicating mature risk based pricing. Optional coverages show flat/narrow premium violins against much larger and varied incurred violins, confirming systematic underpricing of add on products.</p></li>
 </ul>
 </div>
@@ -2089,14 +2091,29 @@ Warning
 <div class="cell">
 <details class="code-fold">
 <summary>Show the code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>motoinsu <span class="sc">%&gt;%</span></span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(policy_type, fuel_type) <span class="sc">%&gt;%</span></span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">loss_ratio =</span> <span class="fu">sum</span>(total_incurred) <span class="sc">/</span> <span class="fu">sum</span>(total_premium) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> fuel_type, <span class="at">y =</span> policy_type, <span class="at">fill =</span> loss_ratio)) <span class="sc">+</span></span>
-<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_tile</span>() <span class="sc">+</span></span>
-<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> <span class="st">"white"</span>, <span class="at">high =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
-<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Loss Ratio Heatmap: Policy Type vs Fuel Type"</span>) <span class="sc">+</span></span>
-<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>theme_exec <span class="ot">&lt;-</span> <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>) <span class="sc">+</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">16</span>, <span class="at">color =</span> <span class="st">"#1B2A4A"</span>),</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>, <span class="at">color =</span> <span class="st">"#5D6D7E"</span>),</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">"#5D6D7E"</span>),</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"bottom"</span></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>loss_heatmap <span class="ot">&lt;-</span> motoinsu <span class="sc">%&gt;%</span></span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(policy_type, fuel_type) <span class="sc">%&gt;%</span></span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">loss_ratio =</span> <span class="fu">sum</span>(total_incurred) <span class="sc">/</span> <span class="fu">sum</span>(total_premium) <span class="sc">*</span> <span class="dv">100</span>, <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(loss_heatmap, <span class="fu">aes</span>(<span class="at">x =</span> fuel_type, <span class="at">y =</span> policy_type, <span class="at">fill =</span> loss_ratio)) <span class="sc">+</span></span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_tile</span>(<span class="at">color =</span> <span class="st">"white"</span>, <span class="at">linewidth =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(loss_ratio, <span class="dv">1</span>), <span class="st">"%"</span>)), </span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a>            <span class="at">size =</span> <span class="fl">4.5</span>, <span class="at">fontface =</span> <span class="st">"bold"</span>, <span class="at">color =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
+<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> <span class="st">"#F9E79F"</span>, <span class="at">high =</span> <span class="st">"#C0392B"</span>) <span class="sc">+</span></span>
+<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Loss Ratio Heatmap: Policy Type vs Fuel Type"</span>, </span>
+<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Fuel Type"</span>, <span class="at">y =</span> <span class="cn">NULL</span>, <span class="at">fill =</span> <span class="st">"Loss Ratio (%)"</span>) <span class="sc">+</span></span>
+<span id="cb29-22"><a href="#cb29-22" aria-hidden="true" tabindex="-1"></a>  theme_exec <span class="sc">+</span></span>
+<span id="cb29-23"><a href="#cb29-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"right"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -2143,7 +2160,7 @@ Warning
 <span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">1.5</span>, <span class="at">size =</span> <span class="dv">3</span>, <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
 <span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">paste0</span>(<span class="st">"€"</span>, scales<span class="sc">::</span><span class="fu">comma</span>(<span class="fu">round</span>(total_premium<span class="sc">/</span><span class="fl">1e6</span>, <span class="dv">1</span>)), <span class="st">"M"</span>)),</span>
 <span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>            <span class="at">vjust =</span> <span class="fl">2.5</span>, <span class="at">size =</span> <span class="fl">2.8</span>, <span class="at">color =</span> <span class="st">"grey30"</span>) <span class="sc">+</span></span>
-<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>comma) <span class="sc">+</span>     <span class="co"># x-axis shows premium numbers like y-axis</span></span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>comma) <span class="sc">+</span>    </span>
 <span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_size_continuous</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">18</span>), <span class="at">guide =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
 <span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
 <span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Loss Ratio vs Vehicle Brand (sized by Total Premium)"</span>,</span>
