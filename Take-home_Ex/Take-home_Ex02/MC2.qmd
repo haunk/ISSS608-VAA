@@ -1,0 +1,150 @@
+---
+title: "MC2"
+author: "Nguyen Kim Hau"
+date: "May 27, 2026"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  warning: false
+  freeze: true
+format:
+  html:
+    code-fold: true
+    code-summary: "Show the code"
+---
+
+```{r}
+pacman::p_load(jsonlite, tidyverse,
+               ggraph, tidygraph)
+```
+
+Run one time:
+
+`mc2_data <- fromJSON("data/mc2_data.json")`
+
+`org_chart <- fromJSON("data/org_chart.json")`
+
+`write_rds(mc2_data, "data/mc2_data.rds")`
+
+`write_rds(org_chart, "data/org_chart.rds")`
+
+```{r}
+mc2_data <- read_rds("data/mc2_data.rds") 
+glimpse(mc2_data)
+```
+
+```{r}
+# Flatten the top level
+mc2_events <- mc2_data$events
+glimpse(mc2_events)
+```
+
+Org_chart
+
+```{r}
+org_chart <- read_rds("data/org_chart.rds") 
+glimpse(org_chart)
+```
+
+```{r}
+org_chart_nodes <- as_tibble(org_chart$nodes)
+org_chart_nodes
+```
+
+```{r}
+org_chart_edges <- as_tibble(org_chart$edges)
+org_chart_edges
+```
+
+Draw tree
+
+```{r}
+#| code-fold: false
+#| code-summary: "Show the code"
+graph <- tbl_graph(nodes = org_chart_nodes, 
+                   edges = org_chart_edges,
+                   directed = TRUE)
+
+ggraph(graph, layout = "tree") +
+  geom_edge_diagonal(alpha = 0.4) +
+  geom_node_point(aes(color = type), size = 3) +
+  geom_node_text(aes(label = label), size = 2, repel = TRUE) +
+  theme_void() +
+  labs(title = "Tenant Thread Organization Chart")
+```
+
+```{r}
+# Check which columns have non-NA
+mc2_events$details %>%
+  summarise(across(where(is.character), 
+                   ~sum(!is.na(.x)))) %>%
+  pivot_longer(everything(), 
+               names_to = "column", 
+               values_to = "non_na") %>%
+  arrange(desc(non_na))
+```
+
+```{r}
+mc2_wevents %>% 
+  count(short_name, sort = TRUE)
+```
+
+```{r}
+# Extract sender-receiver pairs
+comm_edges <- mc2_events %>%
+  filter(short_name == "sent") %>%
+  mutate(
+    from = details$from,
+    to = details$to
+  ) %>%
+  filter(!is.na(from), !is.na(to)) %>%
+  # filter(from == "person:john_windward" | to == "person:john_windward") %>%
+  filter(str_detect(from, "john_windward") | str_detect(to, "john_windward")) %>%
+  count(from, to, name = "weight")
+
+# Build graph
+comm_graph <- as_tbl_graph(comm_edges, directed = TRUE)
+
+ggraph(comm_graph, layout = "fr") +
+  geom_edge_link(aes(width = weight), alpha = 0.3, 
+                 arrow = arrow(length = unit(2, "mm"))) +
+  geom_node_point(size = 4, color = "steelblue") +
+  geom_node_text(aes(label = str_remove(name, "person:")), 
+                 size = 2.5, repel = TRUE) +
+  theme_void() +
+  labs(title = "Who communicates with whom")
+```
+
+```{r}
+# Filter events involving John Windward
+jw_events <- mc2_events %>%
+  mutate(row = row_number()) %>%
+  filter(map_lgl(parties, ~ any(str_detect(.x, "john_windward"))))
+
+# Build sequential chain: event → next event
+jw_chain <- jw_events %>%
+  mutate(
+    datetime = as_datetime(when),
+    node_label = paste0(short_name, "\n", 
+                        format(datetime, "%m-%d %H:%M"))
+  ) %>%
+  arrange(datetime) %>%
+  mutate(
+    from = lag(node_label),
+    to = node_label
+  ) %>%
+  filter(!is.na(from))
+
+jw_graph <- as_tbl_graph(
+  jw_chain %>% select(from, to), directed = TRUE
+)
+
+ggraph(jw_graph, layout = "linear") +
+  geom_edge_link(arrow = arrow(length = unit(2, "mm"))) +
+  geom_node_point(size = 3, color = "tomato") +
+  geom_node_text(aes(label = name), size = 2, angle = 45, hjust = 0) +
+  theme_void() +
+  labs(title = "John Windward's event chain leading to SaidIt post")
+
+```

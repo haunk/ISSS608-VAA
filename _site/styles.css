@@ -83,3 +83,8 @@ body.home-page::after {
 .callout-warning .callout-header * {
   color: white !important;
 }
+
+/* ========== INLINE CODE STYLING ========== */
+:not(pre) > code {
+  background-color: #f0f0f0 !important;
+}

@@ -1,0 +1,586 @@
+---
+title: "MC2, Data Preprocessing"
+author: "Nguyen Kim Hau"
+date: "May 29, 2026"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  warning: false
+  freeze: true
+format:
+  html:
+    code-fold: true
+    code-summary: "Show the code"
+    toc: true
+    toc-depth: 3
+    number-sections: true
+---
+
+# Overview
+
+This document covers the **data preparation stage** for VAST Challenge 2026 Mini-Challenge 2 (MC2). The task is to reconstruct the chain of events that led to the anomalous SaidIt post sent by **John Windward** on **May 17, 2046 at 4:21am**.
+
+Before any analysis can happen, the raw data needs to be:
+
+1.  Loaded efficiently and inspected,
+2.  Flattened from its nested JSON structure into tidy tables,
+3.  Cleaned (timestamps converted, duplicates checked, missingness understood),
+4.  Joined with the organisation chart so that every actor in an event can be traced back to their **department**, **team**, and **human principal** (for autonomous agents).
+
+The end product of this stage is a single enriched events table (`events_mapped`) plus several lookup tables. Along the way we render several descriptive visuals so the shape of the data is intuitive before any modelling begins.
+
+# Setup
+
+## Loading R packages
+
+The packages below cover the jobs we do in this notebook: read JSON (`jsonlite`), wrangle in the tidyverse, handle timestamps (`lubridate`), walk the org chart as a graph (`tidygraph`, `ggraph`), and render the report tables and plots (`DT`, `gt`, `scales`, `patchwork`).
+
+```{r}
+pacman::p_load(jsonlite, tidyverse, lubridate,
+               tidygraph, ggraph,
+               DT, gt, scales, patchwork)
+```
+
+## Reading the raw data
+
+The JSON files are large and slow to re-parse on every render. The convention is to parse JSON **once** with `fromJSON()`, then cache as `.rds` (R's native binary format, smaller and faster, and it preserves column types). The `if (!file.exists(...))` guard means the conversion runs only the first time.
+
+> Note on filenames: the MC2 data description refers to `MC2_Data.json`. Confirm the actual filename with `list.files("data")` before running the chunk; the code below uses lowercase `mc2_data.json`, change it to match what you have on disk.
+
+```{r}
+#| eval: false
+if (!file.exists("data/mc2_data.rds")) {
+  mc2_data <- fromJSON("data/mc2_data.json")
+  write_rds(mc2_data, "data/mc2_data.rds")
+}
+if (!file.exists("data/org_chart.rds")) {
+  org_chart <- fromJSON("data/org_chart.json")
+  write_rds(org_chart, "data/org_chart.rds")
+}
+```
+
+```{r}
+mc2_data  <- read_rds("data/mc2_data.rds")
+org_chart <- read_rds("data/org_chart.rds")
+```
+
+# Inspecting raw structure
+
+## MC2 events
+
+`mc2_data` is a list with a `description` field and an `events` data frame. The events table is where everything happens: each row is one action taken by a person, an agent, or a system.
+
+```{r}
+glimpse(mc2_data)
+```
+
+```{r}
+mc2_events <- mc2_data$events
+glimpse(mc2_events)
+```
+
+A few things to notice from the glimpse above:
+
+-   `parties` is a **list column**, each row is a character vector of one or more actor IDs (people like `person:john_windward`, agents like `agent:xxx`, or systems).
+-   `details` is a **nested data frame**, its columns differ by event type, so most cells are `NA`. This is normal for an event log schema.
+-   `when` is a Unix timestamp (numeric), we will convert it to a proper datetime.
+-   `short_name` tells us the *kind* of action, this is the field we group on.
+
+## Organisation chart
+
+`org_chart` is in NetworkX node link format: a `nodes` list and an `edges` list. Each person has an `id`, `label`, `type` (`person` / `team` / `department` / `company`), and sometimes a `title`. Edges carry a `relation` (`contains` or `led_by`) describing how parts of the org nest.
+
+```{r}
+glimpse(org_chart)
+```
+
+```{r}
+org_nodes <- as_tibble(org_chart$nodes)
+org_edges <- as_tibble(org_chart$edges)
+
+org_nodes %>% count(type)
+```
+
+```{r}
+org_edges %>% count(relation)
+```
+
+## Visualising the organisation chart
+
+A picture of the org tree is the single most useful reference for this whole project, because every actor in the event log eventually needs to be located somewhere on it. We highlight **John Windward** in red so his place in the structure is immediately visible.
+
+The layout is `dendrogram`, which gives a tidy top down tree. Node colour shows the `type`, and the label is shifted slightly below each node for readability.
+
+```{r}
+#| fig-width: 12
+#| fig-height: 8
+
+org_graph <- tbl_graph(nodes = org_nodes,
+                       edges = org_edges,
+                       directed = TRUE)
+
+org_graph <- org_graph %>% 
+  mutate(is_jw = (id == "person:john_windward"),
+         display_label = label)
+
+ggraph(org_graph, layout = "dendrogram", circular = FALSE) +
+  geom_edge_diagonal(alpha = 0.4, colour = "grey60") +
+  geom_node_point(aes(colour = type, size = is_jw)) +
+  geom_node_text(aes(label = display_label,
+                     fontface = ifelse(is_jw, "bold", "plain")),
+                 size = 2.6, vjust = 1.6, hjust = 0.5) +
+  scale_size_manual(values = c(`FALSE` = 2.5, `TRUE` = 5), guide = "none") +
+  scale_colour_brewer(palette = "Set2") +
+  coord_cartesian(clip = "off") +
+  theme_void() +
+  theme(plot.margin = margin(10, 10, 30, 10),
+        legend.position = "bottom") +
+  labs(title = "Tenant Thread organisation chart",
+       subtitle = "John Windward (Customer Support, Department Lead) shown larger and bold",
+       colour = "Node type")
+```
+
+The tree confirms what the brief says: John Windward is the **Department Lead of Customer Support**, sitting directly under that department alongside four teams (Phone Center, Billing, Concierge, Public Relations).
+
+## Department size summary
+
+Before moving on, a quick bar chart of how many people sit in each department, so we know which parts of the org are heavy and which are light.
+
+```{r}
+#| fig-width: 8
+#| fig-height: 4
+
+# helper: all node ids reachable downward from start_id
+descendants_of <- function(start_id, edges_df) {
+  out <- character(0); frontier <- start_id
+  while (length(frontier) > 0) {
+    children <- edges_df %>% filter(source %in% frontier) %>% pull(target)
+    out <- c(out, children); frontier <- children
+  }
+  unique(out)
+}
+
+person_ids_set <- org_nodes %>% filter(type == "person") %>% pull(id)
+
+dept_sizes <- org_nodes %>% 
+  filter(type == "department") %>% 
+  rowwise() %>% 
+  mutate(n_people = sum(descendants_of(id, org_edges) %in% person_ids_set)) %>% 
+  ungroup() %>% 
+  select(department = label, n_people) %>% 
+  arrange(desc(n_people))
+
+ggplot(dept_sizes, aes(x = n_people, y = reorder(department, n_people))) +
+  geom_col(fill = "steelblue") +
+  geom_text(aes(label = n_people), hjust = -0.3, size = 3.5) +
+  scale_x_continuous(expand = expansion(mult = c(0, 0.1))) +
+  labs(title = "People per department",
+       x = "Number of people", y = NULL) +
+  theme_minimal()
+```
+
+# Cleaning the events table
+
+## Convert timestamps and add row id
+
+Working with Unix timestamps is painful for filtering by date. We convert `when` into a `POSIXct` datetime in UTC, then derive a `date` and `hour` column for easier grouping. We also keep an explicit `event_id` (the original `id` field) and a sequential `row` index for ordering.
+
+```{r}
+events_clean <- mc2_events %>% 
+  mutate(
+    event_id  = id,
+    datetime  = as_datetime(when, tz = "UTC"),
+    date      = as_date(datetime),
+    hour      = hour(datetime),
+    .keep = "unused"
+  ) %>% 
+  mutate(row = row_number(), .before = 1)
+
+events_clean %>% 
+  select(row, event_id, datetime, short_name) %>% 
+  head(5)
+```
+
+## Sanity check the time range
+
+The challenge brief says the events occur in **May 2046**. A quick min/max confirms the data matches that.
+
+```{r}
+events_clean %>% 
+  summarise(
+    n_events   = n(),
+    first_time = min(datetime),
+    last_time  = max(datetime),
+    n_days     = n_distinct(date)
+  )
+```
+
+## Distribution of events over time
+
+A histogram of when things happened across May 2046 tells us whether activity is steady or spiky. A red dashed line marks the moment of the anomalous SaidIt post (2046-05-17 04:21 UTC), so we can see immediately whether there is unusual activity around it.
+
+```{r}
+#| fig-width: 10
+#| fig-height: 3.5
+
+post_time <- ymd_hms("2046-05-17 04:21:00", tz = "UTC")
+
+ggplot(events_clean, aes(x = datetime)) +
+  geom_histogram(binwidth = 3600, fill = "steelblue", colour = "white") +
+  geom_vline(xintercept = as.numeric(post_time),
+             colour = "red", linetype = "dashed") +
+  annotate("text", x = post_time, y = Inf,
+           label = " anomalous post", colour = "red",
+           hjust = 0, vjust = 1.5, size = 3) +
+  scale_x_datetime(date_breaks = "2 days", date_labels = "%b %d") +
+  labs(title = "Event volume over time (hourly bins)",
+       x = NULL, y = "Events per hour") +
+  theme_minimal()
+```
+
+## Distribution of event types
+
+`short_name` is the verb of each event. Counting them tells us which actions dominate the log and which are rare. Rare verbs are often the most diagnostic for an anomaly investigation.
+
+```{r}
+event_type_counts <- events_clean %>% 
+  count(short_name, sort = TRUE)
+
+event_type_counts
+```
+
+```{r}
+#| fig-width: 8
+#| fig-height: 5
+
+ggplot(event_type_counts, aes(x = n, y = reorder(short_name, n))) +
+  geom_col(fill = "steelblue") +
+  geom_text(aes(label = comma(n)), hjust = -0.1, size = 3) +
+  scale_x_continuous(expand = expansion(mult = c(0, 0.15)),
+                     labels = comma) +
+  labs(title = "Event counts by short_name",
+       x = "Count", y = NULL) +
+  theme_minimal()
+```
+
+## Missingness in `details`
+
+`details` is a nested data frame: most of its columns are populated only for the event types that need them. The summary and chart below show which detail fields actually carry information, so we know which ones are worth unpacking later.
+
+```{r}
+detail_na <- events_clean$details %>% 
+  summarise(across(where(is.character), ~ sum(!is.na(.x)))) %>% 
+  pivot_longer(everything(), names_to = "detail_field", values_to = "non_na") %>% 
+  arrange(desc(non_na))
+
+detail_na
+```
+
+```{r}
+#| fig-width: 8
+#| fig-height: 4
+
+ggplot(detail_na, aes(x = non_na, y = reorder(detail_field, non_na))) +
+  geom_col(fill = "darkorange") +
+  geom_text(aes(label = comma(non_na)), hjust = -0.1, size = 3) +
+  scale_x_continuous(expand = expansion(mult = c(0, 0.15)), labels = comma) +
+  labs(title = "Fields inside `details`, non-NA counts",
+       x = "Non-NA rows", y = NULL) +
+  theme_minimal()
+```
+
+## Duplicates
+
+There should be one row per `event_id`. We verify.
+
+```{r}
+events_clean %>% 
+  summarise(
+    n_rows    = n(),
+    n_unique  = n_distinct(event_id),
+    n_dup_ids = n() - n_distinct(event_id)
+  )
+```
+
+# Transforming, long format actor table
+
+The hard part of working with this data is that **`parties` is a list column**. To answer "what did John Windward do?", we need one row per (event, actor), not one row per event. We `unnest_longer()` to long form.
+
+```{r}
+events_long <- events_clean %>% 
+  select(row, event_id, datetime, date, hour, short_name, parties) %>% 
+  unnest_longer(parties, values_to = "actor_id")
+
+events_long %>% head(8)
+```
+
+Now every event appears as many times as it has actors. We can immediately ask "how many distinct actors appear in the log?"
+
+```{r}
+events_long %>% 
+  summarise(
+    n_event_actor_rows = n(),
+    n_distinct_actors  = n_distinct(actor_id)
+  )
+```
+
+## Classify actor IDs
+
+Actor IDs follow a `prefix:name` convention. The prefix tells us whether the actor is a person, an autonomous agent, a system, or something else. We extract the prefix to make filtering and joins easier downstream.
+
+```{r}
+events_long <- events_long %>% 
+  mutate(
+    actor_kind = str_extract(actor_id, "^[^:]+"),
+    actor_name = str_remove(actor_id, "^[^:]+:")
+  )
+
+actor_kind_counts <- events_long %>% count(actor_kind, sort = TRUE)
+actor_kind_counts
+```
+
+```{r}
+#| fig-width: 7
+#| fig-height: 3
+
+ggplot(actor_kind_counts, aes(x = n, y = reorder(actor_kind, n))) +
+  geom_col(fill = "steelblue") +
+  geom_text(aes(label = comma(n)), hjust = -0.1, size = 3.5) +
+  scale_x_continuous(expand = expansion(mult = c(0, 0.15)), labels = comma) +
+  labs(title = "Actor kinds in the long format event table",
+       x = "Event-actor rows", y = NULL) +
+  theme_minimal()
+```
+
+This split is the reason we need two lookups in the next section: an org lookup (for `person`) and a separate agent-to-principal lookup (for `agent`).
+
+# Building lookup tables from `org_chart`
+
+## Person lookup with department and team
+
+The org chart is a tree: `company > department > team > person`, except for department leads (like John Windward) who hang directly under a department rather than under a team. We walk down from each department to build a flat lookup that, for every person, gives us their team and department.
+
+```{r}
+dept_ids <- org_nodes %>% filter(type == "department") %>% pull(id)
+
+person_lookup <- map_dfr(dept_ids, function(d) {
+  desc <- descendants_of(d, org_edges)
+  tibble(department_id = d, descendant_id = desc)
+}) %>% 
+  inner_join(org_nodes %>% filter(type == "person"),
+             by = c("descendant_id" = "id"))
+
+# team for each person (if any)
+team_ids <- org_nodes %>% filter(type == "team") %>% pull(id)
+
+person_team <- map_dfr(team_ids, function(t) {
+  desc <- descendants_of(t, org_edges)
+  tibble(team_id = t, descendant_id = desc)
+}) %>% 
+  inner_join(org_nodes %>% filter(type == "person"),
+             by = c("descendant_id" = "id")) %>% 
+  select(person_id = descendant_id, team_id)
+
+person_lookup <- person_lookup %>% 
+  transmute(
+    person_id     = descendant_id,
+    person_name   = label,
+    title         = title,
+    department_id = department_id
+  ) %>% 
+  left_join(person_team, by = "person_id") %>% 
+  left_join(org_nodes %>% filter(type == "department") %>% 
+              select(department_id = id, department_name = label),
+            by = "department_id") %>% 
+  left_join(org_nodes %>% filter(type == "team") %>% 
+              select(team_id = id, team_name = label),
+            by = "team_id")
+
+person_lookup
+```
+
+Quick check: is John Windward in there with the right department?
+
+```{r}
+person_lookup %>% filter(person_id == "person:john_windward")
+```
+
+Customer Support, Department Lead, matches the brief.
+
+## Agent to principal lookup (derived from events)
+
+Autonomous agents (`agent:*` IDs) are **not** in the org chart, they only show up inside `mc2_events`. To attach an agent to a human, we look at events where agents and persons co-appear in `parties`. For each (agent, person) pair, the most frequent human co-actor is taken as the agent's likely principal.
+
+> This is a heuristic. If the data contains explicit assignment events (look at the `short_name` list above for things like `agent_created`, `agent_assigned`, etc.), those should be preferred as the source of truth.
+
+```{r}
+agent_principal_pairs <- events_long %>% 
+  filter(actor_kind %in% c("agent", "person")) %>% 
+  select(row, actor_kind, actor_id) %>% 
+  pivot_wider(names_from = actor_kind, values_from = actor_id,
+              values_fn = list) %>% 
+  unnest_longer(agent, values_to = "agent_id") %>% 
+  unnest_longer(person, values_to = "person_id") %>% 
+  filter(!is.na(agent_id), !is.na(person_id)) %>% 
+  count(agent_id, person_id, name = "co_occurrences") %>% 
+  arrange(desc(co_occurrences))
+
+agent_principal_pairs %>% head(10)
+```
+
+```{r}
+agent_lookup <- agent_principal_pairs %>% 
+  group_by(agent_id) %>% 
+  slice_max(co_occurrences, n = 1, with_ties = FALSE) %>% 
+  ungroup() %>% 
+  rename(principal_id = person_id, evidence_strength = co_occurrences)
+
+agent_lookup %>% head(10)
+```
+
+# Master enriched table
+
+Now we join everything. Each (event, actor) row gets enriched with department, team, and title for persons, and for agents with their inferred principal plus that principal's department and team.
+
+```{r}
+events_mapped <- events_long %>% 
+  left_join(person_lookup,
+            by = c("actor_id" = "person_id")) %>% 
+  rename(actor_person_name = person_name,
+         actor_title       = title,
+         actor_department  = department_name,
+         actor_team        = team_name) %>% 
+  select(-department_id, -team_id)
+
+events_mapped <- events_mapped %>% 
+  left_join(agent_lookup %>% select(agent_id, principal_id),
+            by = c("actor_id" = "agent_id")) %>% 
+  left_join(person_lookup %>% 
+              select(principal_id   = person_id,
+                     principal_name = person_name,
+                     principal_title = title,
+                     principal_department = department_name,
+                     principal_team = team_name),
+            by = "principal_id")
+
+events_mapped <- events_mapped %>% 
+  mutate(
+    effective_person_id   = coalesce(if_else(actor_kind == "person", actor_id, NA_character_),
+                                     principal_id),
+    effective_person_name = coalesce(actor_person_name, principal_name),
+    effective_department  = coalesce(actor_department, principal_department),
+    effective_team        = coalesce(actor_team, principal_team),
+    effective_title       = coalesce(actor_title, principal_title)
+  )
+
+events_mapped %>% 
+  select(row, event_id, datetime, short_name, actor_kind, actor_id,
+         effective_person_name, effective_department, effective_team) %>% 
+  head(10)
+```
+
+## Coverage of the enrichment
+
+How many event-actor rows did we manage to resolve to a department? This tells us if our lookup logic is leaving anyone unmapped.
+
+```{r}
+#| fig-width: 7
+#| fig-height: 3.2
+
+coverage <- events_mapped %>% 
+  mutate(resolved = ifelse(is.na(effective_department), "unresolved", "resolved")) %>% 
+  count(actor_kind, resolved)
+
+ggplot(coverage, aes(x = actor_kind, y = n, fill = resolved)) +
+  geom_col(position = "stack") +
+  geom_text(aes(label = comma(n)),
+            position = position_stack(vjust = 0.5),
+            colour = "white", size = 3.2) +
+  scale_y_continuous(labels = comma) +
+  scale_fill_manual(values = c(resolved = "steelblue", unresolved = "grey70")) +
+  labs(title = "Did each actor get mapped to a department?",
+       x = "Actor kind", y = "Event-actor rows", fill = NULL) +
+  theme_minimal()
+```
+
+`person` rows that stay unresolved are usually IDs that do not appear in the org chart (external parties or naming mismatches). `agent` rows that stay unresolved are agents whose human co-actors were never observed, so no principal could be inferred. `system` rows are expected to be unresolved, they belong to infrastructure, not the org tree.
+
+## Save outputs
+
+```{r}
+#| eval: false
+write_rds(events_mapped, "data/events_mapped.rds")
+write_rds(person_lookup, "data/person_lookup.rds")
+write_rds(agent_lookup,  "data/agent_lookup.rds")
+```
+
+# John Windward mapping view
+
+This is the table the project requirement specifically asks for: where John Windward sits in the org, and what he and his agents did.
+
+## John Windward in the org chart
+
+```{r}
+person_lookup %>% 
+  filter(person_id == "person:john_windward") %>% 
+  gt() %>% 
+  tab_header(title = "John Windward, organisational placement")
+```
+
+## Agents linked to John Windward
+
+```{r}
+jw_agents <- agent_lookup %>% 
+  filter(principal_id == "person:john_windward")
+
+jw_agents %>% 
+  gt() %>% 
+  tab_header(title = "Agents whose most frequent human co-actor is John Windward")
+```
+
+## Every event involving John Windward or his agents
+
+This is the core mapping table, one row per (event, actor) where the actor is John or an agent attributed to him.
+
+```{r}
+jw_actor_ids <- c("person:john_windward", jw_agents$agent_id)
+
+jw_events_view <- events_mapped %>% 
+  filter(actor_id %in% jw_actor_ids) %>% 
+  arrange(datetime) %>% 
+  select(
+    datetime, short_name,
+    actor_kind, actor_id,
+    effective_person_name, effective_department, effective_team,
+    event_id
+  )
+
+jw_events_view %>% 
+  datatable(
+    options = list(pageLength = 15, scrollX = TRUE),
+    rownames = FALSE,
+    caption = "John Windward and his agents, all logged actions, chronological"
+  )
+```
+
+## Action mix for John and his agents
+
+```{r}
+jw_events_view %>% 
+  count(actor_kind, short_name, sort = TRUE) %>% 
+  pivot_wider(names_from = actor_kind, values_from = n, values_fill = 0) %>% 
+  gt() %>% 
+  tab_header(title = "Action counts, John Windward and his agents")
+```
+
+# Outputs of this preprocessing stage
+
+By the end of this notebook we have, ready for the analysis and visualisation stage:
+
+-   `events_clean`, one row per event, with a proper `datetime` and a stable `row` index.
+-   `events_long`, one row per (event, actor), with `actor_kind` classified.
+-   `person_lookup`, every person in Tenant Thread mapped to their team and department.
+-   `agent_lookup`, every autonomous agent mapped to its most likely human principal.
+-   `events_mapped`, the master enriched table, this is what subsequent visualisations should build on.
+-   `jw_events_view`, the focused John Windward mapping that scaffolds the MC2 narrative.

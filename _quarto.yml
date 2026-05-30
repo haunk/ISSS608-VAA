@@ -55,6 +55,9 @@ website:
           - text: "EX1: Executive Summary-Unmasking Motor Insurance Risk Drivers"
             href: "Take-home_Ex/Take-home_Ex01/Executive_Summary.html"
             
+          - text: "EX2: Technical Report"
+            href: "Take-home_Ex/Take-home_Ex02/Technical_Report.html"
+            
           
       - text: "<img src='/images/black.png' width='40' height='40' style='margin-right: 5px;'> 
       Real-world Project"
