@@ -49,6 +49,9 @@ website:
           - text: "HO13_Modelling, Visualising and Analysing Network Data with R"
             href: "Hands-on_Ex/Hands-on_Ex07/Hands-on_Ex07a.html"
             
+          - text: "HO14_Visualising and Analysing Text Data with R: tidytext methods"
+            href: "Hands-on_Ex/Hands-on_Ex07/Hands-on_Ex07b.html"
+            
       - text: "<img src='/images/shark.png' width='40' height='40' style='margin-right: 5px;'> 
       Take-home Exercise"
         menu:
