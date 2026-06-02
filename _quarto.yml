@@ -46,6 +46,9 @@ website:
           - text: "HO12_Visual Multivariate Analysis with Parallel Coordinates Plot"
             href: "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05d.html"
             
+          - text: "HO13_Modelling, Visualising and Analysing Network Data with R"
+            href: "Hands-on_Ex/Hands-on_Ex07/Hands-on_Ex07a.html"
+            
       - text: "<img src='/images/shark.png' width='40' height='40' style='margin-right: 5px;'> 
       Take-home Exercise"
         menu:
