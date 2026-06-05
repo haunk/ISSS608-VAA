@@ -885,7 +885,7 @@ How to use this figure:
 ::: callout-note
 There are some insights from this chart:
 
--   MC2 stated that: "The anomalous posting was sent to SaidIt by John Windward on May 17, 2046 at 4:21am". But from what we see, the post happened on 11:21. It maybe due to local time difference. On preprocessing stage, we already convert original Unix timestamp to UTC (Coordinated Universal Time).
+-   MC2 stated that: "The anomalous posting was sent to SaidIt by John Windward on May 17, 2046 at 4:21am". But from what we see, **the post actually happened on 11:21**. It maybe due to local time difference. On preprocessing stage, we already convert original Unix timestamp to UTC (Coordinated Universal Time).
 -   On all days having SaidIT posts (13 May, 31 May, 4 June, 18 June and 7 July), there are always Advice actions: "give_advice", "suggest_contacts" happening before SaidIT actions. Meanwhile on target day 17 May 2046, **there is no Advice action before SaidIT post.**
 :::
 
@@ -954,18 +954,18 @@ jw_may17 %>%
 ::: callout-note
 We can see important information from this table above:
 
--   Before event saidit_post (2046-05-17T11:21:15Z, event_id = 373902), there was an event queue_subordinate_task (2046-05-17T11:21:13Z, event_id = 373893) with the task of read_file with target_agent is: Agent/person:john_windward.
--   Then, there was event saidit_post_check (2046-05-17T11:21:14Z, event_id = 373899) without any content (which means saidit_post_check checks nothing?)
--   Event saidit_post (2046-05-17T11:21:15Z) read file: SwiftWren.txt from content_source from forum: general.
--   Then two delete_file actions happened (2046-05-17T11:21:16Z, event_id = 373909 and 2046-05-17T11:21:17Z, event_id = 373913) deleted SwiftWren_further_instructions.md and SwiftWren.txt. Dangerously, it deleted files on file_system directly.
+-   Before event saidit_post (2046-05-17T11:21:15Z, event_id = 373902), there was an event **queue_subordinate_task** (2046-05-17T11:21:13Z, event_id = 373893) with the task of read_file with target_agent is: Agent/person:john_windward.
+-   Then, there was event **saidit_post_check** (2046-05-17T11:21:14Z, event_id = 373899) without any content (which means saidit_post_check checks nothing?)
+-   Event **saidit_post** (2046-05-17T11:21:15Z) read file: SwiftWren.txt from content_source from forum: general.
+-   Then two **delete_file** actions happened (2046-05-17T11:21:16Z, event_id = 373909 and 2046-05-17T11:21:17Z, event_id = 373913) deleted SwiftWren_further_instructions.md and SwiftWren.txt. Dangerously, it deleted files on file_system directly.
 
-=\> Questions to be raised:
+=\> **Questions to be raised:**
 
--   All of these events continuously occured after each second. The whole sequence is that firstly agent of John Windward read SwiftWren.txt, checked nothing and post the content from this file, then deleted this file's instruction and this file itself.
+-   All of these events continuously occured after each second. **The whole sequence is that** firstly agent of John Windward read SwiftWren.txt, checked nothing and post the content from this file, then deleted this file's instruction and this file itself.
 -   SwiftWren_further_instructions.md maybe the conditional steps to use SwiftWren.txt but we do not know checking events read it before read SwiftWren.txt or not.
--   This flow is highly problematic, why it deleted the file content right after posting it? It likely a "smoking-gun" sequence.
--   What is the content of SwiftWren.txt? Whether we can find out the content of SwiftWren.txt is the question that will be answered in the Question 2.
--   Who created that file? Who is SwiftWren? We will find out right now.
+-   This flow is highly problematic, **why it deleted the file content right after posting it?** It likely a "smoking-gun" sequence.
+-   **What is the content of SwiftWren.txt?** Whether we can find out the content of SwiftWren.txt is the question that will be answered in the Question 2.
+-   **Who created that file?** Who is SwiftWren? We will find out right now.
 :::
 
 ### Which are events related to SwiftWren?
@@ -1006,8 +1006,8 @@ mc2_data$events %>%
 ```
 
 ::: callout-note
--   So, SwiftWren.txt file was created by agent of Emma Harbor on 2046-05-09T15:02:01Z (roughly 8 days before the SaidIT post day). One second later, this agent also read SwiftWren_further_instructions.md (likely the instructioin to use SwiftWren.txt).
--   Content column shows nothing for all events.
+-   So, SwiftWren.txt file was **created by agent of Emma Harbor** on 2046-05-09T15:02:01Z (roughly 8 days before the SaidIT post day). One second later, this agent also read SwiftWren_further_instructions.md (likely the instructioin to use SwiftWren.txt).
+-   **Content column shows nothing for all events.**
 :::
 
 ### Who is Emma Harbor?
@@ -1069,8 +1069,8 @@ visNetwork(target_nodes, target_edges,
 ```
 
 ::: callout-note
--   Emma Harbor is CFO, one of three C-suite employers, which means she likely knows important information or even top secrets of this TenantThread company, especially the deal "Project HarborCrest" (mentioned in MC1).
--   There is no direct link among Emma Harbor and John Windward but the agent of John can access to files that agent of Emma created on a shared system (file_system).
--   Agent of Emma stored files on the shared system without protection, which agent of John or agent of any other Department leads seem easily access to.
--   One small suspicious point: is "Harbor" Crest deal relevant to Emma "Harbor".Worth flagging as a finding for further investigation.
+-   **Emma Harbor is CFO,** one of three C-suite employers, which means she likely knows important information or even top secrets of this TenantThread company, especially the deal **"Project HarborCrest"** (mentioned in MC1).
+-   There is **no direct link among Emma Harbor and John Windward** but the agent of John can access to files that agent of Emma created on a **shared system (file_system).**
+-   Agent of Emma stored files on the shared system without protection, which agent of John or agent of **any other Department leads seem easily access** to.
+-   One small suspicious point: is **"Harbor" Crest deal relevant to Emma "Harbor"**. Worth flagging as a finding for further investigation.
 :::
