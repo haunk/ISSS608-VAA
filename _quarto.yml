@@ -4,7 +4,7 @@ project:
     - "images/*.webp"
 
 website:
-  title: "ISSS608-VAA"
+  title: "HAUKIMNG"
   navbar:
     left:
       - text: "<img src='/images/dory.png' width='40' height='40' style='margin-right: 5px;'> 
@@ -61,7 +61,7 @@ website:
           - text: "EX1: Executive Summary-Unmasking Motor Insurance Risk Drivers"
             href: "Take-home_Ex/Take-home_Ex01/Executive_Summary.html"
             
-          - text: "EX2: Technical Report"
+          - text: "EX2: VAST Challenge 2026"
             href: "Take-home_Ex/Take-home_Ex02/MC2.html"
             
           
