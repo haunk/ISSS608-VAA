@@ -25,10 +25,10 @@ This report focuses on [Mini-Challenge (MC) 2](https://vast-challenge.github.io/
 
 This part is data preprocessing stage, which contains following steps:
 
--   Loaded efficiently and inspected.
--   Flattened from its nested JSON structure into tidy tables.
--   Cleaned (timestamps converted, duplicates checked, missingness understood).
--   Joined with the organisation chart so that every actor in an event can be traced back to their **department**, **team**, and **human principal** (for autonomous agents).
+- Loaded efficiently and inspected.
+- Flattened from its nested JSON structure into tidy tables.
+- Cleaned (timestamps converted, duplicates checked, missingness understood).
+- Joined with the organisation chart so that every actor in an event can be traced back to their **department**, **team**, and **human principal** (for autonomous agents).
 
 The end-product of this stage is a single enriched events table (`events_mapped`) plus several lookup tables. From those, the very last chunk of this notebook produces the **John Windward mapping view**: what John and the agents tied to him actually did in the system.
 
@@ -116,10 +116,10 @@ glimpse(mc2_events)
 ::: callout-note
 A few things to notice from the glimpse above:
 
--   `parties` is a **list-column**, each row is a character vector of one or more actor IDs (people like `person:john_windward`, agents like `agent:xxx`, or systems).
--   `details` is a **nested data frame**, its columns differ by event type, so most cells are `NA`. This is normal for an event-log schema.
--   `when` is a Unix timestamp (numeric), we'll convert it to a proper datetime.
--   `short_name` tells us the *kind* of action, this is the field we'll group on.
+- `parties` is a **list-column**, each row is a character vector of one or more actor IDs (people like `person:john_windward`, agents like `agent:xxx`, or systems).
+- `details` is a **nested data frame**, its columns differ by event type, so most cells are `NA`. This is normal for an event-log schema.
+- `when` is a Unix timestamp (numeric), we'll convert it to a proper datetime.
+- `short_name` tells us the *kind* of action, this is the field we'll group on.
 :::
 
 ### Organisation chart
@@ -323,8 +323,8 @@ The number 49 exactly matches the number of persons in `org_chart`, so every emp
 
 It raises a question: **is there a pattern to which format gets used?** For example:
 
--   Does `person:` appear when the action is logged by the system (so the system knows the canonical ID)?
--   Does the bare name appear when the action originates from a free-text field (like an email body, a message, or a calendar invite where humans typed the name)?
+- Does `person:` appear when the action is logged by the system (so the system knows the canonical ID)?
+- Does the bare name appear when the action originates from a free-text field (like an email body, a message, or a calendar invite where humans typed the name)?
 
 For now, just normalise them and move on then we will investiage in later stage.
 
@@ -645,12 +645,12 @@ jw_events_view %>%
 
 By the end of this notebook we have, ready for the analysis & visualisation stage:
 
--   `events_clean`: one row per event, with a proper `datetime` and a stable `row` index.
--   `events_long`: one row per (event × actor), with `actor_kind` classified.
--   `person_lookup`: every person in Tenant Thread mapped to their team and department.
--   `agent_lookup`: every autonomous agent mapped to its human principal, parsed from the agent ID.
--   `events_mapped`: the master enriched table; this is what subsequent visualisations should build on.
--   `jw_events_view`: the focused John-Windward mapping that scaffolds the MC2 narrative.
+- `events_clean`: one row per event, with a proper `datetime` and a stable `row` index.
+- `events_long`: one row per (event × actor), with `actor_kind` classified.
+- `person_lookup`: every person in Tenant Thread mapped to their team and department.
+- `agent_lookup`: every autonomous agent mapped to its human principal, parsed from the agent ID.
+- `events_mapped`: the master enriched table; this is what subsequent visualisations should build on.
+- `jw_events_view`: the focused John-Windward mapping that scaffolds the MC2 narrative.
 
 ```{mermaid}
 %%| fig-cap: "Data flow: from raw JSON files to the enriched events table"
@@ -696,10 +696,10 @@ flowchart TD
 ```
 
 ::: callout-note
--   **Grey nodes** are raw source files.
--   **Blue nodes** are intermediate processed tables.
--   **Yellow nodes** are the final outputs, will be input for further analysis.
--   Arrows are labelled with the **operation** that produced the next tae.
+- **Grey nodes** are raw source files.
+- **Blue nodes** are intermediate processed tables.
+- **Yellow nodes** are the final outputs, will be input for further analysis.
+- Arrows are labelled with the **operation** that produced the next tae.
 :::
 
 # Data Exploration & Visualization
@@ -871,22 +871,22 @@ fig
 ::: callout-tip
 How to use this figure:
 
--   **Range day**: you can pick 1d (1 day before the anomalous SaidIT posts), 7d, 14d or all events in the dataset. OR you can free to choose range of day by time scroll bar (near the bottom). **Click on Reset axes before pick day range.**
+- **Range day**: you can pick 1d (1 day before the anomalous SaidIT posts), 7d, 14d or all events in the dataset. OR you can free to choose range of day by time scroll bar (near the bottom). **Click on Reset axes before pick day range.**
 
--   **Tooltip**: From button on the right side, choose *Show closest data on the hover* to see single tooltip, OR *Compare data on hover* to see multiple tooltips on a certain time period.
+- **Tooltip**: From button on the right side, choose *Show closest data on the hover* to see single tooltip, OR *Compare data on hover* to see multiple tooltips on a certain time period.
 
--   **Legend**: Click on legend item to hide it from the chart.
+- **Legend**: Click on legend item to hide it from the chart.
 
--   This is a sample view.
+- This is a sample view.
 
-    ![](images/clipboard-3326819771.png)
+  ![](images/clipboard-3326819771.png)
 :::
 
 ::: callout-note
 There are some insights from this chart:
 
--   MC2 stated that: "The anomalous posting was sent to SaidIt by John Windward on May 17, 2046 at 4:21am". But from what we see, **the post actually happened on 11:21**. It maybe due to local time difference. On preprocessing stage, we already convert original Unix timestamp to UTC (Coordinated Universal Time).
--   On all days having SaidIT posts (13 May, 31 May, 4 June, 18 June and 7 July), there are always Advice actions: "give_advice", "suggest_contacts" happening before SaidIT actions. Meanwhile on target day 17 May 2046, **there is no Advice action before SaidIT post.**
+- MC2 stated that: "The anomalous posting was sent to SaidIt by John Windward on May 17, 2046 at 4:21am". But from what we see, **the post actually happened on 11:21**. It maybe due to local time difference. On preprocessing stage, we already convert original Unix timestamp to UTC (Coordinated Universal Time).
+- On all days having SaidIT posts (13 May, 31 May, 4 June, 18 June and 7 July), there are always Advice actions: "give_advice", "suggest_contacts" happening before SaidIT actions. Meanwhile on target day 17 May 2046, **there is no Advice action before SaidIT post.**
 :::
 
 ### Which are detailed actions of John related to SaidIT post?
@@ -954,18 +954,18 @@ jw_may17 %>%
 ::: callout-note
 We can see important information from this table above:
 
--   Before event saidit_post (2046-05-17T11:21:15Z, event_id = 373902), there was an event **queue_subordinate_task** (2046-05-17T11:21:13Z, event_id = 373893) with the task of read_file with target_agent is: Agent/person:john_windward.
--   Then, there was event **saidit_post_check** (2046-05-17T11:21:14Z, event_id = 373899) without any content (which means saidit_post_check checks nothing?)
--   Event **saidit_post** (2046-05-17T11:21:15Z) read file: SwiftWren.txt from content_source from forum: general.
--   Then two **delete_file** actions happened (2046-05-17T11:21:16Z, event_id = 373909 and 2046-05-17T11:21:17Z, event_id = 373913) deleted SwiftWren_further_instructions.md and SwiftWren.txt. Dangerously, it deleted files on file_system directly.
+- Before event saidit_post (2046-05-17T11:21:15Z, event_id = 373902), there was an event **queue_subordinate_task** (2046-05-17T11:21:13Z, event_id = 373893) with the task of read_file with target_agent is: Agent/person:john_windward.
+- Then, there was event **saidit_post_check** (2046-05-17T11:21:14Z, event_id = 373899) without any content (which means saidit_post_check checks nothing?)
+- Event **saidit_post** (2046-05-17T11:21:15Z) read file: SwiftWren.txt from content_source from forum: general.
+- Then two **delete_file** actions happened (2046-05-17T11:21:16Z, event_id = 373909 and 2046-05-17T11:21:17Z, event_id = 373913) deleted SwiftWren_further_instructions.md and SwiftWren.txt. Dangerously, it deleted files on file_system directly.
 
 =\> **Questions to be raised:**
 
--   All of these events continuously occured after each second. **The whole sequence is that** firstly agent of John Windward read SwiftWren.txt, checked nothing and post the content from this file, then deleted this file's instruction and this file itself.
--   SwiftWren_further_instructions.md maybe the conditional steps to use SwiftWren.txt but we do not know checking events read it before read SwiftWren.txt or not.
--   This flow is highly problematic, **why it deleted the file content right after posting it?** It likely a "smoking-gun" sequence.
--   **What is the content of SwiftWren.txt?** Whether we can find out the content of SwiftWren.txt is the question that will be answered in the Question 2.
--   **Who created that file?** Who is SwiftWren? We will find out right now.
+- All of these events continuously occured after each second. **The whole sequence is that** firstly agent of John Windward read SwiftWren.txt, checked nothing and post the content from this file, then deleted this file's instruction and this file itself.
+- SwiftWren_further_instructions.md maybe the conditional steps to use SwiftWren.txt but we do not know checking events read it before read SwiftWren.txt or not.
+- This flow is highly problematic, **why it deleted the file content right after posting it?** It likely a "smoking-gun" sequence.
+- **What is the content of SwiftWren.txt?** Whether we can find out the content of SwiftWren.txt is the question that will be answered in the Question 2.
+- **Who created that file?** Who is SwiftWren? We will find out right now.
 :::
 
 ### Which are events related to SwiftWren?
@@ -1006,8 +1006,8 @@ mc2_data$events %>%
 ```
 
 ::: callout-note
--   So, SwiftWren.txt file was **created by agent of Emma Harbor** on 2046-05-09T15:02:01Z (roughly 8 days before the SaidIT post day). One second later, this agent also read SwiftWren_further_instructions.md (likely the instructioin to use SwiftWren.txt).
--   **Content column shows nothing for all events.**
+- So, SwiftWren.txt file was **created by agent of Emma Harbor** on 2046-05-09T15:02:01Z (roughly 8 days before the SaidIT post day). One second later, this agent also read SwiftWren_further_instructions.md (likely the instructioin to use SwiftWren.txt).
+- **Content column shows nothing for all events.**
 :::
 
 ### Who is Emma Harbor?
@@ -1069,8 +1069,8 @@ visNetwork(target_nodes, target_edges,
 ```
 
 ::: callout-note
--   **Emma Harbor is CFO,** one of three C-suite employers, which means she likely knows important information or even top secrets of this TenantThread company, especially the deal **"Project HarborCrest"** (mentioned in MC1).
--   There is **no direct link among Emma Harbor and John Windward** but the agent of John can access to files that agent of Emma created on a **shared system (file_system).**
--   Agent of Emma stored files on the shared system without protection, which agent of John or agent of **any other Department leads seem easily access** to.
--   One small suspicious point: is **"Harbor" Crest deal relevant to Emma "Harbor"**. Worth flagging as a finding for further investigation.
+- **Emma Harbor is CFO,** one of three C-suite employers, which means she likely knows important information or even top secrets of this TenantThread company, especially the deal **"Project HarborCrest"** (mentioned in MC1).
+- There is **no direct link among Emma Harbor and John Windward** but the agent of John can access to files that agent of Emma created on a **shared system (file_system).**
+- Agent of Emma stored files on the shared system without protection, which agent of John or agent of **any other Department leads seem easily access** to.
+- One small suspicious point: is **"Harbor" Crest deal relevant to Emma "Harbor"**. Worth flagging as a finding for further investigation.
 :::
