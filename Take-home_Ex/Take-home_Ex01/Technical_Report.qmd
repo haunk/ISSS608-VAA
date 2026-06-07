@@ -34,8 +34,8 @@ Using a real-world open-access motor vehicle insurance portfolio dataset and app
 
 The specific tasks of this study are:
 
--   Apply suitable univariate visual analytics techniques to explore the distributions and characteristics of numerical and categorical variables.
--   Apply suitable bivariate visual analytics techniques to investigate and statistically validate factors influencing the profitability and volatility of the insurance portfolio.
+- Apply suitable univariate visual analytics techniques to explore the distributions and characteristics of numerical and categorical variables.
+- Apply suitable bivariate visual analytics techniques to investigate and statistically validate factors influencing the profitability and volatility of the insurance portfolio.
 
 # Getting Started
 
@@ -162,9 +162,9 @@ motoinsu <- motoinsu %>%
 ```
 
 ::: callout-tip
--   dbl stands for double, numbers with decimals.
--   fct stands for factor, text with fixed, known categories. Factor uses less memory, which matters in such large database.
--   char stands for character, plain text without predefined categories.
+- dbl stands for double, numbers with decimals.
+- fct stands for factor, text with fixed, known categories. Factor uses less memory, which matters in such large database.
+- char stands for character, plain text without predefined categories.
 :::
 
 After changing data type, we have 1 identifier, 11 categorical variables and 35 numerical variables.
@@ -188,9 +188,9 @@ colMeans(is.na(motoinsu)) %>% # Caculate missing rate in each column
   .[. > 0] # Filter ratio > 0
 ```
 
--   `vehicle_age`, `age_driving_licence` only lack two values, we drop these missing rows.
--   `fire_incurred`, `occupants_incurred` having missing values likely means no claim, in insurance context. Therefore we can change to zero.
--   `fuel_type`, `vehicle_value` have more missing values, which make I consider between using mode/medium or remove missing rows. Because they are seem important features, it is risky to impute data. This issue should be reported to the relevant stakeholders.
+- `vehicle_age`, `age_driving_licence` only lack two values, we drop these missing rows.
+- `fire_incurred`, `occupants_incurred` having missing values likely means no claim, in insurance context. Therefore we can change to zero.
+- `fuel_type`, `vehicle_value` have more missing values, which make I consider between using mode/medium or remove missing rows. Because they are seem important features, it is risky to impute data. This issue should be reported to the relevant stakeholders.
 
 ```{r}
 #| code-fold: false
@@ -297,22 +297,22 @@ wrap_plots(plots, ncol = 3)
 
 **Policy & Business Characteristics**
 
--   **Year**: Data is unbalanced - 2024 (47.4%) has the most records, likely because policies accumulate over time. Dataset covers 3 years of a growing portfolio.
--   **Policy type**: CC dominates (58%), meaning most customers choose combined third-party + additional coverage. Pure TP is rare (1.6%) - customers prefer more protection.
--   **Policy status**: 89.2% active (A) vs 10.8% cancelled (C) - relatively low cancellation rate, portfolio is stable.
--   **Business type**: 69.3% new business (NB) vs 30.7% portfolio (P), which means the insurer is heavily acquiring new customers rather than renewing existing ones. This is a risk signal, new customers have unknown claims history.
--   **Payment frequency**: 81.3% pay annually (A) - most customers prefer single payment, simplifying cash flow for the insurer.
--   **Bonus score**: 96.5% have score G (good/favorable claims history) - the portfolio is dominated by low-risk customers historically.
+- **Year**: Data is unbalanced - 2024 (47.4%) has the most records, likely because policies accumulate over time. Dataset covers 3 years of a growing portfolio.
+- **Policy type**: CC dominates (58%), meaning most customers choose combined third-party + additional coverage. Pure TP is rare (1.6%) - customers prefer more protection.
+- **Policy status**: 89.2% active (A) vs 10.8% cancelled (C) - relatively low cancellation rate, portfolio is stable.
+- **Business type**: 69.3% new business (NB) vs 30.7% portfolio (P), which means the insurer is heavily acquiring new customers rather than renewing existing ones. This is a risk signal, new customers have unknown claims history.
+- **Payment frequency**: 81.3% pay annually (A) - most customers prefer single payment, simplifying cash flow for the insurer.
+- **Bonus score**: 96.5% have score G (good/favorable claims history) - the portfolio is dominated by low-risk customers historically.
 
 **Vehicle Characteristics**
 
--   **Fuel type**: 64.2% diesel (D) vs 35.8% gasoline (G) - diesel vehicles dominate, which may have different risk profiles.
--   **Seats**: 84.9% have 5 seats - standard passenger cars dominate, very homogeneous portfolio.
+- **Fuel type**: 64.2% diesel (D) vs 35.8% gasoline (G) - diesel vehicles dominate, which may have different risk profiles.
+- **Seats**: 84.9% have 5 seats - standard passenger cars dominate, very homogeneous portfolio.
 
 **Geographic**
 
--   **Municipality type**: 64.6% type I (Inland) where typically have higher accident/theft risk than coastal and island areas.
--   **Circulation area**: Nearly split between U (53.8%) and R (46.2%) - urban vs rural almost balanced, suggesting national coverage.
+- **Municipality type**: 64.6% type I (Inland) where typically have higher accident/theft risk than coastal and island areas.
+- **Circulation area**: Nearly split between U (53.8%) and R (46.2%) - urban vs rural almost balanced, suggesting national coverage.
 :::
 
 Vehicle brand distribution show high fragmentation with top brand \~10%, many brands with \<1%. We will combine all brands excluding RENAULT, CITROEN, PEUGEOT, VOLKSWAGEN, FORD, SEAT, and OPEL (having share \>= 5%).
@@ -367,10 +367,10 @@ ggplot(motoinsu, aes(x = fct_infreq(vehicle_brand_grouped))) +
 ::: callout-note
 **Insights: Vehicle brand**
 
--   The near-equal spread among top brands means risk is **not concentrated** in any single brand's characteristics.
--   Among top 7, French brands (RENAULT, CITROEN, PEUGEOT) collectively represent \~27%, reflecting **Spain's strong preference for French** automobiles.
--   SEAT's presence (\~7.9%) is notable as a **Spanish domestic brand**, expected in a Spanish portfolio.
--   The large "Others" group (40.6%) warrants further investigation - it contains luxury brands (BMW, MERCEDES, AUDI) and niche brands that **may carry higher vehicle values and different risk profiles**.
+- The near-equal spread among top brands means risk is **not concentrated** in any single brand's characteristics.
+- Among top 7, French brands (RENAULT, CITROEN, PEUGEOT) collectively represent \~27%, reflecting **Spain's strong preference for French** automobiles.
+- SEAT's presence (\~7.9%) is notable as a **Spanish domestic brand**, expected in a Spanish portfolio.
+- The large "Others" group (40.6%) warrants further investigation - it contains luxury brands (BMW, MERCEDES, AUDI) and niche brands that **may carry higher vehicle values and different risk profiles**.
 :::
 
 ### Numerical variables
@@ -401,17 +401,17 @@ wrap_plots(plots, ncol = 3)
 
 **Driver & Licence Characteristics**
 
--   **driver_age**: roughly bell-shaped, peaking around **35–50 years**. Young drivers (\<25) and elderly (\>70) are rare, suggesting the portfolio skews toward middle-aged, experienced drivers.
+- **driver_age**: roughly bell-shaped, peaking around **35–50 years**. Young drivers (\<25) and elderly (\>70) are rare, suggesting the portfolio skews toward middle-aged, experienced drivers.
 
--   **vehicle_age**: bimodal with peaks around **10 and 25 years,** meaning the portfolio covers both newer and older vehicles almost equally.
+- **vehicle_age**: bimodal with peaks around **10 and 25 years,** meaning the portfolio covers both newer and older vehicles almost equally.
 
--   **age_driving_licence**: heavily right-skewed, most policyholders have held licences for **less than 20 years**, consistent with the driver age distribution.
+- **age_driving_licence**: heavily right-skewed, most policyholders have held licences for **less than 20 years**, consistent with the driver age distribution.
 
--   **Vehicle Characteristics**
+- **Vehicle Characteristics**
 
--   **vehicle_value**: heavily right-skewed, most vehicles are **low value under 50,000**, with a very long tail up to 300,000+ (luxury/high-end vehicles).
+- **vehicle_value**: heavily right-skewed, most vehicles are **low value under 50,000**, with a very long tail up to 300,000+ (luxury/high-end vehicles).
 
--   **power_to_weight_ratio**: concentrated tightly between 10 and 20, with very few high-performance outliers above 40. Portfolio is dominated by **standard passenger cars**.
+- **power_to_weight_ratio**: concentrated tightly between 10 and 20, with very few high-performance outliers above 40. Portfolio is dominated by **standard passenger cars**.
 :::
 
 #### Premium, Claims & Exposure Distributions
@@ -444,21 +444,21 @@ wrap_plots(plots, ncol = 3)
 
 **Premium Variables**
 
--   **total_premium**: right-skewed, most policies have low-to-mid premiums with a long tail of high-premium policies
--   **liability_premium**: concentrated around **100–400**, the most normally distributed of all premiums — makes sense as liability coverage is **mandatory** for all vehicles in Spain
--   **property_damage_premium, theft_premium, fire_premium, glass_premium, legal_protection_premium, occupants_premium**: all **extremely right-skewed with mass at zero**, meaning most policies **do not include** these optional coverages. This is consistent with CC being 58% of policies — only combined policies carry these extras.
+- **total_premium**: right-skewed, most policies have low-to-mid premiums with a long tail of high-premium policies
+- **liability_premium**: concentrated around **100–400**, the most normally distributed of all premiums — makes sense as liability coverage is **mandatory** for all vehicles in Spain
+- **property_damage_premium, theft_premium, fire_premium, glass_premium, legal_protection_premium, occupants_premium**: all **extremely right-skewed with mass at zero**, meaning most policies **do not include** these optional coverages. This is consistent with CC being 58% of policies — only combined policies carry these extras.
 
 **Claims Variables**
 
--   **total_claims, liability_claims, property_claims**: **overwhelming majority are zero**. Rare claims events with counts of 1–2 for most claimants, very few exceed 3. Classic **low-frequency** insurance pattern.
+- **total_claims, liability_claims, property_claims**: **overwhelming majority are zero**. Rare claims events with counts of 1–2 for most claimants, very few exceed 3. Classic **low-frequency** insurance pattern.
 
 **Incurred Loss Variables**
 
--   **total_incurred, liability_incurred, property_incurred**: mostly zero with **right tail** up to 600,000.
+- **total_incurred, liability_incurred, property_incurred**: mostly zero with **right tail** up to 600,000.
 
 **Exposure Variables**
 
--   **total_exposure & liability_exposure**: U-shaped, **dominated by 1.0 (full year, annual payers)** and a smaller spike near 0.25 (quarterly). The spread between 0 and 1 represents mid-year cancellations, consistent with 10.8% cancellation rate.
+- **total_exposure & liability_exposure**: U-shaped, **dominated by 1.0 (full year, annual payers)** and a smaller spike near 0.25 (quarterly). The spread between 0 and 1 represents mid-year cancellations, consistent with 10.8% cancellation rate.
 :::
 
 ## Bivariate Analysis
@@ -498,10 +498,10 @@ motoinsu %>%
 ::: callout-note
 #### Insights: Total Incurred by Policy Type
 
--   **COMP_N** has the highest median incurred (1,392), consistent with no-excess comprehensive coverage encouraging more claims.
--   **TP** surprisingly ranks second (1,114), suggesting liability-only claims tend to be costly when they do occur (bodily injury).
--   **COMP_E** (954) is lower than TP despite broader coverage, likely because the excess/deductible filters out small claims.
--   **CC** and **TPG** share the lowest median (882), high volume products with more mixed, smaller claims.
+- **COMP_N** has the highest median incurred (1,392), consistent with no-excess comprehensive coverage encouraging more claims.
+- **TP** surprisingly ranks second (1,114), suggesting liability-only claims tend to be costly when they do occur (bodily injury).
+- **COMP_E** (954) is lower than TP despite broader coverage, likely because the excess/deductible filters out small claims.
+- **CC** and **TPG** share the lowest median (882), high volume products with more mixed, smaller claims.
 :::
 
 ```{r}
@@ -532,10 +532,10 @@ motoinsu %>%
 ::: callout-note
 #### Insights: Total Claims by Policy Type
 
--   **CC and TP** median is at **1**, most policies only ever have 1 claim at most, very low frequency.
--   **COMP_N shows the widest box** (highest IQR between 1–5), comprehensive without excess generates **more frequent claims**, likely because no excess/deductible discourages small claims
--   **COMP_E** has more outliers reaching 10+ claims, excess policies attract higher-risk customers who still manage to claim frequently despite the deductible barrier.
--   **TP and TPG** are nearly flat at 1, very low claim frequency for basic coverage.
+- **CC and TP** median is at **1**, most policies only ever have 1 claim at most, very low frequency.
+- **COMP_N shows the widest box** (highest IQR between 1–5), comprehensive without excess generates **more frequent claims**, likely because no excess/deductible discourages small claims
+- **COMP_E** has more outliers reaching 10+ claims, excess policies attract higher-risk customers who still manage to claim frequently despite the deductible barrier.
+- **TP and TPG** are nearly flat at 1, very low claim frequency for basic coverage.
 :::
 
 ::: callout-warning
@@ -573,9 +573,9 @@ motoinsu %>%
 ::: callout-note
 #### Insights: performance by Year
 
--   **avg_incurred (red)** shows a consistent upward trend from \~187 in 2022 to \~224 in 2024, meaning the average cost per claim is increasing every year - a clear sign of **growing claims severity**.
--   **avg_premium (green)** peaked in 2023 then slightly declined in 2024, suggesting the insurer may have **reduced premiums to attract new business** (consistent with 69.3% new business ratio) while claims costs continued rising.
--   **loss_ratio (blue)** increases from \~66.5% in 2022 to \~67% in 2023 to \~75% in 2024. The jump from 2023 to 2024 is the most alarming signal — a near 8 percentage point spike in a single year. The portfolio is becoming **less profitable at an accelerating rate**.
+- **avg_incurred (red)** shows a consistent upward trend from \~187 in 2022 to \~224 in 2024, meaning the average cost per claim is increasing every year - a clear sign of **growing claims severity**.
+- **avg_premium (green)** peaked in 2023 then slightly declined in 2024, suggesting the insurer may have **reduced premiums to attract new business** (consistent with 69.3% new business ratio) while claims costs continued rising.
+- **loss_ratio (blue)** increases from \~66.5% in 2022 to \~67% in 2023 to \~75% in 2024. The jump from 2023 to 2024 is the most alarming signal — a near 8 percentage point spike in a single year. The portfolio is becoming **less profitable at an accelerating rate**.
 :::
 
 ::: callout-warning
@@ -616,10 +616,10 @@ ggplot(loss_data, aes(x = reorder(!!sym(group_var), loss_ratio),
 ::: callout-note
 #### Loss Ratio by Policy Type
 
--   COMP_N is the most unprofitable product at 93.5%, far exceeding the 70% benchmark by 23.5 percentage points. Immediate repricing is needed. The 19 point gap between COMP_N (93.5%) and COMP_E (73.9%) demonstrates that the excess/deductible is highly effective at reducing claims cost.
--   TP is the most profitable at 54.6%, sitting 15.4 points below the benchmark. Low claim frequency from limited coverage scope offsets its high individual claim severity.
--   TPG (69.6%) falls just below the 70% threshold, appearing healthy but barely so. It is surprisingly less profitable than CC (63.5%) despite simpler coverage, suggesting glass replacement costs are underpriced relative to their frequency.
--   Overall, two out of five products (COMP_N and COMP_E) exceed the 70% healthy benchmark, signaling underpricing in comprehensive coverage. The remaining three sit below the line but CC and TPG are not far from crossing it, consistent with the worsening loss ratio trend seen in the temporal analysis.
+- COMP_N is the most unprofitable product at 93.5%, far exceeding the 70% benchmark by 23.5 percentage points. Immediate repricing is needed. The 19 point gap between COMP_N (93.5%) and COMP_E (73.9%) demonstrates that the excess/deductible is highly effective at reducing claims cost.
+- TP is the most profitable at 54.6%, sitting 15.4 points below the benchmark. Low claim frequency from limited coverage scope offsets its high individual claim severity.
+- TPG (69.6%) falls just below the 70% threshold, appearing healthy but barely so. It is surprisingly less profitable than CC (63.5%) despite simpler coverage, suggesting glass replacement costs are underpriced relative to their frequency.
+- Overall, two out of five products (COMP_N and COMP_E) exceed the 70% healthy benchmark, signaling underpricing in comprehensive coverage. The remaining three sit below the line but CC and TPG are not far from crossing it, consistent with the worsening loss ratio trend seen in the temporal analysis.
 :::
 
 ```{r}
@@ -673,20 +673,20 @@ ggplot(motoinsu,
 ```
 
 ::: callout-note
--   **N (New, blue): youngest drivers**.
-    -   Peak sharply around age 33–35, very narrow distribution.
+- **N (New, blue): youngest drivers**.
+  - Peak sharply around age 33–35, very narrow distribution.
 
-    -   New policyholders skew younger - first-time insurance buyers.
--   **B (Bad history, pink)**: **mirrors N almost exactly**.
-    -   Nearly identical age distribution to N.
+  - New policyholders skew younger - first-time insurance buyers.
+- **B (Bad history, pink)**: **mirrors N almost exactly**.
+  - Nearly identical age distribution to N.
 
-    -   Suggests bad-score customers are largely the same cohort as new customers - young drivers who recently accumulated claims.
--   **G (Good history, green)**: **older and wider spread**.
-    -   Bimodal: one peak \~40, second bump around 55–65.
+  - Suggests bad-score customers are largely the same cohort as new customers - young drivers who recently accumulated claims.
+- **G (Good history, green)**: **older and wider spread**.
+  - Bimodal: one peak \~40, second bump around 55–65.
 
-    -   Experienced drivers with long clean records dominate the older age bands.
+  - Experienced drivers with long clean records dominate the older age bands.
 
-    -   The long right tail to age 80+ is almost entirely G - elderly drivers have good bonus scores from decades of claim-free driving.
+  - The long right tail to age 80+ is almost entirely G - elderly drivers have good bonus scores from decades of claim-free driving.
 :::
 
 ### Violin Chart by Premium/Incurred Type
@@ -787,21 +787,21 @@ ggplot(incurred_long, aes(x = reorder(incurred_type, incurred_value, FUN = media
 ::: callout-note
 **Key abnormalities:**
 
--   **Fire:** Premium median = 1, incurred median = 1,522.9. A 1,500x gap, the most extreme mismatch. The premium violin is flat and concentrated while the incurred violin is the widest in the chart, showing highly unpredictable claim costs against nearly zero pricing.
+- **Fire:** Premium median = 1, incurred median = 1,522.9. A 1,500x gap, the most extreme mismatch. The premium violin is flat and concentrated while the incurred violin is the widest in the chart, showing highly unpredictable claim costs against nearly zero pricing.
 
--   **Occupants:** Premium median = 1.8, incurred median = 635.7. A 350x gap. Premium has the narrowest violin (zero risk differentiation), yet incurred shows a broad, boxy shape suggesting varied claim severity.
+- **Occupants:** Premium median = 1.8, incurred median = 635.7. A 350x gap. Premium has the narrowest violin (zero risk differentiation), yet incurred shows a broad, boxy shape suggesting varied claim severity.
 
--   **Glass:** Incurred violin has a distinctive diamond/star shape with a tight cluster around 387, suggesting standardized repair costs (windshield replacement at fixed rates). Premium (15.7) is too low relative to this.
+- **Glass:** Incurred violin has a distinctive diamond/star shape with a tight cluster around 387, suggesting standardized repair costs (windshield replacement at fixed rates). Premium (15.7) is too low relative to this.
 
--   **Theft:** Premium violin is wide and spread (7.2 median) showing some risk differentiation, but incurred (310.4) has a compact rectangular shape, meaning theft claims tend to fall within a predictable cost band. The pricing variation does not match the claim pattern.
+- **Theft:** Premium violin is wide and spread (7.2 median) showing some risk differentiation, but incurred (310.4) has a compact rectangular shape, meaning theft claims tend to fall within a predictable cost band. The pricing variation does not match the claim pattern.
 
--   **Legal protection:** The only coverage where shapes are somewhat proportional. Both violins are compact and narrow, suggesting this is the best priced optional coverage.
+- **Legal protection:** The only coverage where shapes are somewhat proportional. Both violins are compact and narrow, suggesting this is the best priced optional coverage.
 
--   **Liability**: Premium median = 165.9, incurred median = 1,114. The premium violin shows a well shaped, wide distribution indicating mature risk based pricing with differentiation across policyholders. The incurred violin is also wide with a long right tail, reflecting the inherently high severity of bodily injury claims. Liability injury incurred (1,662.6) is the highest median across all types, confirming that personal injury drives the most expensive claims in the portfolio.
+- **Liability**: Premium median = 165.9, incurred median = 1,114. The premium violin shows a well shaped, wide distribution indicating mature risk based pricing with differentiation across policyholders. The incurred violin is also wide with a long right tail, reflecting the inherently high severity of bodily injury claims. Liability injury incurred (1,662.6) is the highest median across all types, confirming that personal injury drives the most expensive claims in the portfolio.
 
--   **Property Damage**: Premium median = 201.9, incurred median = 1,000.3. Both violins display broad, well spread shapes, confirming effective risk segmentation in pricing. The relatively close alignment between premium and incurred distributions makes this the most balanced mandatory coverage.
+- **Property Damage**: Premium median = 201.9, incurred median = 1,000.3. Both violins display broad, well spread shapes, confirming effective risk segmentation in pricing. The relatively close alignment between premium and incurred distributions makes this the most balanced mandatory coverage.
 
-    **➨ Overall pattern:** Mandatory coverages (liability, property damage) show wide, well shaped violins on both sides, indicating mature risk based pricing. Optional coverages show flat/narrow premium violins against much larger and varied incurred violins, confirming systematic underpricing of add on products.
+  **➨ Overall pattern:** Mandatory coverages (liability, property damage) show wide, well shaped violins on both sides, indicating mature risk based pricing. Optional coverages show flat/narrow premium violins against much larger and varied incurred violins, confirming systematic underpricing of add on products.
 :::
 
 ### Correlation Matrix
@@ -830,14 +830,14 @@ ggstatsplot::ggcorrmat(
 
 **Strong pairs:**
 
--   `vehicle_age` and `age_driving_licence` (0.86): nearly duplicate variables
--   `total_exposure` and `total_premium` (0.6): longer policies generate higher premiums, expected
--   `vehicle_value` and `total_premium` (0.32): surprisingly weak, pricing is not strongly value-driven
+- `vehicle_age` and `age_driving_licence` (0.86): nearly duplicate variables
+- `total_exposure` and `total_premium` (0.6): longer policies generate higher premiums, expected
+- `vehicle_value` and `total_premium` (0.32): surprisingly weak, pricing is not strongly value-driven
 
 **Negative relationships:**
 
--   `power_to_weight_ratio` and `vehicle_value` (-0.49): high-performance vehicles tend to be undervalued relative to their actual risk
--   `power_to_weight_ratio` and `age_driving_licence` (-0.18): younger licence holders gravitate toward higher-performance vehicles
+- `power_to_weight_ratio` and `vehicle_value` (-0.49): high-performance vehicles tend to be undervalued relative to their actual risk
+- `power_to_weight_ratio` and `age_driving_licence` (-0.18): younger licence holders gravitate toward higher-performance vehicles
 :::
 
 ::: callout-warning
@@ -882,8 +882,8 @@ ggplot(loss_heatmap, aes(x = fuel_type, y = policy_type, fill = loss_ratio)) +
 ::: callout-note
 #### Insights
 
--   **COMP_N:** Has the highest loss ratio (\~90%+) for **both** fuel types, with Diesel (D) appearing even more extreme (deep red). This policy type is clearly underperforming and likely unprofitable.
--   **Fuel type (D vs G):** has minimal impact across most policy types, it likely shouldn't be a primary rating factor in pricing models.
+- **COMP_N:** Has the highest loss ratio (\~90%+) for **both** fuel types, with Diesel (D) appearing even more extreme (deep red). This policy type is clearly underperforming and likely unprofitable.
+- **Fuel type (D vs G):** has minimal impact across most policy types, it likely shouldn't be a primary rating factor in pricing models.
 :::
 
 ### Bubble chart: Loss ratio by Vehicle brand
@@ -932,17 +932,17 @@ ggplot(brand_data, aes(x = total_premium, y = loss_ratio)) +
 ::: callout-note
 **High risk, low revenue — most concerning:**
 
--   **OPEL** (77%, €7.4M) — highest loss ratio but one of the smallest bubbles. Worst combination: unprofitable AND small contributor
--   **SEAT** (74%, €7.4M) — same story, small premium volume but elevated risk
+- **OPEL** (77%, €7.4M) — highest loss ratio but one of the smallest bubbles. Worst combination: unprofitable AND small contributor
+- **SEAT** (74%, €7.4M) — same story, small premium volume but elevated risk
 
 **Acceptable risk, decent revenue:**
 
--   **VOLKSWAGEN** (71%, €8.7M) — largest bubble among named brands, moderate loss ratio. Most important brand to manage carefully given its revenue weight
--   **CITROEN** (69%, €8.5M) — large bubble, below-average loss ratio. Best balance of volume and profitability among French brands
+- **VOLKSWAGEN** (71%, €8.7M) — largest bubble among named brands, moderate loss ratio. Most important brand to manage carefully given its revenue weight
+- **CITROEN** (69%, €8.5M) — large bubble, below-average loss ratio. Best balance of volume and profitability among French brands
 
 **Best performers:**
 
--   **PEUGEOT** (66%, €8.1M) and **RENAULT** (67%, €9.1M) — lowest loss ratios with solid premium volumes. RENAULT is particularly valuable: largest revenue among named brands AND most profitable French brand
+- **PEUGEOT** (66%, €8.1M) and **RENAULT** (67%, €9.1M) — lowest loss ratios with solid premium volumes. RENAULT is particularly valuable: largest revenue among named brands AND most profitable French brand
 :::
 
 ```{r}
@@ -983,16 +983,16 @@ animate(p, nframes = 60, fps = 10, width = 800, height = 500,
 ::: callout-note
 #### Insights
 
--   Across three year window, **RENAULT and PEUGEOT** are the most stable, staying in the 63 to 68% range. They are the safest brands in the portfolio and should be prioritized for customer retention.
+- Across three year window, **RENAULT and PEUGEOT** are the most stable, staying in the 63 to 68% range. They are the safest brands in the portfolio and should be prioritized for customer retention.
 
--   **OPEL** continues to show warning to be the highest volatile brand. This instability suggests a small portfolio where a few large claims can swing the ratio wildly. Unpredictable and hard to price.
+- **OPEL** continues to show warning to be the highest volatile brand. This instability suggests a small portfolio where a few large claims can swing the ratio wildly. Unpredictable and hard to price.
 
--   **SEAT** is consistently the worst among mid range brands, hovering around 70 to 80% across all three years. It never dips below the benchmark, confirming it is structurally underpriced.
+- **SEAT** is consistently the worst among mid range brands, hovering around 70 to 80% across all three years. It never dips below the benchmark, confirming it is structurally underpriced.
 :::
 
 ::: callout-warning
--   **RENAULT and PEUGEOT** are the most valuable brands, combining high premium volume with the lowest and most stable loss ratios across all three years. These should be prioritized for customer retention.
--   **OPEL and SEAT** generate the least revenue while being the most unprofitable. OPEL is extremely volatile year to year, while SEAT is consistently above the benchmark, confirming structural underpricing. Both require urgent pricing review.
+- **RENAULT and PEUGEOT** are the most valuable brands, combining high premium volume with the lowest and most stable loss ratios across all three years. These should be prioritized for customer retention.
+- **OPEL and SEAT** generate the least revenue while being the most unprofitable. OPEL is extremely volatile year to year, while SEAT is consistently above the benchmark, confirming structural underpricing. Both require urgent pricing review.
 :::
 
 # Summary
@@ -1001,19 +1001,19 @@ This study applied visual analytics techniques to a real world motor vehicle ins
 
 ### Key Findings {.unnumbered}
 
--   The portfolio is growing but **increasingly unprofitable**, with loss ratio worsening sharply from 2022 to 2024 driven by rising claims severity alongside declining premiums.
--   The insurer **relies heavily on new business** acquisition over renewals, and new customers consistently carry the worst loss ratios, directly contributing to portfolio deterioration.
--   **COMP_N is the most dangerous product** with both the highest claim frequency and highest incurred losses, confirming that the absence of a deductible encourages excessive claiming. The gap with COMP_E proves deductibles are highly effective.
--   **Optional coverages are systematically underpriced**, with fire showing the most extreme mismatch between what is charged and what is paid out, followed by occupants and glass. Only legal protection appears adequately priced. Mandatory coverages show mature pricing.
--   **Younger drivers cluster in the new and bad bonus score** categories, suggesting these are largely the same cohort of first time buyers who quickly accumulate claims.
--   **RENAULT and PEUGEOT are the most valuable brands**, combining high revenue with the lowest and most stable loss ratios across all three years. **OPEL and SEAT are the opposite:** low revenue, high loss ratios, and in OPEL's case extreme volatility.
+- The portfolio is growing but **increasingly unprofitable**, with loss ratio worsening sharply from 2022 to 2024 driven by rising claims severity alongside declining premiums.
+- The insurer **relies heavily on new business** acquisition over renewals, and new customers consistently carry the worst loss ratios, directly contributing to portfolio deterioration.
+- **COMP_N is the most dangerous product** with both the highest claim frequency and highest incurred losses, confirming that the absence of a deductible encourages excessive claiming. The gap with COMP_E proves deductibles are highly effective.
+- **Optional coverages are systematically underpriced**, with fire showing the most extreme mismatch between what is charged and what is paid out, followed by occupants and glass. Only legal protection appears adequately priced. Mandatory coverages show mature pricing.
+- **Younger drivers cluster in the new and bad bonus score** categories, suggesting these are largely the same cohort of first time buyers who quickly accumulate claims.
+- **RENAULT and PEUGEOT are the most valuable brands**, combining high revenue with the lowest and most stable loss ratios across all three years. **OPEL and SEAT are the opposite:** low revenue, high loss ratios, and in OPEL's case extreme volatility.
 
 ### Recommendations for future research {.unnumbered}
 
--   **Confirmatory statistical analysis:** Future studies should incorporate formal hypothesis testing and regression modeling to validate these exploratory findings and establish causal relationships between risk factors and profitability.
--   **Temporal granularity:** Extending the analysis to monthly or quarterly intervals could reveal seasonal patterns in claims frequency and severity that annual aggregation may obscure.
--   **Customer retention analysis:** Investigating the relationship between cancellation behavior, policy tenure, and profitability would help design better retention strategies for low risk segments.
--   **External data enrichment:** Incorporating macroeconomic indicators such as inflation rates, repair cost indices, and regional accident statistics could improve understanding of the drivers behind rising claims severity.
+- **Confirmatory statistical analysis:** Future studies should incorporate formal hypothesis testing and regression modeling to validate these exploratory findings and establish causal relationships between risk factors and profitability.
+- **Temporal granularity:** Extending the analysis to monthly or quarterly intervals could reveal seasonal patterns in claims frequency and severity that annual aggregation may obscure.
+- **Customer retention analysis:** Investigating the relationship between cancellation behavior, policy tenure, and profitability would help design better retention strategies for low risk segments.
+- **External data enrichment:** Incorporating macroeconomic indicators such as inflation rates, repair cost indices, and regional accident statistics could improve understanding of the drivers behind rising claims severity.
 
 # References {.unnumbered}
 

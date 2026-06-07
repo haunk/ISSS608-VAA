@@ -15,6 +15,7 @@ format:
     toc: true
     toc-depth: 3
     number-sections: true
+bibliography: references.bib
 ---
 
 # Overview
@@ -23,14 +24,17 @@ This report focuses on [Mini-Challenge (MC) 2](https://vast-challenge.github.io/
 
 **Context**: You work in the AI systems administration department of Company A. A post was recently made on SaidIT looks like a malfunction of an agent: It is in gibberish and in a forum that appears random. Your job is to track down why this post occurred and suggest a remedy to the situation by building a visual analytics system that integrates visuals with algorithms to enable interactive exploration and documentation of the multi-agent system!
 
-This part is data preprocessing stage, which contains following steps:
+The VAST Challenge lives up to its name. The dataset is massive, and the challenge is real. A turning point came when I read *Analysis Without Data: Teaching Students to Tackle the VAST Challenge* (@he), one of good resources that Prof. Kam shared. The paper advocates generating questions and formalising hypotheses before touching the data, as a safeguard against **HARKing** (Hypothesizing After Results are Known) and false discoveries.
 
-- Loaded efficiently and inspected.
-- Flattened from its nested JSON structure into tidy tables.
-- Cleaned (timestamps converted, duplicates checked, missingness understood).
-- Joined with the organisation chart so that every actor in an event can be traced back to their **department**, **team**, and **human principal** (for autonomous agents).
+It felt like an "Aha" moment to me. These are steps we often do intuitively and haphazardly, just without thinking of them as a systematic workflow. Therefore, by any chance you read my assignment, I hope you can find this reference useful.
 
-The end-product of this stage is a single enriched events table (`events_mapped`) plus several lookup tables. From those, the very last chunk of this notebook produces the **John Windward mapping view**: what John and the agents tied to him actually did in the system.
+I focus to answer the Question 1 from MC2:
+
+> 1.  How was the anomalous SaidIT posts made? Build a visual tool that describes the sequence of events that led up to the post. Include people and system interactions that were important to the post being made.
+>
+>     a\. Provide a detailed view that focuses on the exact chain of events for this message of interest.
+>
+>     b\. Provide a system overview that contextualizes this message chain in that overall system.
 
 # Setup
 
@@ -96,31 +100,7 @@ org_chart <- read_rds("data/org_chart.rds")
 
 # Data Wrangling
 
-## Inspecting raw structure
-
-### MC2 events
-
-`mc2_data` is a list with a `description` field and an `events` data frame. The events table is where everything happens, each row is one action taken by a person, an agent, or a system.
-
-```{r}
-#| code-fold: false
-glimpse(mc2_data)
-```
-
-```{r}
-#| code-fold: false
-mc2_events <- mc2_data$events
-glimpse(mc2_events)
-```
-
-::: callout-note
-A few things to notice from the glimpse above:
-
-- `parties` is a **list-column**, each row is a character vector of one or more actor IDs (people like `person:john_windward`, agents like `agent:xxx`, or systems).
-- `details` is a **nested data frame**, its columns differ by event type, so most cells are `NA`. This is normal for an event-log schema.
-- `when` is a Unix timestamp (numeric), we'll convert it to a proper datetime.
-- `short_name` tells us the *kind* of action, this is the field we'll group on.
-:::
+## Organisation data
 
 ### Organisation chart
 
@@ -152,7 +132,7 @@ org_edges %>% count(relation)
 
 #### Draw organization tree
 
-Here is an interactive chart showing hierachy levels (company, department and team). We can zoom/search/drag and hover by name of each employee.
+Here is an interactive chart created by visNetwork, showing hierachy levels (company, department and team). We can zoom/search/drag and hover by name of each employee.
 
 ```{r}
 #| code-fold: true
@@ -196,167 +176,36 @@ visNetwork(vis_nodes, vis_edges,
   ) %>%
   visInteraction(navigationButtons = TRUE, zoomView = TRUE) %>%
   visPhysics(enabled = FALSE)
+
 ```
-
-## Cleaning the events table
-
-### Convert timestamps and add row id
-
-Working with Unix timestamps is painful for filtering by date. We convert `when` into a `POSIXct` datetime in UTC, then derive a `date` and `hour` column for easier grouping. We also keep an explicit `event_id` (the original `id` field) and a sequential `row` index for ordering.
 
 ```{r}
-#| code-fold: false
-events_clean <- mc2_events %>% 
-  mutate(
-    event_id  = id,
-    datetime  = as_datetime(when, tz = "UTC"),
-    date      = as_date(datetime),
-    hour      = hour(datetime),
-    .keep = "unused"  # drops `id` and `when`, keeps the rest
-  ) %>% 
-  mutate(row = row_number(), .before = 1)
+# Personnel count by department
+team_dept <- org_edges %>%
+  filter(str_starts(source, "department:"), str_starts(target, "team:")) %>%
+  select(dept = source, team = target)
 
-events_clean %>% 
-  select(row, event_id, datetime, short_name) %>% 
-  head(5)
+org_edges %>%
+  filter(str_starts(target, "person:")) %>%
+  left_join(team_dept, by = c("source" = "team")) %>%
+  mutate(dept = coalesce(dept, source)) %>%
+  left_join(org_nodes %>% select(id, label), by = c("dept" = "id")) %>%
+  count(label) %>%
+  ggplot(aes(x = reorder(label, n), y = n)) +
+  geom_col(fill = "steelblue") +
+  geom_text(aes(label = n), hjust = -0.2) +
+  coord_flip() +
+  labs(title = "Personnel Count by Department", x = NULL, y = "Personnel") +
+  theme_minimal()
 ```
 
-### Sanity-check the time range
+::: callout-note
+There are some information from these charts and tables above:
 
-The challenge brief says the anomalous post occurs in **17** **May 2046**. A quick min/max confirms the data matches that.
-
-```{r}
-#| code-fold: false
-events_clean %>% 
-  summarise(
-    n_events   = n(),
-    first_time = min(datetime),
-    last_time  = max(datetime),
-    n_days     = n_distinct(date)
-  )
-```
-
-So dataset ranges among 70 days, from 8 May to 16 July, covering the checking point (17 May).
-
-### Distribution of event types
-
-`short_name` is the verb of each event: what was done. Counting them tells us which actions dominate the log and which are rare. Rare verbs are often the most diagnostic for an anomaly investigation.
-
-```{r}
-event_type_counts <- events_clean %>% 
-  count(short_name, sort = TRUE)
-
-event_type_counts
-```
-
-There are some events seem be duplicated. Eg: post_saidit and saidit_post maybe one event (due to the inconsistency of name convention) or two different stages. I will confirm in further investigation.
-
-### Missingness in `details`
-
-`details` is a nested data frame: most of its columns are populated only for the event types that need them. The summary below tells us which detail-fields actually carry information.
-
-```{r}
-events_clean$details %>% 
-  summarise(across(where(is.character), ~ sum(!is.na(.x)))) %>% 
-  pivot_longer(everything(), names_to = "detail_field", values_to = "non_na") %>% 
-  arrange(desc(non_na)) %>%
-  print(n = Inf)
-```
-
-### Duplicates
-
-There should be one row per `event_id`. We verify.
-
-```{r}
-events_clean %>% 
-  summarise(
-    n_rows    = n(),
-    n_unique  = n_distinct(event_id),
-    n_dup_ids = n() - n_distinct(event_id)
-  )
-```
-
-Yes, each row represents for one event.
-
-## Transforming: long-format actor table
-
-The hard part of working with this data is that **`parties` is a list-column**. To answer "what did John Windward do?", we need one row per (event × actor), not one row per event. We `unnest()` to long form.
-
-```{r}
-events_long <- events_clean %>% 
-  select(row, event_id, datetime, date, hour, short_name, parties) %>% 
-  unnest_longer(parties, values_to = "actor_id")
-
-events_long %>% head(8)
-```
-
-Now every event appears as many times as it has actors. We can immediately ask "how many distinct actors appear in the log?"
-
-```{r}
-events_long %>% 
-  summarise(
-    n_event_actor_rows = n(),
-    n_distinct_actors  = n_distinct(actor_id)
-  )
-```
-
-### Classify actor IDs
-
-Actor IDs follow a `prefix:name` convention. The prefix tells us whether the actor is a person, an autonomous agent, a system, or something else. We extract the prefix to make filtering and joins easier downstream.
-
-```{r}
-events_long <- events_long %>% 
-  mutate(
-    actor_kind = str_extract(actor_id, "^[^:]+"),   # part before the colon
-    actor_name = str_remove(actor_id, "^[^:]+:")    # part after
-  )
-
-events_long %>% count(actor_kind, sort = TRUE)
-```
-
-::: callout-warning
-The raw `actor_kind` extraction returns 54 categories, which is too many.
-
-Inspection reveals that the data uses **two inconsistent ID formats for the same people**: most actors carry a prefix (`person:hannah_starboard`), but **49 bare person names** also appear (`Hannah Starboard`).
-
-The number 49 exactly matches the number of persons in `org_chart`, so every employee shows up under both formats in different events.
-
-It raises a question: **is there a pattern to which format gets used?** For example:
-
-- Does `person:` appear when the action is logged by the system (so the system knows the canonical ID)?
-- Does the bare name appear when the action originates from a free-text field (like an email body, a message, or a calendar invite where humans typed the name)?
-
-For now, just normalise them and move on then we will investiage in later stage.
-
-=\> We normalise the bare names to their `person:` equivalents using the org chart as the source of truth, and merge the two agent variants (`Agent/person` and `agent`) into a single `agent` kind. After normalisation there are four actor kinds: `person`, `agent`, `system`, `world`.
+- TenantThread Company has 6 departments, 19 teams and 49 personnel.
+- There are five departments (Products, HR, Legal, IT and CS), and special department which is Executive Suite.
+- Each department has 6-13 people, including department lead and normal employees.
 :::
-
-```{r}
-# 1. Build a lookup: bare name -> person ID, from the org chart
-name_to_id <- org_nodes %>% 
-  filter(type == "person") %>% 
-  select(label, id) %>% 
-  deframe()
-
-# 2. Normalise actor_id, then derive actor_kind
-events_long <- events_long %>% 
-  mutate(
-    # bare names get rewritten to person:xxx, prefixed IDs stay as-is
-    actor_id = if_else(
-      str_detect(actor_id, ":"),
-      actor_id,
-      name_to_id[actor_id]
-    ),
-    # extract the prefix, then merge the two agent variants
-    actor_kind = str_extract(actor_id, "^[^:/]+"),
-    actor_kind = if_else(actor_kind == "Agent", "agent", actor_kind),
-    actor_name = str_remove(actor_id, "^[^:]+:")
-  )
-
-events_long %>% count(actor_kind, sort = TRUE)
-```
-
-## Building lookup tables from `org_chart`
 
 ### Person lookup with department & team
 
@@ -416,135 +265,308 @@ person_lookup <- person_lookup %>%
               select(team_id = id, team_name = label),
             by = "team_id")
 
-person_lookup
-```
-
-A quick check: is John Windward in there with the right department?
-
-```{r}
-#| code-fold: false
-person_lookup %>% filter(person_id == "person:john_windward") %>%
-  t()
-```
-
-Customer Support, Department Lead matches the brief.
-
-### Agent → principal lookup (derived from events)
-
-Autonomous agents are not in the org chart, they only appear inside `mc2_events`. But the agent ID itself encodes the principal: `Agent/person:john_windward` literally means "the agent of John Windward". So the lookup is one line of string manipulation, no heuristic needed. Inspection also reveals two ID formats (`Agent/...` and `agent:...`) for what appear to be the same logical agents. We keep both as distinct rows in the lookup but map them to the same `principal_id`.
-
-A peek at all distinct agent IDs in the log:
-
-```{r}
-events_long %>% 
-  filter(actor_kind == "agent") %>% 
-  distinct(actor_id) %>%
-  print(n = Inf)
-```
-
-We strip either prefix (`Agent/` or `agent:`) from each agent ID to expose the `person:<name>` part underneath, which is the principal. The same person can appear under two agent IDs (one per format), both correctly map to the same `principal_id`.
-
-```{r}
-agent_lookup <- events_long %>% 
-  filter(actor_kind == "agent") %>% 
-  distinct(agent_id = actor_id) %>% 
-  mutate(
-    # Strip either "Agent/" or "agent:" prefix to expose "person:<name>"
-    principal_id = str_replace(agent_id, "^(Agent/|agent:)", "")
+person_lookup %>%
+  select(person_name, title, department_name, team_name) %>%
+  arrange(department_name, team_name, person_name) %>%
+  datatable(
+    filter = "top",
+    rownames = FALSE,
+    colnames = c("Name", "Title", "Department", "Team"),
+    caption = "Tenant Thread Personnel Directory",
+    options = list(pageLength = 15, scrollX = TRUE)
   )
-
-agent_lookup
 ```
 
-Check for John Windward case.
+## Inspecting raw mc2_data
+
+`mc2_data` is a list with a `description` field and an `events` data frame. The events table is where everything happens, each row is one action taken by a person, an agent, or a system.
 
 ```{r}
 #| code-fold: false
-agent_lookup %>% filter(principal_id == "person:john_windward")
+glimpse(mc2_data)
 ```
 
 ```{r}
 #| code-fold: false
-events_long %>% 
-  filter(str_starts(actor_id, "agent:")) %>% 
-  count(short_name, sort = TRUE)
+mc2_events <- mc2_data$events
+glimpse(mc2_events)
 ```
 
-**`read_file` events use a different ID format by convention** (whoever logs `read_file` events writes agent IDs as `agent:person:X`, while every other event type writes them as `Agent/person:X`). Same agent, different logging style for this one event type.
+::: callout-note
+A few things to notice from the glimpse above:
 
-## Master enriched table
+- `parties` is a **list-column**, each row is a character vector of one or more actor IDs (people like `person:john_windward`, agents like `agent:xxx`, or systems).
+- `details` is a **nested data frame**, its columns differ by event type, so most cells are `NA`. This is normal for an event-log schema.
+- `when` is a Unix timestamp (numeric), we'll convert it to a proper datetime.
+- `short_name` tells us the *kind* of action, this is the field we'll group on.
+:::
 
-Now we join everything: each (event × actor) row gets enriched with department, team, title for persons and for agents, their inferred principal plus that principal's department / team.
+## Select nescessary columns in mc2_events
 
-```{r}
-# Person enrichment, join when actor is a person
-events_mapped <- events_long %>% 
-  left_join(person_lookup,
-            by = c("actor_id" = "person_id")) %>% 
-  rename(actor_person_name = person_name,
-         actor_title       = title,
-         actor_department  = department_name,
-         actor_team        = team_name) %>% 
-  select(-department_id, -team_id)
-
-# Agent enrichment, look up the principal then re-join person info
-events_mapped <- events_mapped %>% 
-  left_join(agent_lookup %>% select(agent_id, principal_id),
-            by = c("actor_id" = "agent_id")) %>% 
-  left_join(person_lookup %>% 
-              select(principal_id   = person_id,
-                     principal_name = person_name,
-                     principal_title = title,
-                     principal_department = department_name,
-                     principal_team = team_name),
-            by = "principal_id")
-
-# Tidy, unified "effective person" view, who is responsible for the action
-events_mapped <- events_mapped %>% 
-  mutate(
-    effective_person_id   = coalesce(
-      if_else(actor_kind == "person", actor_id, NA_character_),
-      principal_id
-    ),
-    effective_person_name = coalesce(actor_person_name, principal_name),
-    effective_department  = coalesce(actor_department, principal_department),
-    effective_team        = coalesce(actor_team, principal_team),
-    effective_title       = coalesce(actor_title, principal_title)
-  )
-
-events_mapped %>% 
-  select(row, event_id, datetime, short_name, actor_kind, actor_id,
-         effective_person_name, effective_department, effective_team) %>% 
-  head(10)
-```
-
-After running, sanity check that John's events show up under both his own and agent rows:
-
-```{r}
-#| code-fold: false
-events_mapped %>% 
-  filter(effective_person_id == "person:john_windward") %>% 
-  count(actor_kind)
-```
-
-Save the enriched table for the analysis stage:
-
-```{r}
-#| code-fold: false
-#| eval: false
-write_rds(events_mapped, "data/events_mapped.rds")
-write_rds(person_lookup, "data/person_lookup.rds")
-write_rds(agent_lookup,  "data/agent_lookup.rds")
-```
-
-## John Windward mapping view
-
-Now we will research who is John Windward, what did he and his agent do?
-
-### John Windward in the org chart
+We create the table `events_clean`: one row per event, with a proper `datetime` and a stable `row` index.
 
 ```{r}
 #| code-fold: true
+#| code-summary: "Show the code"
+#| 
+# Step 1: Flatten events
+events_clean <- mc2_data$events %>%
+  mutate(
+    event_id       = id,
+    datetime       = as_datetime(when, tz = "UTC"),
+    date           = as_date(datetime),
+    hour           = hour(datetime),
+    parties_str    = sapply(parties, paste, collapse = " | "),
+    target         = details$target,
+    file           = details$file,
+    subject        = details$subject,
+    content        = details$content,
+    forum          = details$forum,
+    topic          = details$topic,
+    advice         = details$advice,
+    task           = details$task,
+    action         = details$action,
+    status         = details$status,
+    person         = details$person,
+    target_agent   = details$target_agent
+  ) %>%
+  select(-id, -when, -details)
+glimpse (events_clean)
+```
+
+::: callout-note
+What we have done:
+
+- **Convert timestamps**: Working with Unix timestamps is painful for filtering by date. We convert `when` into a `POSIXct` datetime in UTC, then derive a `date` and `hour` column for easier grouping.
+- **Parties** field is a list, we concatenate into one row, to respect each event (timestamp) is one row.
+:::
+
+## Unnest events_clean
+
+We create events_long table: one row per (event × party), with from_type and to_type classified (person/agent/system/world).
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| 
+
+# Step 2: Build events_long
+events_long <- events_clean %>%
+  mutate(from = map_chr(parties, ~ .x[1])) %>%
+  unnest(parties) %>%
+  rename(to = parties) %>%
+  filter(from != to) %>%
+  mutate(
+    # Type
+    from_type = case_when(
+      str_starts(from, "person:")       ~ "person",
+      str_starts(from, "Agent/person:") ~ "agent",
+      str_starts(from, "agent:person:") ~ "agent",
+      str_starts(from, "system:")       ~ "system",
+      str_starts(from, "world:")        ~ "world",
+      TRUE ~ "other"),
+    to_type = case_when(
+      str_starts(to, "person:")       ~ "person",
+      str_starts(to, "Agent/person:") ~ "agent",
+      str_starts(to, "agent:person:") ~ "agent",
+      str_starts(to, "system:")       ~ "system",
+      str_starts(to, "world:")        ~ "world",
+      TRUE ~ "other"),
+    # Person ID for name lookup
+    from_pid = str_replace(from, "^(Agent/person:|agent:person:)", "person:"),
+    to_pid   = str_replace(to,   "^(Agent/person:|agent:person:)", "person:")
+  ) %>%
+  left_join(person_lookup %>% select(person_id, person_name),
+            by = c("from_pid" = "person_id")) %>%
+  rename(from_name = person_name) %>%
+  left_join(person_lookup %>% select(person_id, person_name),
+            by = c("to_pid" = "person_id")) %>%
+  rename(to_name = person_name) %>%
+  mutate(
+    from_name = coalesce(from_name, from),
+    to_name   = coalesce(to_name, to)
+  ) %>%
+  select(event_id, datetime, date, hour, short_name,
+         from, from_type, from_name,
+         to, to_type, to_name,
+         parties_str,
+         action, target, task, person, subject, status,
+         file, content, forum, topic, advice, target_agent)
+glimpse(events_long)
+```
+
+::: callout-note
+What we have done:
+
+- **Unnest parties field**: to show relationship from whom to whom. Agent/person and agent:person share the same treatment =\> tranform to agent type. We have analyzed it in details but do not want to show here for the sake of concise and smooth flow (agent:person only do read_file task while Agent/person do all remaining tasks).
+- **From and to** show nice human name (john_windward becomes John Windward).
+:::
+
+## Extract graph elements from events_long
+
+### Node entities
+
+```{r}
+#| code-fold: false
+mc2_nodes <- bind_rows(
+  events_long %>% select(id = from, type = from_type, label = from_name),
+  events_long %>% select(id = to,   type = to_type,   label = to_name)
+) %>%
+  distinct(id, .keep_all = TRUE)
+mc2_nodes
+```
+
+### Edge/Link entities
+
+```{r}
+#| code-fold: false
+
+mc2_edges <- events_long %>%
+  count(from_name, to_name, short_name, name = "weight")
+glimpse(mc2_edges)
+```
+
+::: callout-note
+- `weight` here counts how many times that `from-to` pair appears in `events_long.`
+:::
+
+## Sanity checking
+
+### Sanity-check the time range
+
+The challenge brief says the anomalous post occurs in **17** **May 2046**. A quick min/max confirms the data matches that.
+
+```{r}
+#| code-fold: false
+events_long %>% 
+  summarise(
+    n_events   = n(),
+    first_time = min(datetime),
+    last_time  = max(datetime),
+    n_days     = n_distinct(date)
+  )
+```
+
+So dataset ranges among 67 days, from 8 May to 16 July, covering the checking point (17 May).
+
+### Duplicates
+
+There should be one row per `event_id`. We verify.
+
+```{r}
+events_clean %>% 
+  summarise(
+    n_rows    = n(),
+    n_unique  = n_distinct(event_id),
+    n_dup_ids = n() - n_distinct(event_id)
+  )
+```
+
+Yes, each row represents for one event.
+
+### Distribution of event types
+
+`short_name` is the verb of each event: what was done. Counting them tells us which actions dominate the log and which are rare. Rare verbs are often the most diagnostic for an anomaly investigation.
+
+```{r}
+#| fig-width: 10
+#| fig-height: 6
+
+event_type_counts <- events_long %>% 
+  count(short_name, sort = TRUE)
+
+event_type_counts %>%
+  ggplot(aes(x = reorder(short_name, n), y = n)) +
+  geom_col(fill = "steelblue") +
+  geom_text(aes(label = n), hjust = -0.2, size = 3) +
+  coord_flip() +
+  labs(title = "Distribution of Event Types", x = NULL, y = "Count") +
+  theme_minimal()
+```
+
+::: callout-note
+- There are some events seem be duplicated. Eg: post_saidit and saidit_post maybe one event (due to the inconsistency of name convention) or two different stages. We will confirm in further investigation.
+
+- Numbers of delete_file, read_file, create_file and check_in are quite equal.
+:::
+
+### Missingness in `details`
+
+`details` is a nested data frame: most of its columns are populated only for the event types that need them. The summary below tells us which detail-fields actually carry information.
+
+```{r}
+mc2_events$details %>% 
+  summarise(across(where(is.character), ~ sum(!is.na(.x)))) %>% 
+  pivot_longer(everything(), names_to = "detail_field", values_to = "non_na") %>% 
+  arrange(desc(non_na)) %>%
+  print(n = Inf)
+```
+
+::: callout-note
+- target, task, person and action are four fields conveying the most information. They are unnested in events_long table already.
+:::
+
+## Outputs of this preprocessing stage
+
+By the end of this notebook we have, ready for the analysis & visualisation stage:
+
+- `org_nodes`: all entities in the organisation chart (company, departments, teams, persons).
+- `org_edges`: hierarchical relationships (contains, led_by) between org entities.
+- `person_lookup`: every person in Tenant Thread mapped to their name, built from org_chart.
+- `events_flat`: one row per event, with proper `datetime`, `date`, `hour` and all detail fields unnested.
+- `events_long`: one row per (event × from-to pair), with `from_type`, `to_type` and human-readable names.
+- `mc2_nodes`: distinct actor entities (id, type, label) extracted from events_long.
+- `mc2_edges`: aggregated interaction weights between actor pairs, ready for network visualisation.
+
+```{mermaid}
+%%| fig-cap: "Data flow: from raw JSON files to the enriched events table"
+%%| code-fold: true
+%%| code-summary: "Show the code"
+
+graph TD
+    A[("mc2_data.json")] --> B["mc2_data"]
+    C[("org_chart.json")] --> D["org_chart"]
+
+    D --> E["org_nodes"]
+    D --> F["org_edges"]
+    F --> G["person_lookup"]
+
+    B --> H["events_flat"]
+    H --> I["events_long"]
+    G --> I
+
+    I --> K["mc2_nodes"]
+    I --> L["mc2_edges"]
+
+    style A fill:#d0d0d0,stroke:#999
+    style C fill:#d0d0d0,stroke:#999
+    style B fill:#d0d0d0,stroke:#999
+    style D fill:#d0d0d0,stroke:#999
+    style E fill:#ffbb78,stroke:#ff7f00
+    style F fill:#ffbb78,stroke:#ff7f00
+    style G fill:#aec7e8,stroke:#377eb8
+    style H fill:#aec7e8,stroke:#377eb8
+    style I fill:#ffbb78,stroke:#ff7f00
+    style K fill:#ffbb78,stroke:#ff7f00
+    style L fill:#ffbb78,stroke:#ff7f00
+```
+
+::: callout-note
+- **Grey nodes** are raw source files and parsed JSON objects.
+- **Blue nodes** are intermediate processed tables.
+- **Orange nodes** are the final outputs, used as input for further analysis and visualisation.
+- Arrows are labelled with the **operation** that produced the next table.
+:::
+
+# Data Exploration & Visualization
+
+## Solving Question 1
+
+### Who is John Windward?
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
 
 # Walk UP from John to find his department chain
 target_id <- "person:john_windward"
@@ -598,22 +620,13 @@ visNetwork(target_nodes, target_edges,
   visLegend(width = 0.2) %>%
   visInteraction(navigationButtons = TRUE, zoomView = TRUE) %>%
   visPhysics(enabled = FALSE)
+
+rm(target_id, target_ancestors)
 ```
 
 So John Windward belongs to Customer Support and is the lead of this Department.
 
-### Agents linked to John Windward
-
-```{r}
-#| code-fold: false
-jw_agents <- agent_lookup %>% 
-  filter(principal_id == "person:john_windward")
-
-jw_agents %>% 
-  gt()
-```
-
-### Every events involving John Windward or his agents
+### What all events John Windward or his agents did?
 
 This is the core mapping table - one row per (event × actor) where the actor is either John himself or an agent attributed to him.
 
@@ -621,92 +634,24 @@ This is the core mapping table - one row per (event × actor) where the actor is
 #| code-fold: true
 #| code-summary: "Show the code"
 #| 
-jw_actor_ids <- c("person:john_windward", jw_agents$agent_id)
 
-jw_events_view <- events_mapped %>% 
-  filter(actor_id %in% jw_actor_ids) %>% 
-  arrange(datetime) %>% 
-  select(
-    datetime, short_name,
-    actor_kind, actor_id,
-    effective_person_name, effective_department, effective_team,
-    event_id
-  )
+jw_events_view <- events_clean %>%
+  filter(str_detect(parties_str, "john_windward"))
 
 jw_events_view %>% 
+  select(-parties) %>%
   datatable(
     options = list(pageLength = 15, scrollX = TRUE),
     rownames = FALSE,
-    caption = "John Windward & his agents — all logged actions, in chronological order"
+    caption = "John Windward & his agents: all logged actions, in chronological order"
   )
 ```
 
-## Outputs of this preprocessing stage
-
-By the end of this notebook we have, ready for the analysis & visualisation stage:
-
-- `events_clean`: one row per event, with a proper `datetime` and a stable `row` index.
-- `events_long`: one row per (event × actor), with `actor_kind` classified.
-- `person_lookup`: every person in Tenant Thread mapped to their team and department.
-- `agent_lookup`: every autonomous agent mapped to its human principal, parsed from the agent ID.
-- `events_mapped`: the master enriched table; this is what subsequent visualisations should build on.
-- `jw_events_view`: the focused John-Windward mapping that scaffolds the MC2 narrative.
-
-```{mermaid}
-%%| fig-cap: "Data flow: from raw JSON files to the enriched events table"
-%%| code-fold: true
-%%| code-summary: "Show the code"
-
-flowchart TD
-    %% Raw sources
-    A[(mc2_data.json)]:::raw
-    B[(org_chart.json)]:::raw
-
-    %% Top level objects
-    A -->|fromJSON| C[mc2_data<br/><i>list</i>]
-    B -->|fromJSON| D[org_chart<br/><i>list</i>]
-
-    C -->|$events| E[mc2_events<br/><i>nested data frame</i>]
-    D -->|$nodes, $edges| F[org_nodes + org_edges]
-
-    %% events_clean
-    E -->|mutate datetime, event_id, row| G[events_clean<br/>1 row per event]:::out
-
-    %% events_long
-    G -->|select + unnest_longer parties<br/>normalise bare names<br/>extract actor_kind| H[events_long<br/>1 row per event × actor]:::out
-
-    %% person_lookup
-    F -->|walk tree:<br/>department → team → person| I[person_lookup<br/>1 row per person]:::out
-
-    %% agent_lookup
-    H -->|filter actor_kind == agent<br/>parse principal from ID| J[agent_lookup<br/>1 row per agent_id]:::out
-
-    %% events_mapped
-    H -->|left_join| K[events_mapped<br/>enriched]:::final
-    I -->|left_join on actor_id| K
-    J -->|left_join on actor_id| K
-    I -->|left_join on principal_id| K
-
-    %% jw_events_view
-    K -->|filter John + his agents| L[jw_events_view<br/>focused subset]:::final
-
-    classDef raw fill:#f5f5f5,stroke:#999,stroke-width:1px,color:#333
-    classDef out fill:#dceefb,stroke:#3b82f6,stroke-width:1px,color:#0c4a6e
-    classDef final fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#78350f
-```
-
 ::: callout-note
-- **Grey nodes** are raw source files.
-- **Blue nodes** are intermediate processed tables.
-- **Yellow nodes** are the final outputs, will be input for further analysis.
-- Arrows are labelled with the **operation** that produced the next tae.
+- MC2 stated that: "The anomalous posting was sent to SaidIt by John Windward on May 17, 2046 at 4:21am". But from what we see, on 17 May 2046, **the post actually happened on 11:21**. It maybe due to local time difference. On preprocessing stage, we already convert original Unix timestamp to UTC (Coordinated Universal Time).
 :::
 
-# Data Exploration & Visualization
-
-## Solving Question 1
-
-### What all actions of John Windward and his agents do?
+### What all events of John Windward and his agents do related to the anomalous post?
 
 Inspired by Gantt chart, we will modify with dot timeline with grouped bars by day to somehow visualize all actitivies as well as focus on target actions.
 
@@ -868,28 +813,13 @@ fig <- fig %>%
 fig
 ```
 
-::: callout-tip
-How to use this figure:
-
-- **Range day**: you can pick 1d (1 day before the anomalous SaidIT posts), 7d, 14d or all events in the dataset. OR you can free to choose range of day by time scroll bar (near the bottom). **Click on Reset axes before pick day range.**
-
-- **Tooltip**: From button on the right side, choose *Show closest data on the hover* to see single tooltip, OR *Compare data on hover* to see multiple tooltips on a certain time period.
-
-- **Legend**: Click on legend item to hide it from the chart.
-
-- This is a sample view.
-
-  ![](images/clipboard-3326819771.png)
-:::
-
 ::: callout-note
-There are some insights from this chart:
+Insights from this chart:
 
-- MC2 stated that: "The anomalous posting was sent to SaidIt by John Windward on May 17, 2046 at 4:21am". But from what we see, **the post actually happened on 11:21**. It maybe due to local time difference. On preprocessing stage, we already convert original Unix timestamp to UTC (Coordinated Universal Time).
 - On all days having SaidIT posts (13 May, 31 May, 4 June, 18 June and 7 July), there are always Advice actions: "give_advice", "suggest_contacts" happening before SaidIT actions. Meanwhile on target day 17 May 2046, **there is no Advice action before SaidIT post.**
 :::
 
-### Which are detailed actions of John related to SaidIT post?
+### What all events of John and his agent did on 17 May?
 
 Now we need to take a deeper look on SaidIT posting day (17 May 2046).
 
@@ -897,64 +827,33 @@ Now we need to take a deeper look on SaidIT posting day (17 May 2046).
 #| code-fold: true
 #| code-summary: "Show the code"
 
-jw_may17 <- mc2_data$events %>%
-  filter(id %in% jw_events_view$event_id) %>%
-  mutate(datetime = as_datetime(when, tz = "UTC")) %>%
-  filter(as_date(datetime) == as_date("2046-05-17")) %>%
-  arrange(datetime) %>%
-  mutate(
-    target         = details$target,
-    file           = details$file,
-    subject        = details$subject,
-    content        = details$content,
-    forum          = details$forum,
-    topic          = details$topic,
-    advice         = details$advice,
-    task           = details$task,
-    action         = details$action,
-    from_field     = details$from,
-    to_field       = details$to,
-    room           = details$room,
-    status         = details$status,
-    person         = details$person,
-    content_source = details$content_source,
-    source_field   = details$source,
-    target_agent   = details$target_agent,
-    name_field     = details$name,
-    access_type    = details$access_type,
-    file_saved     = details$file_saved
-  ) %>%
-  # Join actor info
-  left_join(
-    jw_events_view %>% select(event_id, actor_kind, actor_id),
-    by = c("id" = "event_id")
-  ) %>%
-  select(
-    id, datetime, short_name, actor_kind, actor_id,
-    action, target, task, person, subject, status,
-    from_field, to_field, file, content, forum, topic, 
-    advice, room, source_field, content_source,
-    target_agent, name_field, access_type, file_saved
-  )
+# local variables
+target_ppl <- "john_windward"
+target_date <- "2046-05-17"
 
-jw_may17 %>%
+events_clean %>%
+  filter(
+    str_detect(parties_str, target_ppl),
+    as_date(datetime) == as_date(target_date)
+    
+  ) %>%
+  select(-parties) %>%
+  arrange(datetime) %>%
   datatable(
-    options = list(
-      pageLength = 20,
-      scrollX = TRUE,
-      scrollY = "500px",
-      order = list(list(1, "asc"))
-    ),
+    options = list(pageLength = 10, scrollX = TRUE),
     filter = "top",
     rownames = FALSE,
-    caption = "John Windward & his agents — All events on 17 May 2046"
+    caption = paste("Events of", target_ppl, "on", target_date)
   )
+
+# remove local variables
+rm(target_ppl, target_date)
 ```
 
 ::: callout-note
 We can see important information from this table above:
 
-- Before event saidit_post (2046-05-17T11:21:15Z, event_id = 373902), there was an event **queue_subordinate_task** (2046-05-17T11:21:13Z, event_id = 373893) with the task of read_file with target_agent is: Agent/person:john_windward.
+- Before event saidit_post (2046-05-17T11:21:15Z, event_id = 373902), there was an event **queue_subordinate_task** (2046-05-17T11:21:13Z, event_id = 373893), which is reading file from agent of Chloe Ballet to the agent of John Windward.
 - Then, there was event **saidit_post_check** (2046-05-17T11:21:14Z, event_id = 373899) without any content (which means saidit_post_check checks nothing?)
 - Event **saidit_post** (2046-05-17T11:21:15Z) read file: SwiftWren.txt from content_source from forum: general.
 - Then two **delete_file** actions happened (2046-05-17T11:21:16Z, event_id = 373909 and 2046-05-17T11:21:17Z, event_id = 373913) deleted SwiftWren_further_instructions.md and SwiftWren.txt. Dangerously, it deleted files on file_system directly.
@@ -964,11 +863,12 @@ We can see important information from this table above:
 - All of these events continuously occured after each second. **The whole sequence is that** firstly agent of John Windward read SwiftWren.txt, checked nothing and post the content from this file, then deleted this file's instruction and this file itself.
 - SwiftWren_further_instructions.md maybe the conditional steps to use SwiftWren.txt but we do not know checking events read it before read SwiftWren.txt or not.
 - This flow is highly problematic, **why it deleted the file content right after posting it?** It likely a "smoking-gun" sequence.
+- Who is Chloe Ballet?
 - **What is the content of SwiftWren.txt?** Whether we can find out the content of SwiftWren.txt is the question that will be answered in the Question 2.
 - **Who created that file?** Who is SwiftWren? We will find out right now.
 :::
 
-### Which are events related to SwiftWren?
+### Which all events related to SwiftWren?
 
 We filter Tenant Thread Organization Chart to find any staff named Swift Wren but see nothing. Therefore I will find out all events related to SwiftWren.
 
@@ -978,25 +878,13 @@ We find keyword in column target, content, source_field, file_saved from nested 
 #| code-fold: true
 #| code-summary: "Show the code"
 #| 
-mc2_data$events %>%
+events_clean %>%
   filter(
-    str_detect(coalesce(details$target, ""), "SwiftWren") |
-      str_detect(coalesce(details$content, ""), "SwiftWren") |
-      str_detect(coalesce(details$source_field, ""), "SwiftWren") |
-    str_detect(coalesce(details$content_source, ""), "SwiftWren") |
-    str_detect(coalesce(details$file_saved, ""), "SwiftWren")
+    str_detect(coalesce(target, ""), "SwiftWren") |
+    str_detect(coalesce(content, ""), "SwiftWren")
   ) %>%
-  mutate(
-    datetime    = as_datetime(when, tz = "UTC"),
-    parties_str = sapply(parties, paste, collapse = " | "),
-    target      = details$target,
-    content     = details$content,
-    content_source = details$content_source,
-    file_saved  = details$file_saved
-  ) %>%
-  arrange(when) %>%
-  select(id, datetime, short_name, parties_str, 
-         target, content, content_source, file_saved) %>%
+  select(-parties) %>%
+  arrange(datetime) %>%
   datatable(
     options = list(pageLength = 10, scrollX = TRUE),
     filter = "top",
@@ -1066,6 +954,7 @@ visNetwork(target_nodes, target_edges,
   visInteraction(navigationButtons = TRUE, zoomView = TRUE) %>%
   visPhysics(enabled = FALSE)
 
+rm(target_id, target_ancestors)
 ```
 
 ::: callout-note
@@ -1074,3 +963,71 @@ visNetwork(target_nodes, target_edges,
 - Agent of Emma stored files on the shared system without protection, which agent of John or agent of **any other Department leads seem easily access** to.
 - One small suspicious point: is **"Harbor" Crest deal relevant to Emma "Harbor"**. Worth flagging as a finding for further investigation.
 :::
+
+### What all events Emma Harbor and her agents did on 9 May?
+
+Because Emma did a number of actions in a day, we filter targeting hour at 15.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+# local variables
+target_ppl <- "emma_harbor"
+target_date <- "2046-05-09"
+target_hour <- c(14, 15)
+
+events_clean %>%
+  filter(
+    str_detect(parties_str, target_ppl),
+    as_date(datetime) == as_date(target_date),
+    hour(datetime) %in% target_hour
+    
+  ) %>%
+  select(-parties) %>%
+  arrange(datetime) %>%
+  datatable(
+    options = list(pageLength = 10, scrollX = TRUE),
+    filter = "top",
+    rownames = FALSE,
+    caption = paste("Events of", target_ppl, "on", target_date,
+                    "- hours", paste(target_hour, collapse = "-"))
+  )
+
+# remove local variables
+rm(target_ppl, target_date, target_hour)
+```
+
+::: callout-note
+Insights from this table above:
+
+- Before agent of Emma created SwiftWren.txt file, Emma personally assigned her agent to access_file (event_id = 21196).
+- Then, her agent read file meeting_notes.doc (event_id=21201), then after 1 second, it created SwiftWren.txt file (event_id = 21208).
+- Now, it confirms our suspicious question. SwiftWren.txt is created based on the content of her meeting.
+:::
+
+```{}
+```
+
+# References
+
+::: {#refs}
+:::
+
+```{}
+```
+
+```{}
+```
+
+```{}
+```
+
+```{}
+```
+
+```{}
+```
+
+```{}
+```
