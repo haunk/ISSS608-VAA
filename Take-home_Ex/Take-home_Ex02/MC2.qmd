@@ -1,5 +1,6 @@
 ---
 title: "Take-home Ex 2: VAST Challenge 2026"
+subtitle: "Anomalous Post Investigation"
 author: "Nguyen Kim Hau"
 date: "May 29, 2026"
 date-modified: "last-modified"
