@@ -1,6 +1,5 @@
 ---
-title: "Take-home Ex 2: VAST Challenge 2026"
-subtitle: "Anomalous Post Investigation"
+title: "VAST Challenge 2026: Anomalous Post Investigation"
 author: "Nguyen Kim Hau"
 date: "May 29, 2026"
 date-modified: "last-modified"
@@ -1183,7 +1182,11 @@ eh_cb_events %>%
 
 ### How strong of connection of each employee?
 
-We compute **betweenness centrality** and **PageRank centrality** for every employee in the interaction network. Betweenness quantifies how often a node sits on the **geodesic (shortest path)** between all other pairs of nodes (@freeman1977). A high betweenness score means that person acts as a **bridge** whose removal would disconnect parts of the network. PageRank uses an iterative random-walk model to propagate importance through the network (@page1999): being connected to someone who is themselves highly connected raises your own score.
+We compute **betweenness centrality** and **PageRank centrality** for every employee in the interaction network.
+
+Betweenness quantifies how often a node sits on the **geodesic (shortest path)** between all other pairs of nodes (@freeman1977). A high betweenness score means that person acts as a **bridge** whose removal would disconnect parts of the network.
+
+PageRank uses an iterative random-walk model to propagate importance through the network (@page1999): being connected to someone who is themselves highly connected raises your own score.
 
 ```{r}
 #| code-fold: true
@@ -1269,8 +1272,6 @@ ggplotly(p, tooltip = "text") %>%
 ```
 
 ::: callout-note
-- **Betweenness Centrality** measures how often a person lies on the shortest path between two other people. High betweenness means that person acts as a **bridge** or **gatekeeper** controlling information flow between groups.
-- **PageRank Centrality** measures a person's importance based on **who** interacts with them. Being connected to highly connected people gives a higher PageRank.
 - **Insights**:
   - The top bridges are **regular team members**, not department leads. **Mia Fender** (Products, betweenness=0.12) is the single most influential connector in the entire company, followed by **Grace Lifeboat** (Legal) and **Anthony Reef** (Customer Support). These three individuals control more cross-department information flow than any leader.
   - **Emma Harbor** (CFO) is the **only department lead with meaningful betweenness** (0.036), confirming her unique role bridging across departments.
