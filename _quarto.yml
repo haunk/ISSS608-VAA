@@ -52,6 +52,9 @@ website:
           - text: "HO14_Visualising and Analysing Text Data with R: tidytext methods"
             href: "Hands-on_Ex/Hands-on_Ex07/Hands-on_Ex07b.html"
             
+          - text: "HO15_Visualising and Analysing Time-oriented Data"
+            href: "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html"
+            
       - text: "<img src='/images/shark.png' width='40' height='40' style='margin-right: 5px;'> 
       Take-home Exercise"
         menu:

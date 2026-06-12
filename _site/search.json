@@ -866,5 +866,320 @@
     "title": "VAST Challenge 2026: Anomalous Post Investigation",
     "section": "5.4 Data Quality Observations",
     "text": "5.4 Data Quality Observations\n\nTimestamp discrepancy. The challenge brief states the post was made at “4:21am” but the data shows 11:21 UTC, likely a timezone difference (UTC vs local time).\nDuplicate event names. Events like “post_saidit” vs “saidit_post” and “post_flex” vs “flex_post” appear to be the same action with inconsistent naming conventions. This could indicate different logging subsystems or different stages of the same action.\nEmpty content fields. The content column is null for all SwiftWren-related events, which may be a logging limitation, a privacy feature, or evidence of content scrubbing.\nAgent ID inconsistency. The same agent appears under two ID formats: Agent/person:xxx and agent:person:xxx. The lowercase format only performs read_file tasks while the uppercase format handles all other actions. We normalized both to “agent” type but this inconsistency suggests different logging subsystems."
+  },
+  {
+    "objectID": "team11/pt/performance_tracking_w1.html",
+    "href": "team11/pt/performance_tracking_w1.html",
+    "title": "Task Tracking – PunchNet 1",
+    "section": "",
+    "text": "ID\nTask\nAssignee\nStatus\nProgress (%)\n\n\n\n\n1\nCreate website, all tabs and style for website designation\nThi Thanh Van Tran (Haley)\nCompleted\n100\n\n\n2\nComplete finding for org_chart hierarchy for future work on website\nThi Thanh Van Tran (Haley)\nCompleted\n100\n\n\n3\nPrepare finding for question 3\nThi Thanh Van Tran (Haley)\nCompleted\n100\n\n\n4\nFrame ideas and layout shiny app\nThi Thanh Van Tran (Haley)\nCompleted\n100\n\n\n5\nAdd data understanding to methodology (help team understand mapping)\nHau\nCompleted\n100\n\n\n6\nPrepare findings for question 1\nHau\nCompleted\n100\n\n\n7\nPrepare findings for question 2\nEdith\nCompleted\n100"
+  },
+  {
+    "objectID": "team11/pt/performance_tracking_w1.html#task-table-week-1",
+    "href": "team11/pt/performance_tracking_w1.html#task-table-week-1",
+    "title": "Task Tracking – PunchNet 1",
+    "section": "",
+    "text": "ID\nTask\nAssignee\nStatus\nProgress (%)\n\n\n\n\n1\nCreate website, all tabs and style for website designation\nThi Thanh Van Tran (Haley)\nCompleted\n100\n\n\n2\nComplete finding for org_chart hierarchy for future work on website\nThi Thanh Van Tran (Haley)\nCompleted\n100\n\n\n3\nPrepare finding for question 3\nThi Thanh Van Tran (Haley)\nCompleted\n100\n\n\n4\nFrame ideas and layout shiny app\nThi Thanh Van Tran (Haley)\nCompleted\n100\n\n\n5\nAdd data understanding to methodology (help team understand mapping)\nHau\nCompleted\n100\n\n\n6\nPrepare findings for question 1\nHau\nCompleted\n100\n\n\n7\nPrepare findings for question 2\nEdith\nCompleted\n100"
+  },
+  {
+    "objectID": "team11/pt/performance_tracking_w1.html#summary-by-assignee",
+    "href": "team11/pt/performance_tracking_w1.html#summary-by-assignee",
+    "title": "Task Tracking – PunchNet 1",
+    "section": "Summary by Assignee",
+    "text": "Summary by Assignee\n\n\n\n\n\nAssignee\nTasks\nCompleted\nIn Progress\nNot Completed\nAvg %\nStatus\n\n\n\n\nEdith\n1\n1\n0\n0\n100\nComplete\n\n\nHau\n2\n2\n0\n0\n100\nComplete\n\n\nThi Thanh Van Tran (Haley)\n4\n4\n0\n0\n100\nComplete"
+  },
+  {
+    "objectID": "team11/minute/m2.html",
+    "href": "team11/minute/m2.html",
+    "title": "Meeting Minutes 2 - Project Branding and Proposal Planning",
+    "section": "",
+    "text": "Item\nDetails\n\n\n\n\nDate\n7 June 2026\n\n\nTime\n15:30 – 18:00\n\n\nVenue\nLKSLIB\n\n\nPresent\nAll members (Helen, Haley, Edith)\n\n\nAbsent\nNil"
+  },
+  {
+    "objectID": "team11/minute/m2.html#meeting-information",
+    "href": "team11/minute/m2.html#meeting-information",
+    "title": "Meeting Minutes 2 - Project Branding and Proposal Planning",
+    "section": "",
+    "text": "Item\nDetails\n\n\n\n\nDate\n7 June 2026\n\n\nTime\n15:30 – 18:00\n\n\nVenue\nLKSLIB\n\n\nPresent\nAll members (Helen, Haley, Edith)\n\n\nAbsent\nNil"
+  },
+  {
+    "objectID": "team11/minute/m2.html#opening",
+    "href": "team11/minute/m2.html#opening",
+    "title": "Meeting Minutes 2 - Project Branding and Proposal Planning",
+    "section": "Opening",
+    "text": "Opening\nThe meeting was called to order at 15:30 by all members at LKSLIB. All three members were present. The agenda was reviewed and approved.\nMeeting objectives included: - Finalising the project name and branding direction - Discussing the logo design and slogan - Planning the proposal structure and content - Planning the next steps, professor consultation, and assignment submission strategy"
+  },
+  {
+    "objectID": "team11/minute/m2.html#approval-of-minutes",
+    "href": "team11/minute/m2.html#approval-of-minutes",
+    "title": "Meeting Minutes 2 - Project Branding and Proposal Planning",
+    "section": "Approval of Minutes",
+    "text": "Approval of Minutes\nMinutes of Meeting 1 (27 May 2026) were reviewed and approved by all members."
+  },
+  {
+    "objectID": "team11/minute/m2.html#business-from-previous-meeting",
+    "href": "team11/minute/m2.html#business-from-previous-meeting",
+    "title": "Meeting Minutes 2 - Project Branding and Proposal Planning",
+    "section": "Business from Previous Meeting",
+    "text": "Business from Previous Meeting\nThe team noted that task allocations from Meeting 1 remain pending. Members confirmed they are actively working on their respective components (data processing, website, meeting minutes and Question 2)."
+  },
+  {
+    "objectID": "team11/minute/m2.html#discussion-on-project-name-change",
+    "href": "team11/minute/m2.html#discussion-on-project-name-change",
+    "title": "Meeting Minutes 2 - Project Branding and Proposal Planning",
+    "section": "Discussion on Project Name Change",
+    "text": "Discussion on Project Name Change\nThe team agreed that the previously considered name “Punchnet” carried connotations that were too strong and not fully aligned with the project’s analytical and investigative nature.\nHelen said: “I think ‘Punchnet’ sounds a bit too aggressive and doesn’t really capture the forensic storytelling we want. We need something that reflects tracing and discovery.”\nEdith said: “Agreed. What about ‘EchoTrace’? It suggests following digital echoes to find anomalies – that’s exactly what our Shiny app will do.”\nHaley said: “I like that. It’s memorable and fits the cybersecurity angle without being overly technical.”\nConclusion: The team unanimously agreed to rename the project to “EchoTrace”."
+  },
+  {
+    "objectID": "team11/minute/m2.html#discussion-on-logo-design-direction",
+    "href": "team11/minute/m2.html#discussion-on-logo-design-direction",
+    "title": "Meeting Minutes 2 - Project Branding and Proposal Planning",
+    "section": "Discussion on Logo Design Direction",
+    "text": "Discussion on Logo Design Direction\nThe team discussed visual elements for the new EchoTrace logo.\nEdith said: “I can take responsibility for the logo. I’m thinking of an eye‑detection motif – something like a stylised eye or a magnifying glass, Sherlock Holmes style.”\nHaley said: “That’s perfect. It ties into investigation and anomaly detection.”\nHelen said: “What about colours? We should use a dynamic, high‑contrast gradient – maybe a fighter print gradient.”\nEdith said: “Yes, that will make the logo stand out on both the website and the Shiny interface.”\nConclusion: - Logo responsibility: Edith - Motif: Eye‑detection / investigative (magnifying glass or stylised eye) - Colour scheme: Fighter print gradient colour (dynamic, high‑contrast gradient)"
+  },
+  {
+    "objectID": "team11/minute/m2.html#discussion-on-project-slogan",
+    "href": "team11/minute/m2.html#discussion-on-project-slogan",
+    "title": "Meeting Minutes 2 - Project Branding and Proposal Planning",
+    "section": "Discussion on Project Slogan",
+    "text": "Discussion on Project Slogan\nThe team moved to finalising a slogan that would accompany the EchoTrace branding.\nHaley said: “We need something short, punchy, and meaningful. How about ‘Trace the echo. Find the anomaly.’?”\nHelen said: “I really like that. It captures both the forensic tracing and the detection purpose.”\nEdith said: “Agreed. It’s easy to remember and fits perfectly on the website header.”\nConclusion: The team adopted the slogan: “Trace the echo. Find the anomaly.” It will be used on the project website and within the Shiny application interface."
+  },
+  {
+    "objectID": "team11/minute/m2.html#discussion-on-proposal-structure-and-content",
+    "href": "team11/minute/m2.html#discussion-on-proposal-structure-and-content",
+    "title": "Meeting Minutes 2 - Project Branding and Proposal Planning",
+    "section": "Discussion on Proposal Structure and Content",
+    "text": "Discussion on Proposal Structure and Content\nThe team discussed what the project proposal should include to ensure alignment with the professor’s expectations and the project’s analytical goals.\nHaley said: “We need a clear problem statement summarising Mini Challenge 2 – the cybersecurity anomaly detection challenge. We should list our six analytical stories: sequence reconstruction, message generation chain, system architecture, provenance analysis, historical pattern detection, and intervention simulation. We also need a technical approach section – Shiny architecture, data processing pipeline, visualisation libraries like plotly and visNetwork.”\nHaley said: “The proposal should be concise but detailed enough to show feasibility. Let’s aim for a draft before our professor consultation.”\nConclusion: The team agreed on the following proposal outline:\n\n\n\n\n\n\n\n#\nProposal Section\n\n\n\n\n1\nProject title and branding (EchoTrace, slogan, logo direction)\n\n\n2\nProblem statement – summarising Mini Challenge 2\n\n\n3\nProposed analytical stories (six core narratives)\n\n\n4\nTechnical approach – Shiny architecture, data pipeline, visualisation libraries\n\n\n5\nKey features and user interaction design\n\n\n6\nWork distribution and timeline (building on Meeting 1 allocations)\n\n\n7\nRisk assessment and mitigation strategies\n\n\n\nThe target is to complete a draft proposal before the next professor consultation."
+  },
+  {
+    "objectID": "team11/minute/m2.html#discussion-on-next-meeting-and-professor-consultation",
+    "href": "team11/minute/m2.html#discussion-on-next-meeting-and-professor-consultation",
+    "title": "Meeting Minutes 2 - Project Branding and Proposal Planning",
+    "section": "Discussion on Next Meeting and Professor Consultation",
+    "text": "Discussion on Next Meeting and Professor Consultation\nThe team planned logistics for the upcoming consultation with the professor.\nEdith said: “We should meet before the consultation to prepare our questions and a draft proposal.”\nHelen said: “Let’s do a Zoom meeting tomorrow – Tuesday 8 June.”\nHelen said: “What time? Evening works best for me.”\nConclusion: The team agreed on the following:\n\nNext meeting: Tuesday 8 June 2026 via Zoom\nTime: 19:00\nPurpose: To prepare for and conduct a consultation session with the professor"
+  },
+  {
+    "objectID": "team11/minute/m2.html#discussion-on-assignment-submission-and-intellectual-property-protection",
+    "href": "team11/minute/m2.html#discussion-on-assignment-submission-and-intellectual-property-protection",
+    "title": "Meeting Minutes 2 - Project Branding and Proposal Planning",
+    "section": "Discussion on Assignment Submission and Intellectual Property Protection",
+    "text": "Discussion on Assignment Submission and Intellectual Property Protection\nThe team discussed SMU academic integrity rules regarding the sharing of assignment materials before deadlines.\nHaley said: “We should not share any part of our assignment until after the take‑home assignment 2 deadline passes as it might violate SMU interity rule”\nEdith said: “Absolutely. That protects our unique ideas and prevents accidental violations.”\nHaley said: “It also ensures we build a strong, unified project based on our own original work.”\nConclusion: It was unanimously agreed that the team will not share any assignment components with other parties until after the deadline. This approach protects intellectual property and maintains academic integrity."
+  },
+  {
+    "objectID": "team11/minute/m2.html#additions-to-the-agenda",
+    "href": "team11/minute/m2.html#additions-to-the-agenda",
+    "title": "Meeting Minutes 2 - Project Branding and Proposal Planning",
+    "section": "Additions to the Agenda",
+    "text": "Additions to the Agenda\nNo additional items were raised."
+  },
+  {
+    "objectID": "team11/minute/m2.html#adjournment",
+    "href": "team11/minute/m2.html#adjournment",
+    "title": "Meeting Minutes 2 - Project Branding and Proposal Planning",
+    "section": "Adjournment",
+    "text": "Adjournment\nThe meeting was adjourned at 18:00 by all members."
+  },
+  {
+    "objectID": "team11/minute/m2.html#next-meeting",
+    "href": "team11/minute/m2.html#next-meeting",
+    "title": "Meeting Minutes 2 - Project Branding and Proposal Planning",
+    "section": "Next Meeting",
+    "text": "Next Meeting\n\n\n\nItem\nDetails\n\n\n\n\nDate\nTuesday 8 June 2026\n\n\nTime\n19:00\n\n\nVenue\nZoom (online)\n\n\n\n\nMinutes submitted by: Haley (Tran Thi Thanh Van)\nMinutes approved by: Helen (Nguyen Kim Hau), Edith (Huang Kuan Yu)"
+  },
+  {
+    "objectID": "team11/index.html",
+    "href": "team11/index.html",
+    "title": "Visual Analytics for Multi-Agent System Intelligence",
+    "section": "",
+    "text": "Modern multi-agent systems operate at scales that outpace manual oversight. Interactions multiply. Documentation lags. When unexpected behavior occurs, understanding what happened—and why—becomes a critical challenge.\nEchoTrace delivers clarity. We are a visual analytics platform purpose-built for complex agent environments. Our interactive Shiny application empowers system administrators to explore, analyze, and document multi-agent system behavior with speed and precision."
+  },
+  {
+    "objectID": "team11/index.html#why-echotrace",
+    "href": "team11/index.html#why-echotrace",
+    "title": "Visual Analytics for Multi-Agent System Intelligence",
+    "section": "",
+    "text": "Modern multi-agent systems operate at scales that outpace manual oversight. Interactions multiply. Documentation lags. When unexpected behavior occurs, understanding what happened—and why—becomes a critical challenge.\nEchoTrace delivers clarity. We are a visual analytics platform purpose-built for complex agent environments. Our interactive Shiny application empowers system administrators to explore, analyze, and document multi-agent system behavior with speed and precision."
+  },
+  {
+    "objectID": "team11/index.html#what-we-deliver",
+    "href": "team11/index.html#what-we-deliver",
+    "title": "Visual Analytics for Multi-Agent System Intelligence",
+    "section": "What We Deliver",
+    "text": "What We Deliver\nEchoTrace transforms raw agent logs into actionable intelligence. Our platform enables organizations to:\n\nReconstruct complete event sequences from any starting point\nMap undocumented agent relationships and communication patterns\nEstablish behavioral baselines and detect anomalies in context\nIdentify recurring issues across historical logs\nPinpoint evidence-backed intervention points"
+  },
+  {
+    "objectID": "team11/index.html#how-it-works",
+    "href": "team11/index.html#how-it-works",
+    "title": "Visual Analytics for Multi-Agent System Intelligence",
+    "section": "How It Works",
+    "text": "How It Works\nEchoTrace does not require pre-existing system maps or baseline definitions. Our integrated analytical methods—including sequence mining, similarity analysis, and path tracing—derive structure directly from available data. The interface provides interactive visualizations that keep the analyst in control while surfacing insights automatically."
+  },
+  {
+    "objectID": "team11/index.html#the-platform",
+    "href": "team11/index.html#the-platform",
+    "title": "Visual Analytics for Multi-Agent System Intelligence",
+    "section": "The Platform",
+    "text": "The Platform\nBuilt as a Shiny application, EchoTrace offers:\n\nBrowser-based access with no client installation\nResponsive, linked visualizations for exploratory analysis\nExport capabilities for reports and static graphics\nFlexible deployment, including local installation for sensitive environments"
+  },
+  {
+    "objectID": "team11/index.html#who-we-serve",
+    "href": "team11/index.html#who-we-serve",
+    "title": "Visual Analytics for Multi-Agent System Intelligence",
+    "section": "Who We Serve",
+    "text": "Who We Serve\nEchoTrace is designed for AI systems administration teams, forensic analysts, and decision-makers who need to understand complex agent behavior without weeks of manual investigation. We turn the unknown into the documented."
+  },
+  {
+    "objectID": "team11/index.html#contact",
+    "href": "team11/index.html#contact",
+    "title": "Visual Analytics for Multi-Agent System Intelligence",
+    "section": "Contact",
+    "text": "Contact\nOur team is ready to discuss how EchoTrace can support your multi-agent system intelligence needs.\n[Your picture here]"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html",
+    "title": "Visualising and Analysing Time-oriented Data",
+    "section": "",
+    "text": "By the end of this hands-on exercise you will be able create the followings data visualisation by using R packages:\n\nplotting a calender heatmap by using ggplot2 functions,\nplotting a cycle plot by using ggplot2 function,\nplotting a slopegraph\nplotting a horizon chart"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#learning-outcome",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#learning-outcome",
+    "title": "Visualising and Analysing Time-oriented Data",
+    "section": "",
+    "text": "By the end of this hands-on exercise you will be able create the followings data visualisation by using R packages:\n\nplotting a calender heatmap by using ggplot2 functions,\nplotting a cycle plot by using ggplot2 function,\nplotting a slopegraph\nplotting a horizon chart"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#getting-started",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#getting-started",
+    "title": "Visualising and Analysing Time-oriented Data",
+    "section": "15.2 Getting Started",
+    "text": "15.2 Getting Started\n\npacman::p_load(scales, viridis, lubridate, ggthemes,\n               gridExtra, readxl, knitr, data.table,\n               ggHoriPlot, tidyverse)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#install-cgpfunctions",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#install-cgpfunctions",
+    "title": "Visualising and Analysing Time-oriented Data",
+    "section": "15.3 Install CGPfunctions",
+    "text": "15.3 Install CGPfunctions\nBecause CGPfunctions has been removed from CRAN so we will try installing from the GitHub archive.\n\n#install.packages(\"devtools\")\n#devtools::install_github(\"ibecav/CGPfunctions\",\n                         #build_vignettes = TRUE,\n                         #upgrade = \"ask\")\n\n#remotes::install_github(\"haleyjeppson/ggmosaic\")\n#remotes::install_github(\"ibecav/CGPfunctions\")\n\nlibrary(CGPfunctions)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#plotting-calendar-heatmap",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#plotting-calendar-heatmap",
+    "title": "Visualising and Analysing Time-oriented Data",
+    "section": "15.4 Plotting Calendar Heatmap",
+    "text": "15.4 Plotting Calendar Heatmap\nIn this section, you will learn how to plot a calender heatmap programmatically by using ggplot2 package.\n\nBy the end of this section, you will be able to:\n\nplot a calender heatmap by using ggplot2 functions and extension,\nto write function using R programming,\nto derive specific date and time related field by using base R and lubridate packages\nto perform data preparation task by using tidyr and dplyr packages.\n\n\n15.4.1 The Data\nFor the purpose of this hands-on exercise, eventlog.csv file will be used. This data file consists of 199,999 rows of time-series cyber attack records by country.\n\n\n15.4.2 Importing the data\nFirst, you will use the code chunk below to import eventlog.csv file into R environment and called the data frame as attacks.\n\nattacks &lt;- read_csv(\"data/eventlog.csv\")\n\n\n\n15.4.3 Examining the data structure\nIt is always a good practice to examine the imported data frame before further analysis is performed.\nFor example, kable() can be used to review the structure of the imported data frame.\n\nkable(head(attacks))\n\n\n\n\ntimestamp\nsource_country\ntz\n\n\n\n\n2015-03-12 15:59:16\nCN\nAsia/Shanghai\n\n\n2015-03-12 16:00:48\nFR\nEurope/Paris\n\n\n2015-03-12 16:02:26\nCN\nAsia/Shanghai\n\n\n2015-03-12 16:02:38\nUS\nAmerica/Chicago\n\n\n2015-03-12 16:03:22\nCN\nAsia/Shanghai\n\n\n2015-03-12 16:03:45\nCN\nAsia/Shanghai\n\n\n\n\n\nThere are three columns, namely timestamp, source_country and tz.\n\ntimestamp field stores date-time values in POSIXct format.\nsource_country field stores the source of the attack. It is in ISO 3166-1 alpha-2 country code.\ntz field stores time zone of the source IP address.\n\n\n\n15.4.4 Data Preparation\nStep 1: Deriving weekday and hour of day fields\nBefore we can plot the calender heatmap, two new fields namely wkday and hour need to be derived. In this step, we will write a function to perform the task.\n\nmake_hr_wkday &lt;- function(ts, sc, tz) {\n  real_times &lt;- ymd_hms(ts, \n                        tz = tz[1], \n                        quiet = TRUE)\n  dt &lt;- data.table(source_country = sc,\n                   wkday = weekdays(real_times),\n                   hour = hour(real_times))\n  return(dt)\n}\n\n\n\n\n\n\n\nNote\n\n\n\n\nymd_hms() and hour() are from lubridate package, and\nweekdays() is a base R function.\n\n\n\nStep 2: Deriving the attacks tibble data frame\n\nwkday_levels &lt;- c('Saturday', 'Friday', \n                  'Thursday', 'Wednesday', \n                  'Tuesday', 'Monday', \n                  'Sunday')\n\nattacks &lt;- attacks %&gt;%\n  mutate(\n    real_times = ymd_hms(timestamp, quiet = TRUE),\n    wkday = factor(weekdays(real_times), levels = wkday_levels),\n    hour = factor(hour(real_times), levels = 0:23)\n  ) %&gt;%\n  select(-real_times)\n\n\n\n\n\n\n\nNote\n\n\n\nBeside extracting the necessary data into attacks data frame, mutate() of dplyr package is used to convert wkday and hour fields into factor so they’ll be ordered when plotting\n\n\nTable below shows the tidy tibble table after processing.\n\nkable(head(attacks))\n\n\n\n\ntimestamp\nsource_country\ntz\nwkday\nhour\n\n\n\n\n2015-03-12 15:59:16\nCN\nAsia/Shanghai\nThursday\n15\n\n\n2015-03-12 16:00:48\nFR\nEurope/Paris\nThursday\n16\n\n\n2015-03-12 16:02:26\nCN\nAsia/Shanghai\nThursday\n16\n\n\n2015-03-12 16:02:38\nUS\nAmerica/Chicago\nThursday\n16\n\n\n2015-03-12 16:03:22\nCN\nAsia/Shanghai\nThursday\n16\n\n\n2015-03-12 16:03:45\nCN\nAsia/Shanghai\nThursday\n16\n\n\n\n\n\n\n\n15.4.5 Building the Calendar Heatmaps\n\ngrouped &lt;- attacks %&gt;% \n  count(wkday, hour) %&gt;% \n  ungroup() %&gt;%\n  na.omit()\n\nggplot(grouped, \n       aes(hour, \n           wkday, \n           fill = n)) + \n  geom_tile(color = \"white\", \n            size = 0.1) + \n  theme_tufte(base_family = \"Helvetica\") + \n  coord_equal() +\n  scale_fill_gradient(name = \"# of attacks\",\n                      low = \"sky blue\", \n                      high = \"dark blue\") +\n  labs(x = NULL, \n       y = NULL, \n       title = \"Attacks by weekday and time of day\") +\n  theme(axis.ticks = element_blank(),\n        plot.title = element_text(hjust = 0.5),\n        legend.title = element_text(size = 8),\n        legend.text = element_text(size = 6) )\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nNote\n\n\n\nThings to learn from the code chunk\n\na tibble data table called grouped is derived by aggregating the attack by wkday and hour fields.\na new field called n is derived by using group_by() and count() functions.\nna.omit() is used to exclude missing value.\ngeom_tile() is used to plot tiles (grids) at each x and y position. color and size arguments are used to specify the border color and line size of the tiles.\ntheme_tufte() of ggthemes package is used to remove unnecessary chart junk. To learn which visual components of default ggplot2 have been excluded, you are encouraged to comment out this line to examine the default plot.\ncoord_equal() is used to ensure the plot will have an aspect ratio of 1:1.\nscale_fill_gradient() function is used to creates a two colour gradient (low-high).\n\n\n\nThen we can simply group the count by hour and wkday and plot it, since we know that we have values for every combination there’s no need to further preprocess the data.\n\n\n15.4.6 Building Multiple Calendar Heatmaps\nChallenge: Building multiple heatmaps for the top four countries with the highest number of attacks.\n\n\n15.4.7 Plotting Multiple Calendar Heatmaps\nStep 1: Deriving attack by country object\nIn order to identify the top 4 countries with the highest number of attacks, you are required to do the followings:\n\ncount the number of attacks by country,\ncalculate the percent of attackes by country, and\nsave the results in a tibble data frame.\n\n\nattacks_by_country &lt;- count(\n  attacks, source_country) %&gt;%\n  mutate(percent = percent(n/sum(n))) %&gt;%\n  arrange(desc(n))\n\nStep 2: Preparing the tidy data frame\nIn this step, you are required to extract the attack records of the top 4 countries from attacks data frame and save the data in a new tibble data frame (i.e. top4_attacks).\n\ntop4 &lt;- attacks_by_country$source_country[1:4]\ntop4_attacks &lt;- attacks %&gt;%\n  filter(source_country %in% top4) %&gt;%\n  count(source_country, wkday, hour) %&gt;%\n  ungroup() %&gt;%\n  mutate(source_country = factor(\n    source_country, levels = top4)) %&gt;%\n  na.omit()\n\n\n\n15.4.8 Plotting Multiple Calendar Heatmaps\nStep 3: Plotting the Multiple Calender Heatmap by using ggplot2 package.\n\nggplot(top4_attacks, \n       aes(hour, \n           wkday, \n           fill = n)) + \n  geom_tile(color = \"white\", \n            size = 0.1) + \n  theme_tufte(base_family = \"Helvetica\") + \n  coord_equal() +\n  scale_fill_gradient(name = \"# of attacks\",\n                      low = \"sky blue\", \n                      high = \"dark blue\") +\n  facet_wrap(~source_country, ncol = 2) +\n  labs(x = NULL, y = NULL, \n       title = \"Attacks on top 4 countries by weekday and time of day\") +\n  theme(axis.ticks = element_blank(),\n        axis.text.x = element_text(size = 7),\n        plot.title = element_text(hjust = 0.5),\n        legend.title = element_text(size = 8),\n        legend.text = element_text(size = 6) )"
+  },
+  {
+    "objectID": "team11/minute/m1.html",
+    "href": "team11/minute/m1.html",
+    "title": "Meeting Minutes 1 - Discussion Summary",
+    "section": "",
+    "text": "Item\nDetails\n\n\n\n\nDate\n27 May 2026\n\n\nTime\n15:30 – 18:00\n\n\nVenue\nLKSLIB 2-04\n\n\nPresent\nAll"
+  },
+  {
+    "objectID": "team11/minute/m1.html#meeting-information",
+    "href": "team11/minute/m1.html#meeting-information",
+    "title": "Meeting Minutes 1 - Discussion Summary",
+    "section": "",
+    "text": "Item\nDetails\n\n\n\n\nDate\n27 May 2026\n\n\nTime\n15:30 – 18:00\n\n\nVenue\nLKSLIB 2-04\n\n\nPresent\nAll"
+  },
+  {
+    "objectID": "team11/minute/m1.html#opening",
+    "href": "team11/minute/m1.html#opening",
+    "title": "Meeting Minutes 1 - Discussion Summary",
+    "section": "Opening",
+    "text": "Opening\nThe meeting was called to order at 15:30 by Haley at LKSLIB. All three members were present. The team reviewed the agenda and approved it."
+  },
+  {
+    "objectID": "team11/minute/m1.html#discussion-on-mini-challenge-selection",
+    "href": "team11/minute/m1.html#discussion-on-mini-challenge-selection",
+    "title": "Meeting Minutes 1 - Discussion Summary",
+    "section": "Discussion on Mini Challenge Selection",
+    "text": "Discussion on Mini Challenge Selection\nHaley opened the discussion by proposing that the team proceed with Mini Challenge 2.\nHaley said: “Mini Challenge 2 offers more challenging data processing methodologies. This gives us opportunities for deeper analysis compared to Mini Challenge 1.”\nEdith responded positively, noting that the challenge would allow the team to observe more meaningful patterns within the dataset.\nEdith said: “The dataset in Mini Challenge 2 has greater potential for advanced visualisations, especially network-based visualisations like node-link diagrams and Sankey charts.”\nHelen agreed and added that the cybersecurity and security detection focus of Mini Challenge 2 aligns well with the team’s academic background and interests.\nHelen said: “Since our backgrounds are in cybersecurity and systems administration, this challenge is a natural fit for us.”\nConclusion: The team unanimously agreed to proceed with Mini Challenge 2."
+  },
+  {
+    "objectID": "team11/minute/m1.html#discussion-on-shiny-application-features",
+    "href": "team11/minute/m1.html#discussion-on-shiny-application-features",
+    "title": "Meeting Minutes 1 - Discussion Summary",
+    "section": "Discussion on Shiny Application Features",
+    "text": "Discussion on Shiny Application Features\nThe team then discussed what features the Shiny application should include. Haley proposed that the application should not just show visualisations but guide users through a complete investigative narrative.\nHaley said: “The application should tell a story from start to finish, how the post was generated, what it means, and how to prevent it from happening again.”\nThe team agreed on six core features:\n\n\n\n\n\n\n\n\n#\nFeature\nProposed by\n\n\n\n\n1\nSequence Reconstruction (interactive timeline)\nHaley\n\n\n2\nMessage Generation Chain (Sankey diagram)\nEdith\n\n\n3\nSystem Context Overview (agent ecosystem map)\nHelen\n\n\n4\nContent Provenance Analysis (trace tokens to source)\nHaley\n\n\n5\nHistorical Pattern Detection (find past incidents)\nEdith\n\n\n6\nIntervention Simulation (one high-impact fix)\nHelen"
+  },
+  {
+    "objectID": "team11/minute/m1.html#discussion-on-quality-scoring-mechanism",
+    "href": "team11/minute/m1.html#discussion-on-quality-scoring-mechanism",
+    "title": "Meeting Minutes 1 - Discussion Summary",
+    "section": "Discussion on Quality Scoring Mechanism",
+    "text": "Discussion on Quality Scoring Mechanism\nHaley raised an additional idea during the discussion.\nHaley said: “What if we develop a rule-based algorithm to assign quality scores to different event attributes? We could highlight potentially problematic posts directly in the Shiny interface.”\nEdith and Helen supported the idea.\nHaley said: “That would help users identify suspicious patterns more effectively.”\nConclusion: The team agreed to explore this feature for Question 2."
+  },
+  {
+    "objectID": "team11/minute/m1.html#discussion-on-website-theme",
+    "href": "team11/minute/m1.html#discussion-on-website-theme",
+    "title": "Meeting Minutes 1 - Discussion Summary",
+    "section": "Discussion on Website Theme",
+    "text": "Discussion on Website Theme\nHaley proposed a blue colour theme for the project website.\nHaley said: “Blue fits technology and cybersecurity. It will give our application a professional and cohesive brand identity.”\nHelen and Edith agreed. No other colours were proposed."
+  },
+  {
+    "objectID": "team11/minute/m1.html#task-allocation",
+    "href": "team11/minute/m1.html#task-allocation",
+    "title": "Meeting Minutes 1 - Discussion Summary",
+    "section": "Task Allocation",
+    "text": "Task Allocation\nThe team distributed responsibilities as follows:\nAll members accepted their assignments.\n\n\n\nTask\nOwner\n\n\n\n\nData processing + Question 1\nHelen\n\n\nMain page (website) + Question 3\nHaley\n\n\nMeeting minutes + Question 2\nEdith\n\n\n\nAgreement: Members will update one another regularly on progress and discuss integration during future meetings."
+  },
+  {
+    "objectID": "team11/minute/m1.html#next-meeting",
+    "href": "team11/minute/m1.html#next-meeting",
+    "title": "Meeting Minutes 1 - Discussion Summary",
+    "section": "Next Meeting",
+    "text": "Next Meeting\nThe team scheduled the next meeting:\nDate: 6 June 2026\nTime: 16:00\nVenue: LKSLIB Project Room 2-4"
+  },
+  {
+    "objectID": "team11/minute/m1.html#adjournment",
+    "href": "team11/minute/m1.html#adjournment",
+    "title": "Meeting Minutes 1 - Discussion Summary",
+    "section": "Adjournment",
+    "text": "Adjournment\nThe meeting was adjourned at 18:00 by all members.\n\nMinutes submitted by: Edith\nMinutes approved by: Helen, Haley"
+  },
+  {
+    "objectID": "team11/proposal.html",
+    "href": "team11/proposal.html",
+    "title": "Proposal",
+    "section": "",
+    "text": "EchoTrace is a cybersecurity intelligence firm specialising in anomaly detection and forensic reconstruction within complex automated systems. We help organisations understand emergent agent behaviours, trace malicious actions, and implement precise remediations without disrupting normal operations."
+  },
+  {
+    "objectID": "team11/proposal.html#motivation",
+    "href": "team11/proposal.html#motivation",
+    "title": "Proposal",
+    "section": "Motivation",
+    "text": "Motivation\nThe motivation for this case arose from the increasing complexity of multi‑agent systems where emergent behaviours often go undetected until an anomaly surfaces. Traditional logging tools lack the contextual depth to distinguish routine agent interactions from malicious campaigns. Without a structured forensic approach, organisations remain vulnerable to repeated exploitation, data leakage, and reputational damage. EchoTrace was founded to bridge this gap, providing a systematic methodology to reconstruct, understand, and prevent unwanted agent behaviour."
+  },
+  {
+    "objectID": "team11/proposal.html#objectives",
+    "href": "team11/proposal.html#objectives",
+    "title": "Proposal",
+    "section": "Objectives",
+    "text": "Objectives\nFor this client case, we set four primary objectives:\n\nTrace the complete chain of events from the first anomalous action to the final external post, identifying every agent, file, and task hand‑off involved.\nDetermine the meaning and origin of the suspicious post, distinguishing normal agent communication from malicious payloads.\nDetect prior occurrences of identical behaviour across historical logs, quantifying their scale through metrics such as patient zero, hop count, duration, and number of affected agents.\nRecommend a single system change that blocks the attack vector without disrupting normal operations, based on the observed propagation mechanism."
+  },
+  {
+    "objectID": "team11/proposal.html#methodology",
+    "href": "team11/proposal.html#methodology",
+    "title": "Proposal",
+    "section": "Methodology",
+    "text": "Methodology\nEchoTrace follows a linear, story‑driven analytical pipeline that progressively refines raw logs into actionable intelligence. The pipeline consists of three integrated parts: organisation chart processing, event log preparation, and the core forensic investigation.\n\nOrganisation Chart Processing\nWe parse the organisation chart JSON to extract all nodes and edges. Nodes carry identifiers, labels, types, and titles. Edges define containment and leadership relations. From this structure we build two essential lookup tables. The name lookup table maps every internal identifier to a human‑readable label. The node type table records whether an identifier belongs to a person, team, department, or the company itself. These tables allow us to replace cryptic identifiers throughout the event log with names that analysts can recognise.\n\n\nShow the code\npacman::p_load(jsonlite, tidyverse, visNetwork)\n\norg_chart &lt;- fromJSON(\"data/org_chart.json\")\norg_nodes &lt;- as_tibble(org_chart$nodes)\norg_edges &lt;- as_tibble(org_chart$edges)\n\nvis_nodes &lt;- org_nodes %&gt;%\n  mutate(\n    id    = id,\n    label = label,\n    group = type,\n    title = paste0(\"&lt;b&gt;\", label, \"&lt;/b&gt;&lt;br&gt;Type: \", type,\n                   if_else(!is.na(title), paste0(\"&lt;br&gt;Title: \", title), \"\"))\n  )\n\nvis_edges &lt;- org_edges %&gt;%\n  rename(from = source, to = target) %&gt;%\n  mutate(\n    arrows = \"to\",\n    dashes = (relation == \"led_by\"),\n    color  = if_else(relation == \"led_by\", \"red\", \"grey\")\n  )\n\nvisNetwork(vis_nodes, vis_edges,\n           main = \"Tenant Thread Organisation Chart\") %&gt;%\n  visEdges(smooth = list(type = \"cubicBezier\")) %&gt;%\n  visHierarchicalLayout(\n    direction       = \"UD\",\n    sortMethod      = \"directed\",\n    levelSeparation = 120,\n    nodeSpacing     = 150\n  ) %&gt;%\n  visGroups(groupname = \"company\",    color = list(background = \"#e41a1c\", border = \"#b31519\")) %&gt;%\n  visGroups(groupname = \"department\", color = list(background = \"#377eb8\", border = \"#2a5f8f\")) %&gt;%\n  visGroups(groupname = \"team\",       color = list(background = \"#4daf4a\", border = \"#3a8838\")) %&gt;%\n  visGroups(groupname = \"person\",     color = list(background = \"#ff7f00\", border = \"#cc6600\")) %&gt;%\n  visLegend(width = 0.15) %&gt;%\n  visOptions(\n    highlightNearest  = list(enabled = TRUE, degree = 2, hover = TRUE),\n    nodesIdSelection  = list(enabled = TRUE, useLabels = TRUE, main = \"Search person\"),\n    selectedBy        = list(variable = \"group\", multiple = TRUE)\n  ) %&gt;%\n  visInteraction(navigationButtons = TRUE, zoomView = TRUE) %&gt;%\n  visPhysics(enabled = FALSE)\n\n\n\n\n\n\n\n\n\n\n\n\nTip: This chart is interactive. Zoom in/out with the scroll wheel, drag nodes to rearrange, search by name using the dropdown, or filter by group (company, department, team, person) using the selector on the left.\n\n\n\n\n\nEvent Log Preparation\nThe raw event log is parsed into a flat table where each row represents one event with columns for event identifier, event type, Unix timestamp, nested details, and the list of participating agents. We recover the local timezone by comparing the Unix timestamp with the ISO‑8601 timestamp present in some event details, taking the median difference, and then produce a local timestamp column for every event. Next we flatten the nested details field into separate columns for target, task, content, content source, poster, argument path, virus flag, and malware combo string. Finally we apply the organisation chart lookup tables to every agent identifier found in the from, to, poster, target, and argument path fields, producing human‑readable mapped columns.\n\n\nForensic Pipeline\nWith a complete, readable event timeline in hand, EchoTrace follows sequential phases shown below to solve this problem."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#plotting-cycle-plot",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#plotting-cycle-plot",
+    "title": "Visualising and Analysing Time-oriented Data",
+    "section": "15.5 Plotting Cycle Plot",
+    "text": "15.5 Plotting Cycle Plot\nIn this section, you will learn how to plot a cycle plot showing the time-series patterns and trend of visitor arrivals from Vietnam programmatically by using ggplot2 functions.\n\n\n15.5.1 Step 1: Data Import\nFor the purpose of this hands-on exercise, arrivals_by_air.xlsx will be used.\nThe code chunk below imports arrivals_by_air.xlsx by using read_excel() of readxl package and save it as a tibble data frame called air.\n\nair &lt;- read_excel(\"data/arrivals_by_air.xlsx\")\n\n\n\n15.5.2 Step 2: Deriving month and year fields\nNext, two new fields called month and year are derived from Month-Year field.\n\nair$month &lt;- factor(month(air$`Month-Year`), \n                    levels=1:12, \n                    labels=month.abb, \n                    ordered=TRUE) \nair$year &lt;- year(ymd(air$`Month-Year`))\n\n\n\n15.5.3 Step 4: Extracting the target country\nNext, the code chunk below is use to extract data for the target country (i.e. Vietnam).\n\nVietnam &lt;- air %&gt;% \n  select(`Vietnam`, \n         month, \n         year) %&gt;%\n  filter(year &gt;= 2010)\n\n\n\n15.5.4 Step 5: Computing year average arrivals by month\nThe code chunk below uses group_by() and summarise() of dplyr to compute year average arrivals by month.\n\nhline.data &lt;- Vietnam %&gt;% \n  group_by(month) %&gt;%\n  summarise(avgvalue = mean(`Vietnam`))\n\n\n\n15.5.5 Srep 6: Plotting the cycle plot\nThe code chunk below is used to plot the cycle plot as shown in Slide 12/23.\n\nggplot() + \n  geom_line(data=Vietnam,\n            aes(x=year, \n                y=`Vietnam`, \n                group=month), \n            colour=\"black\") +\n  geom_hline(aes(yintercept=avgvalue), \n             data=hline.data, \n             linetype=6, \n             colour=\"red\", \n             size=0.5) + \n  facet_grid(~month) +\n  labs(axis.text.x = element_blank(),\n       title = \"Visitor arrivals from Vietnam by air, Jan 2010-Dec 2019\") +\n  xlab(\"\") +\n  ylab(\"No. of Visitors\") +\n  theme_tufte(base_family = \"Helvetica\")"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#plotting-slopegraph",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#plotting-slopegraph",
+    "title": "Visualising and Analysing Time-oriented Data",
+    "section": "15.6 Plotting Slopegraph",
+    "text": "15.6 Plotting Slopegraph\nIn this section you will learn how to plot a slopegraph by using R.\nBefore getting start, make sure that CGPfunctions has been installed and loaded onto R environment. Then, refer to Using newggslopegraph to learn more about the function. Lastly, read more about newggslopegraph() and its arguments by referring to this link.\n\n15.6.1 Step 1: Data Import\nImport the rice data set into R environment by using the code chunk below.\n\nrice &lt;- read_csv(\"data/rice.csv\")\n\n\n\n15.6.2 Step 2: Plotting the slopegraph\nNext, code chunk below will be used to plot a basic slopegraph as shown below.\n\nrice %&gt;% \n  mutate(Year = factor(Year)) %&gt;%\n  filter(Year %in% c(1961, 1980)) %&gt;%\n  newggslopegraph(Year, Yield, Country,\n                  Title = \"Rice Yield of Top 11 Asian Counties\",\n                  SubTitle = \"1961-1980\",\n                  Caption = \"Prepared by: Dr. Kam Tin Seong\")\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nNote\n\n\n\nThing to learn from the code chunk above\nFor effective data visualisation design, factor() is used convert the value type of Year field from numeric to factor."
   }
 ]

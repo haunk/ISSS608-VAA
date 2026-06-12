@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Thi Thanh Van Tran (Haley)">
+<meta name="dcterms.date" content="2026-06-09">
+
+<title>Proposal – HAUKIMNG</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-d0ae9245876894da5ac7e18953ecc5cc.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-d8959edb5c358ddb2e3be135ec60f9fe.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<link href="../site_libs/htmltools-fill-0.5.9/fill.css" rel="stylesheet">
+
+<script src="../site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+
+<link href="../site_libs/vis-9.1.0/vis-network.min.css" rel="stylesheet">
+
+<script src="../site_libs/vis-9.1.0/vis-network.min.js"></script>
+
+<script src="../site_libs/visNetwork-binding-2.1.4/visNetwork.js"></script>
+
+
+
+<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">HAUKIMNG</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-img-srcimagesdory.png-width40-height40-stylemargin-right-5px--hands-on-exercise" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text"><img src="../images/dory.png" width="40" height="40" style="margin-right: 5px;"> Hands-on Exercise</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-img-srcimagesdory.png-width40-height40-stylemargin-right-5px--hands-on-exercise">    
+        <li>
+    <a class="dropdown-item" href="../Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html">
+ <span class="dropdown-text">HO1_A Layered Grammar of Graphics: ggplot2 methods</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html">
+ <span class="dropdown-text">HO2_Beyond ggplot2 Fundamentals</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html">
+ <span class="dropdown-text">HO3_Interactive Data Visualisation with R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../Hands-on_Ex/Hands-on_Ex03b/Hands-on_Ex03b.html">
+ <span class="dropdown-text">HO4_Animated Statistical Graphics with R ⭐</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04.html">
+ <span class="dropdown-text">HO5_Visualising Distribution</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04b.html">
+ <span class="dropdown-text">HO6_Visual Statistical Analysis</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04c.html">
+ <span class="dropdown-text">HO7_Visualising Uncertainty ⭐</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04d.html">
+ <span class="dropdown-text">HO8_Funnel Plots for Fair Comparisons</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05a.html">
+ <span class="dropdown-text">HO9_Creating Ternary Plot with R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05b.html">
+ <span class="dropdown-text">HO10_Visual Correlation Analysis ⭐</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05c.html">
+ <span class="dropdown-text">HO11_Heatmap for Visualising and Analysing Multivariate Data</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05d.html">
+ <span class="dropdown-text">HO12_Visual Multivariate Analysis with Parallel Coordinates Plot</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../Hands-on_Ex/Hands-on_Ex07/Hands-on_Ex07a.html">
+ <span class="dropdown-text">HO13_Modelling, Visualising and Analysing Network Data with R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../Hands-on_Ex/Hands-on_Ex07/Hands-on_Ex07b.html">
+ <span class="dropdown-text">HO14_Visualising and Analysing Text Data with R: tidytext methods</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html">
+ <span class="dropdown-text">HO15_Visualising and Analysing Time-oriented Data</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-img-srcimagesshark.png-width40-height40-stylemargin-right-5px--take-home-exercise" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text"><img src="../images/shark.png" width="40" height="40" style="margin-right: 5px;"> Take-home Exercise</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-img-srcimagesshark.png-width40-height40-stylemargin-right-5px--take-home-exercise">    
+        <li>
+    <a class="dropdown-item" href="../Take-home_Ex/Take-home_Ex01/Technical_Report.html">
+ <span class="dropdown-text">EX1: Technical Report-Unmasking Motor Insurance Risk Drivers</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../Take-home_Ex/Take-home_Ex01/Executive_Summary.html">
+ <span class="dropdown-text">EX1: Executive Summary-Unmasking Motor Insurance Risk Drivers</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../Take-home_Ex/Take-home_Ex02/MC2.html">
+ <span class="dropdown-text">EX2: VAST Challenge 2026-Anomalous Post Investigation</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-img-srcimagesblack.png-width40-height40-stylemargin-right-5px--real-world-project" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text"><img src="../images/black.png" width="40" height="40" style="margin-right: 5px;"> Real-world Project</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-img-srcimagesblack.png-width40-height40-stylemargin-right-5px--real-world-project">    
+        <li>
+    <a class="dropdown-item" href="../Analytics_Project/Customer_Segmentation/Customer_Segmentation.html">
+ <span class="dropdown-text">Customer Segmentation</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#our-company" id="toc-our-company" class="nav-link active" data-scroll-target="#our-company">Our Company</a></li>
+  <li><a href="#client-case-showcase" id="toc-client-case-showcase" class="nav-link" data-scroll-target="#client-case-showcase">Client Case Showcase</a>
+  <ul class="collapse">
+  <li><a href="#motivation" id="toc-motivation" class="nav-link" data-scroll-target="#motivation">Motivation</a></li>
+  <li><a href="#objectives" id="toc-objectives" class="nav-link" data-scroll-target="#objectives">Objectives</a></li>
+  <li><a href="#methodology" id="toc-methodology" class="nav-link" data-scroll-target="#methodology">Methodology</a>
+  <ul class="collapse">
+  <li><a href="#organisation-chart-processing" id="toc-organisation-chart-processing" class="nav-link" data-scroll-target="#organisation-chart-processing">Organisation Chart Processing</a></li>
+  <li><a href="#event-log-preparation" id="toc-event-log-preparation" class="nav-link" data-scroll-target="#event-log-preparation">Event Log Preparation</a></li>
+  <li><a href="#forensic-pipeline" id="toc-forensic-pipeline" class="nav-link" data-scroll-target="#forensic-pipeline">Forensic Pipeline</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#why-echotrace-delivers-results" id="toc-why-echotrace-delivers-results" class="nav-link" data-scroll-target="#why-echotrace-delivers-results">Why EchoTrace Delivers Results</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Proposal</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Thi Thanh Van Tran (Haley) </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">June 9, 2026</p>
+    </div>
+  </div>
+  
+    <div>
+    <div class="quarto-title-meta-heading">Modified</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date-modified">June 9, 2026</p>
+    </div>
+  </div>
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="our-company" class="level1">
+<h1>Our Company</h1>
+<p>EchoTrace is a cybersecurity intelligence firm specialising in anomaly detection and forensic reconstruction within complex automated systems. We help organisations understand emergent agent behaviours, trace malicious actions, and implement precise remediations without disrupting normal operations.</p>
+</section>
+<section id="client-case-showcase" class="level1">
+<h1>Client Case Showcase</h1>
+<p>We now share a recent case we successfully resolved for one of our clients. The client operates a large multi‑agent platform. One of their agents published seemingly random text to a public forum. No one in the organisation fully understood the system’s interactions, and traditional logs lacked context. The client needed answers to three critical questions: How was the post made? What does the post actually contain? Has this happened before, and what single change would prevent recurrence?</p>
+<p>EchoTrace was engaged to conduct a forensic investigation. The client provided two data sources: an organisation chart defining every agent, team, department, and their reporting relationships; and a comprehensive event log capturing all system actions over several weeks, including file operations, task assignments, inter‑agent communications, and external posts. We used all data without filtering and reconstructed the exact chain of events.</p>
+<section id="motivation" class="level2">
+<h2 class="anchored" data-anchor-id="motivation">Motivation</h2>
+<p>The motivation for this case arose from the increasing complexity of multi‑agent systems where emergent behaviours often go undetected until an anomaly surfaces. Traditional logging tools lack the contextual depth to distinguish routine agent interactions from malicious campaigns. Without a structured forensic approach, organisations remain vulnerable to repeated exploitation, data leakage, and reputational damage. EchoTrace was founded to bridge this gap, providing a systematic methodology to reconstruct, understand, and prevent unwanted agent behaviour.</p>
+</section>
+<section id="objectives" class="level2">
+<h2 class="anchored" data-anchor-id="objectives">Objectives</h2>
+<p>For this client case, we set four primary objectives:</p>
+<ul>
+<li>Trace the complete chain of events from the first anomalous action to the final external post, identifying every agent, file, and task hand‑off involved.</li>
+<li>Determine the meaning and origin of the suspicious post, distinguishing normal agent communication from malicious payloads.</li>
+<li>Detect prior occurrences of identical behaviour across historical logs, quantifying their scale through metrics such as patient zero, hop count, duration, and number of affected agents.</li>
+<li>Recommend a single system change that blocks the attack vector without disrupting normal operations, based on the observed propagation mechanism.</li>
+</ul>
+</section>
+<section id="methodology" class="level2">
+<h2 class="anchored" data-anchor-id="methodology">Methodology</h2>
+<p>EchoTrace follows a linear, story‑driven analytical pipeline that progressively refines raw logs into actionable intelligence. The pipeline consists of three integrated parts: organisation chart processing, event log preparation, and the core forensic investigation.</p>
+<section id="organisation-chart-processing" class="level3">
+<h3 class="anchored" data-anchor-id="organisation-chart-processing">Organisation Chart Processing</h3>
+<p>We parse the organisation chart JSON to extract all nodes and edges. Nodes carry identifiers, labels, types, and titles. Edges define containment and leadership relations. From this structure we build two essential lookup tables. The name lookup table maps every internal identifier to a human‑readable label. The node type table records whether an identifier belongs to a person, team, department, or the company itself. These tables allow us to replace cryptic identifiers throughout the event log with names that analysts can recognise.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(jsonlite, tidyverse, visNetwork)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>org_chart <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(<span class="st">"data/org_chart.json"</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>org_nodes <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(org_chart<span class="sc">$</span>nodes)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>org_edges <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(org_chart<span class="sc">$</span>edges)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>vis_nodes <span class="ot">&lt;-</span> org_nodes <span class="sc">%&gt;%</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">id    =</span> id,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> label,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">group =</span> type,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="fu">paste0</span>(<span class="st">"&lt;b&gt;"</span>, label, <span class="st">"&lt;/b&gt;&lt;br&gt;Type: "</span>, type,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">if_else</span>(<span class="sc">!</span><span class="fu">is.na</span>(title), <span class="fu">paste0</span>(<span class="st">"&lt;br&gt;Title: "</span>, title), <span class="st">""</span>))</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>vis_edges <span class="ot">&lt;-</span> org_edges <span class="sc">%&gt;%</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">from =</span> source, <span class="at">to =</span> target) <span class="sc">%&gt;%</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">arrows =</span> <span class="st">"to"</span>,</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">dashes =</span> (relation <span class="sc">==</span> <span class="st">"led_by"</span>),</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">color  =</span> <span class="fu">if_else</span>(relation <span class="sc">==</span> <span class="st">"led_by"</span>, <span class="st">"red"</span>, <span class="st">"grey"</span>)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="fu">visNetwork</span>(vis_nodes, vis_edges,</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>           <span class="at">main =</span> <span class="st">"Tenant Thread Organisation Chart"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">visEdges</span>(<span class="at">smooth =</span> <span class="fu">list</span>(<span class="at">type =</span> <span class="st">"cubicBezier"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">visHierarchicalLayout</span>(</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">direction       =</span> <span class="st">"UD"</span>,</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">sortMethod      =</span> <span class="st">"directed"</span>,</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">levelSeparation =</span> <span class="dv">120</span>,</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">nodeSpacing     =</span> <span class="dv">150</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">visGroups</span>(<span class="at">groupname =</span> <span class="st">"company"</span>,    <span class="at">color =</span> <span class="fu">list</span>(<span class="at">background =</span> <span class="st">"#e41a1c"</span>, <span class="at">border =</span> <span class="st">"#b31519"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">visGroups</span>(<span class="at">groupname =</span> <span class="st">"department"</span>, <span class="at">color =</span> <span class="fu">list</span>(<span class="at">background =</span> <span class="st">"#377eb8"</span>, <span class="at">border =</span> <span class="st">"#2a5f8f"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">visGroups</span>(<span class="at">groupname =</span> <span class="st">"team"</span>,       <span class="at">color =</span> <span class="fu">list</span>(<span class="at">background =</span> <span class="st">"#4daf4a"</span>, <span class="at">border =</span> <span class="st">"#3a8838"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">visGroups</span>(<span class="at">groupname =</span> <span class="st">"person"</span>,     <span class="at">color =</span> <span class="fu">list</span>(<span class="at">background =</span> <span class="st">"#ff7f00"</span>, <span class="at">border =</span> <span class="st">"#cc6600"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">visLegend</span>(<span class="at">width =</span> <span class="fl">0.15</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">visOptions</span>(</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">highlightNearest  =</span> <span class="fu">list</span>(<span class="at">enabled =</span> <span class="cn">TRUE</span>, <span class="at">degree =</span> <span class="dv">2</span>, <span class="at">hover =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>    <span class="at">nodesIdSelection  =</span> <span class="fu">list</span>(<span class="at">enabled =</span> <span class="cn">TRUE</span>, <span class="at">useLabels =</span> <span class="cn">TRUE</span>, <span class="at">main =</span> <span class="st">"Search person"</span>),</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">selectedBy        =</span> <span class="fu">list</span>(<span class="at">variable =</span> <span class="st">"group"</span>, <span class="at">multiple =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">visInteraction</span>(<span class="at">navigationButtons =</span> <span class="cn">TRUE</span>, <span class="at">zoomView =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">visPhysics</span>(<span class="at">enabled =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="visNetwork html-widget html-fill-item" id="htmlwidget-ee67a4c94193ab0f090b" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-ee67a4c94193ab0f090b">{"x":{"nodes":{"id":["company:tenant_thread","department:executive_suite","department:products","department:human_resources","department:legal","department:information_technologies","department:customer_support","team:residential_app","team:property_ops_console","team:analytics_suite","team:integrations","team:hiring","team:benefits","team:professional_development","team:ip","team:mergers_and_acquisitions","team:corporate_contracts","team:client_contracts","team:finance","team:ai_systems","team:infrastructure","team:helpdesk","team:phone_center","team:billing","team:concierge","team:public_relations","person:liam_anchor","person:emma_harbor","person:noah_mariner","person:olivia_keel","person:william_rudder","person:ava_tiller","person:james_stern","person:sophia_beacon","person:benjamin_mooring","person:mia_fender","person:lucas_compass","person:charlotte_current","person:henry_sail","person:amelia_skiff","person:alexander_jetty","person:evelyn_dock","person:michael_capstan","person:harper_oar","person:daniel_gangway","person:ella_pilot","person:matthew_tide","person:scarlett_wharf","person:david_breakwater","person:avery_sextant","person:joseph_buoy","person:abigail_spinnaker","person:sebastian_cutter","person:emily_ferry","person:jack_helm","person:grace_lifeboat","person:samuel_gull","person:chloe_ballast","person:levi_signal","person:victoria_rigging","person:owen_hatch","person:lily_anchorline","person:gabriel_sonar","person:zoey_drydock","person:john_windward","person:nora_bulkhead","person:julian_seaway","person:hannah_starboard","person:isaac_mast","person:audrey_portside","person:christopher_jettyline","person:layla_channel","person:anthony_reef","person:aria_towline","person:dylan_hawser"],"label":["Tenant Thread","Executive Suite","Products","Human Resources","Legal","Information Technologies","Customer Support","Residential App","Property Ops Console","Analytics Suite","Integrations","Hiring","Benefits","Professional Development","IP","Mergers and Acquisitions","Corporate Contracts","Client Contracts","Finance","AI Systems","Infrastructure","Helpdesk","Phone Center","Billing","Concierge","Public Relations","Liam Anchor","Emma Harbor","Noah Mariner","Olivia Keel","William Rudder","Ava Tiller","James Stern","Sophia Beacon","Benjamin Mooring","Mia Fender","Lucas Compass","Charlotte Current","Henry Sail","Amelia Skiff","Alexander Jetty","Evelyn Dock","Michael Capstan","Harper Oar","Daniel Gangway","Ella Pilot","Matthew Tide","Scarlett Wharf","David Breakwater","Avery Sextant","Joseph Buoy","Abigail Spinnaker","Sebastian Cutter","Emily Ferry","Jack Helm","Grace Lifeboat","Samuel Gull","Chloe Ballast","Levi Signal","Victoria Rigging","Owen Hatch","Lily Anchorline","Gabriel Sonar","Zoey Drydock","John Windward","Nora Bulkhead","Julian Seaway","Hannah Starboard","Isaac Mast","Audrey Portside","Christopher Jettyline","Layla Channel","Anthony Reef","Aria Towline","Dylan Hawser"],"type":["company","department","department","department","department","department","department","team","team","team","team","team","team","team","team","team","team","team","team","team","team","team","team","team","team","team","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person"],"title":["<b>Tenant Thread<\/b><br>Type: company","<b>Executive Suite<\/b><br>Type: department","<b>Products<\/b><br>Type: department","<b>Human Resources<\/b><br>Type: department","<b>Legal<\/b><br>Type: department","<b>Information Technologies<\/b><br>Type: department","<b>Customer Support<\/b><br>Type: department","<b>Residential App<\/b><br>Type: team","<b>Property Ops Console<\/b><br>Type: team","<b>Analytics Suite<\/b><br>Type: team","<b>Integrations<\/b><br>Type: team","<b>Hiring<\/b><br>Type: team","<b>Benefits<\/b><br>Type: team","<b>Professional Development<\/b><br>Type: team","<b>IP<\/b><br>Type: team","<b>Mergers and Acquisitions<\/b><br>Type: team","<b>Corporate Contracts<\/b><br>Type: team","<b>Client Contracts<\/b><br>Type: team","<b>Finance<\/b><br>Type: team","<b>AI Systems<\/b><br>Type: team","<b>Infrastructure<\/b><br>Type: team","<b>Helpdesk<\/b><br>Type: team","<b>Phone Center<\/b><br>Type: team","<b>Billing<\/b><br>Type: team","<b>Concierge<\/b><br>Type: team","<b>Public Relations<\/b><br>Type: team","<b>Liam Anchor<\/b><br>Type: person<br>Title: CEO","<b>Emma Harbor<\/b><br>Type: person<br>Title: CFO","<b>Noah Mariner<\/b><br>Type: person<br>Title: COO","<b>Olivia Keel<\/b><br>Type: person<br>Title: Department Lead","<b>William Rudder<\/b><br>Type: person","<b>Ava Tiller<\/b><br>Type: person","<b>James Stern<\/b><br>Type: person","<b>Sophia Beacon<\/b><br>Type: person","<b>Benjamin Mooring<\/b><br>Type: person","<b>Mia Fender<\/b><br>Type: person","<b>Lucas Compass<\/b><br>Type: person","<b>Charlotte Current<\/b><br>Type: person","<b>Henry Sail<\/b><br>Type: person","<b>Amelia Skiff<\/b><br>Type: person","<b>Alexander Jetty<\/b><br>Type: person","<b>Evelyn Dock<\/b><br>Type: person","<b>Michael Capstan<\/b><br>Type: person<br>Title: Department Lead","<b>Harper Oar<\/b><br>Type: person","<b>Daniel Gangway<\/b><br>Type: person","<b>Ella Pilot<\/b><br>Type: person","<b>Matthew Tide<\/b><br>Type: person","<b>Scarlett Wharf<\/b><br>Type: person","<b>David Breakwater<\/b><br>Type: person<br>Title: Department Lead","<b>Avery Sextant<\/b><br>Type: person","<b>Joseph Buoy<\/b><br>Type: person","<b>Abigail Spinnaker<\/b><br>Type: person","<b>Sebastian Cutter<\/b><br>Type: person","<b>Emily Ferry<\/b><br>Type: person","<b>Jack Helm<\/b><br>Type: person","<b>Grace Lifeboat<\/b><br>Type: person","<b>Samuel Gull<\/b><br>Type: person","<b>Chloe Ballast<\/b><br>Type: person<br>Title: Department Lead","<b>Levi Signal<\/b><br>Type: person","<b>Victoria Rigging<\/b><br>Type: person","<b>Owen Hatch<\/b><br>Type: person","<b>Lily Anchorline<\/b><br>Type: person","<b>Gabriel Sonar<\/b><br>Type: person","<b>Zoey Drydock<\/b><br>Type: person","<b>John Windward<\/b><br>Type: person<br>Title: Department Lead","<b>Nora Bulkhead<\/b><br>Type: person","<b>Julian Seaway<\/b><br>Type: person","<b>Hannah Starboard<\/b><br>Type: person","<b>Isaac Mast<\/b><br>Type: person","<b>Audrey Portside<\/b><br>Type: person","<b>Christopher Jettyline<\/b><br>Type: person","<b>Layla Channel<\/b><br>Type: person","<b>Anthony Reef<\/b><br>Type: person","<b>Aria Towline<\/b><br>Type: person","<b>Dylan Hawser<\/b><br>Type: person"],"group":["company","department","department","department","department","department","department","team","team","team","team","team","team","team","team","team","team","team","team","team","team","team","team","team","team","team","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person","person"]},"edges":{"from":["company:tenant_thread","company:tenant_thread","company:tenant_thread","company:tenant_thread","company:tenant_thread","company:tenant_thread","department:products","department:products","department:products","department:products","department:human_resources","department:human_resources","department:human_resources","department:legal","department:legal","department:legal","department:legal","department:legal","department:information_technologies","department:information_technologies","department:information_technologies","department:customer_support","department:customer_support","department:customer_support","department:customer_support","department:executive_suite","department:executive_suite","department:executive_suite","department:products","team:residential_app","team:residential_app","team:residential_app","team:property_ops_console","team:property_ops_console","team:property_ops_console","team:analytics_suite","team:analytics_suite","team:analytics_suite","team:integrations","team:integrations","team:integrations","department:human_resources","team:hiring","team:hiring","team:benefits","team:benefits","team:professional_development","department:legal","team:ip","team:mergers_and_acquisitions","team:corporate_contracts","team:corporate_contracts","team:client_contracts","team:client_contracts","team:finance","team:finance","department:information_technologies","team:ai_systems","team:ai_systems","team:infrastructure","team:infrastructure","team:helpdesk","team:helpdesk","department:customer_support","team:phone_center","team:phone_center","team:phone_center","team:billing","team:billing","team:concierge","team:concierge","team:public_relations","team:public_relations","team:public_relations"],"to":["department:executive_suite","department:products","department:human_resources","department:legal","department:information_technologies","department:customer_support","team:residential_app","team:property_ops_console","team:analytics_suite","team:integrations","team:hiring","team:benefits","team:professional_development","team:ip","team:mergers_and_acquisitions","team:corporate_contracts","team:client_contracts","team:finance","team:ai_systems","team:infrastructure","team:helpdesk","team:phone_center","team:billing","team:concierge","team:public_relations","person:liam_anchor","person:emma_harbor","person:noah_mariner","person:olivia_keel","person:william_rudder","person:ava_tiller","person:james_stern","person:sophia_beacon","person:benjamin_mooring","person:mia_fender","person:lucas_compass","person:charlotte_current","person:henry_sail","person:amelia_skiff","person:alexander_jetty","person:evelyn_dock","person:michael_capstan","person:harper_oar","person:daniel_gangway","person:ella_pilot","person:matthew_tide","person:scarlett_wharf","person:david_breakwater","person:avery_sextant","person:joseph_buoy","person:abigail_spinnaker","person:sebastian_cutter","person:emily_ferry","person:jack_helm","person:grace_lifeboat","person:samuel_gull","person:chloe_ballast","person:levi_signal","person:victoria_rigging","person:owen_hatch","person:lily_anchorline","person:gabriel_sonar","person:zoey_drydock","person:john_windward","person:nora_bulkhead","person:julian_seaway","person:hannah_starboard","person:isaac_mast","person:audrey_portside","person:christopher_jettyline","person:layla_channel","person:anthony_reef","person:aria_towline","person:dylan_hawser"],"relation":["contains","contains","contains","contains","contains","contains","contains","contains","contains","contains","contains","contains","contains","contains","contains","contains","contains","contains","contains","contains","contains","contains","contains","contains","contains","contains","contains","contains","led_by","contains","contains","contains","contains","contains","contains","contains","contains","contains","contains","contains","contains","led_by","contains","contains","contains","contains","contains","led_by","contains","contains","contains","contains","contains","contains","contains","contains","led_by","contains","contains","contains","contains","contains","contains","led_by","contains","contains","contains","contains","contains","contains","contains","contains","contains","contains"],"arrows":["to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to"],"dashes":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false],"color":["grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","red","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","red","grey","grey","grey","grey","grey","red","grey","grey","grey","grey","grey","grey","grey","grey","red","grey","grey","grey","grey","grey","grey","red","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey"]},"nodesToDataframe":true,"edgesToDataframe":true,"options":{"width":"100%","height":"100%","nodes":{"shape":"dot"},"manipulation":{"enabled":false},"edges":{"smooth":{"type":"cubicBezier"}},"layout":{"hierarchical":{"enabled":true,"levelSeparation":120,"nodeSpacing":150,"direction":"UD","sortMethod":"directed"}},"groups":{"company":{"color":{"background":"#e41a1c","border":"#b31519"}},"department":{"color":{"background":"#377eb8","border":"#2a5f8f"}},"team":{"color":{"background":"#4daf4a","border":"#3a8838"}},"useDefaultGroups":true,"person":{"color":{"background":"#ff7f00","border":"#cc6600"}}},"interaction":{"hover":true,"navigationButtons":true,"zoomView":true,"zoomSpeed":1},"physics":{"enabled":false}},"groups":["company","department","team","person"],"width":null,"height":null,"idselection":{"enabled":true,"style":"width: 150px; height: 26px","useLabels":true,"main":"Search person"},"byselection":{"enabled":true,"style":"width: 150px; height: 26px","multiple":true,"hideColor":"rgba(200,200,200,0.5)","highlight":false,"variable":"group","main":"Select by group","values":["company","department","person","team"]},"main":{"text":"Tenant Thread Organisation Chart","style":"font-family:Georgia, Times New Roman, Times, serif;font-weight:bold;font-size:20px;text-align:center;"},"submain":null,"footer":null,"background":"rgba(0, 0, 0, 0)","legend":{"width":0.15,"useGroups":true,"position":"left","ncol":1,"stepX":100,"stepY":100,"zoom":true},"highlight":{"enabled":true,"hoverNearest":true,"degree":2,"algorithm":"all","hideColor":"rgba(200,200,200,0.5)","labelOnly":true},"collapse":{"enabled":false,"fit":false,"resetHighlight":true,"clusterOptions":null,"keepCoord":true,"labelSuffix":"(cluster)"},"tooltipStay":300,"tooltipStyle":"position: fixed;visibility:hidden;padding: 5px;white-space: nowrap;font-family: verdana;font-size:14px;font-color:#000000;background-color: #f5f4ed;-moz-border-radius: 3px;-webkit-border-radius: 3px;border-radius: 3px;border: 1px solid #808074;box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<div class="callout callout-style-simple callout-tip">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p><strong>Tip:</strong> This chart is interactive. Zoom in/out with the scroll wheel, drag nodes to rearrange, search by name using the dropdown, or filter by group (company, department, team, person) using the selector on the left.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="event-log-preparation" class="level3">
+<h3 class="anchored" data-anchor-id="event-log-preparation">Event Log Preparation</h3>
+<p>The raw event log is parsed into a flat table where each row represents one event with columns for event identifier, event type, Unix timestamp, nested details, and the list of participating agents. We recover the local timezone by comparing the Unix timestamp with the ISO‑8601 timestamp present in some event details, taking the median difference, and then produce a local timestamp column for every event. Next we flatten the nested details field into separate columns for target, task, content, content source, poster, argument path, virus flag, and malware combo string. Finally we apply the organisation chart lookup tables to every agent identifier found in the from, to, poster, target, and argument path fields, producing human‑readable mapped columns.</p>
+</section>
+<section id="forensic-pipeline" class="level3">
+<h3 class="anchored" data-anchor-id="forensic-pipeline">Forensic Pipeline</h3>
+<p>With a complete, readable event timeline in hand, EchoTrace follows sequential phases shown below to solve this problem.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</section>
+</section>
+</section>
+<section id="why-echotrace-delivers-results" class="level1">
+<h1>Why EchoTrace Delivers Results</h1>
+<p>Our methodology uses every event and every relationship, leaving no data behind. The pipeline is fully reproducible, meaning the same analysis can be run on new logs as they arrive. The approach is general and applies to any multi‑agent system that maintains an organisation chart and an event log. Most importantly, the final recommendation is a single, testable system change that directly targets the observed propagation mechanism.</p>
+<p>Through this client showcase, EchoTrace demonstrates how we transform raw system logs into forensic clarity, helping organisations stop threats before they can repeat.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
