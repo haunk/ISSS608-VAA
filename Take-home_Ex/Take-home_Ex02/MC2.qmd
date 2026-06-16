@@ -775,6 +775,16 @@ fig
 
 ```
 
+::: callout-tip
+How to use this figure:
+
+- **Range day**: you can pick 1d (1 day before the anomalous SaidIT posts), 7d, 14d or all events in the dataset. OR you can free to choose range of day by time scroll bar (near the bottom). **Click on Reset axes before pick day range.**
+
+- **Tooltip**: From button on the right side, choose *Show closest data on the hover* to see single tooltip, OR *Compare data on hover* to see multiple tooltips on a certain time period.
+
+- **Legend**: Click on legend item to hide it from the chart.
+:::
+
 ::: callout-note
 Insights from this chart:
 
