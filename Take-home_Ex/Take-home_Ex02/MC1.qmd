@@ -1,0 +1,759 @@
+---
+title: "Take-home_Ex02"
+author: "Nguyen Kim Hau"
+date: "May 26, 2026"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  warning: false
+  freeze: true
+---
+
+## 1 Load Dataset
+
+```{r}
+pacman::p_load(jsonlite, tidyverse, plotly,
+               tidygraph, ggraph,
+               DT, gt, skimr,
+               visNetwork,lubridate,
+               crosstalk)
+```
+
+```{r}
+#| eval: true
+#| code-fold: false
+#| 
+if (!file.exists("data/mc1_data.rds")) {
+  mc1_data <- fromJSON("data/mc1_data.json")
+  write_rds(mc1_data, "data/mc1_data.rds")
+}
+
+mc1_data  <- read_rds("data/mc1_data.rds")
+```
+
+```{r}
+glimpse(mc1_data)
+```
+
+```{r}
+names(mc1_data$rounds)
+```
+
+```{r}
+glimpse(mc1_data$rounds$environment_context)
+```
+
+```{r}
+mc1_data$rounds$communications[[1]] %>% 
+  head(2)
+```
+
+```{r}
+mc1_data$rounds$communications[[1]] %>%
+  head(2) %>%
+  unnest(internal_state)
+```
+
+Unnest
+
+```{r}
+comms_df <- mc1_data$rounds %>%
+  select(hour, communications) %>%
+  unnest(communications) %>%
+  unnest(internal_state)
+glimpse(comms_df)
+
+```
+
+```{r}
+# Environment context data  
+env_df <- mc1_data$rounds %>%
+  select(hour, environment_context) %>%
+  unnest(environment_context)
+glimpse(env_df)
+```
+
+Check each hour have how many critical_deadlines
+
+```{r}
+env_df %>%
+  mutate(n = map_int(critical_deadlines, length)) %>%
+  select(hour, n)
+```
+
+```{r}
+# Participants data
+participants_df <- mc1_data$rounds %>%
+  select(hour, participants) %>%
+  unnest(participants)
+glimpse(participants_df)
+```
+
+## **2. Question 1: What were the key events leading to the inappropriate release?**
+
+### 2.1 Network graph shows who communicated with whom
+
+Step 1: Check recipients column first
+
+```{r}
+# See what recipients looks like
+comms_df %>%
+  select(agent_id, recipients, channel) %>%
+  head(10)
+
+```
+
+```{r}
+# Create role-to-agent mapping
+role_map <- c(
+  "ALL"            = "ALL",
+  "intern"         = "intern_agent",
+  "judge"          = "judge_eval_agent",
+  "legal"          = "legal_agent",
+  "platform_trust" = "quality_agent",
+  "pr"             = "pr_agent",
+  "pr_intern"      = "pr_intern_agent",
+  "social_manager" = "social_manager_agent"
+)
+role_map
+```
+
+Step 2: Build edges and nodes
+
+```{r}
+# Build edges (sender → recipient)
+# Fix edges_df
+edges_df <- comms_df %>%
+  select(agent_id, recipients, channel, hour) %>%
+  unnest(recipients) %>%
+  filter(!is.na(recipients)) %>%
+  mutate(to = role_map[recipients]) %>%
+  filter(to != "ALL") %>%  # remove broadcast messages
+  rename(from = agent_id) %>%
+  select(from, to, channel, hour)
+
+# Check result
+edges_df %>% count(to)
+
+# Aggregate edges: count messages between each pair
+edges_agg <- edges_df %>%
+  filter(from != to) %>%  # remove self-loops
+  count(from, to, name = "weight") %>%
+  mutate(width = weight / max(weight) * 10)
+
+# Build nodes from participants_df
+nodes_df <- participants_df %>%
+  distinct(agent_id, agent_role, agent_label) %>%
+  rename(id = agent_id, label = agent_label)
+```
+
+Step 3: Draw with visNetwork
+
+```{r}
+# Rebuild visNetwork with aggregated edges
+visNetwork(nodes_df, edges_agg) %>%
+  visEdges(arrows = "to", 
+           width = "weight",  # thicker = more messages
+           smooth = FALSE) %>%  # straight lines, less chaos
+  visNodes(size = 20) %>%
+  visOptions(highlightNearest = TRUE) %>%
+  visLayout(randomSeed = 42)
+```
+
+### 2.2 Timeline visualization of events by hour
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+comms_df %>%
+  mutate(timestamp = ymd_hms(timestamp),
+         date = as.Date(timestamp)) %>%
+  count(date, agent_id) %>%
+  plot_ly(x = ~date, y = ~n, color = ~agent_id,
+          type = "scatter", mode = "lines+markers",
+          hoverinfo = "text",
+          text = ~paste("Agent:", agent_id,
+                        "<br>Date:", date,
+                        "<br>Messages:", n)) %>%
+  layout(title = "Message Frequency by Agent Over Time",
+         xaxis = list(title = "Date"),
+         yaxis = list(title = "Number of Messages"),
+         legend = list(title = list(text = "Agent")))
+```
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+participants_df %>%
+  select(hour, agent_id, agent_label, declared_action) %>%
+  filter(!is.na(declared_action)) %>%
+  mutate(hour = ymd_hms(hour)) %>%
+  arrange(hour, agent_id) %>%
+  DT::datatable(
+    filter = "top",
+    options = list(pageLength = 15)
+  )
+```
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+# Prepare data
+timeline_data <- comms_df %>%
+  mutate(timestamp = ymd_hms(timestamp),
+         date = as.Date(timestamp)) %>%
+  filter(timestamp < ymd_hms("2046-06-05 17:00:00")) %>%
+  mutate(content_short = str_trunc(content, 150))
+
+# Create shared data for crosstalk
+shared_data <- SharedData$new(timeline_data)
+
+# Filter widget + plot
+bscols(
+  widths = c(3, 9),
+  list(
+    filter_select("date", "Select Date", shared_data, ~date),
+    filter_select("agent", "Select Agent", shared_data, ~agent_id),
+    filter_select("channel", "Select Channel", shared_data, ~channel)
+  ),
+  plot_ly(shared_data, 
+          x = ~timestamp, 
+          y = ~agent_id,
+          color = ~channel,
+          symbol = ~message_type,
+          text = ~paste("<b>Agent:</b>", agent_label,
+                        "<br><b>Time:</b>", timestamp,
+                        "<br><b>Channel:</b>", channel,
+                        "<br><b>Type:</b>", message_type,
+                        "<br><b>Content:</b>", content_short),
+          hoverinfo = "text",
+          type = "scatter",
+          mode = "markers",
+          marker = list(size = 10, opacity = 0.7)) %>%
+    layout(title = "Agent Communications Timeline (Before 5PM Breach)",
+           xaxis = list(title = "Time"),
+           yaxis = list(title = "Agent"))
+)
+```
+
+### 2.3 Identify the causal chain of decisions that led to the embargo breach
+
+WHAT happened (the timeline of key decisions)
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+# Find all messages mentioning key terms
+
+critical_events <- comms_df %>%
+  mutate(timestamp = ymd_hms(timestamp)) %>%
+  filter(str_detect(content, regex(
+    "embargo|HarborCrest|CivicLoom|merger|post|publish|anonymous|Flex",
+    ignore_case = TRUE
+  ))) %>%
+  select(timestamp, agent_id, agent_label, channel, 
+         content, deliberating, message_id, responding_to)
+  
+critical_events %>%
+  select(timestamp, agent_id, channel, content, deliberating) %>%
+  arrange(timestamp)
+```
+
+The `deliberating` column reveals what agents were *actually thinking*
+
+```{r}
+# Track legal_agent's internal reasoning over time
+comms_df %>%
+  filter(agent_id == "legal_agent",
+         !is.na(deliberating)) %>%
+  select(timestamp, deliberating) %>%
+  arrange(timestamp)
+```
+
+```{r}
+comms_df %>%
+  filter(agent_id == "legal_agent",
+         !is.na(deliberating)) %>%
+  select(deliberating)
+```
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+# Build response chains
+comms_df %>%
+  filter(!is.na(responding_to)) %>%
+  select(message_id, agent_id, responding_to, timestamp, content) %>%
+  arrange(timestamp)
+```
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| 
+pacman::p_load(networkD3)
+
+# Step 1: Identify the critical decision points
+critical_events  %>%
+  select(timestamp, agent_id, agent_label, channel, 
+         content, deliberating, message_id, responding_to) %>%
+  arrange(timestamp)
+
+# Simpler: agent → channel → action flow
+simple_flow <- critical_events %>%
+  mutate(action_type = case_when(
+    str_detect(content, "POSTED_ANONYMOUS") ~ "Anonymous Post",
+    str_detect(content, "POSTED_PERSONAL") ~ "Personal Post",
+    str_detect(channel, "official") ~ "Official Post",
+    TRUE ~ "Internal Discussion"
+  )) %>%
+  count(agent_id, channel, action_type, name = "value")
+
+# Build nodes
+all_names <- unique(c(simple_flow$agent_id, simple_flow$channel, simple_flow$action_type))
+nodes <- data.frame(name = all_names)
+
+simple_flow$source <- match(simple_flow$agent_id, nodes$name) - 1
+simple_flow$target_ch <- match(simple_flow$channel, nodes$name) - 1
+
+# Two-level Sankey: Agent → Channel
+links_1 <- simple_flow %>%
+  group_by(agent_id, channel) %>%
+  summarise(value = sum(value), .groups = "drop") %>%
+  mutate(source = match(agent_id, nodes$name) - 1,
+         target = match(channel, nodes$name) - 1) %>%
+  select(source, target, value)
+
+# Channel → Action Type
+links_2 <- simple_flow %>%
+  group_by(channel, action_type) %>%
+  summarise(value = sum(value), .groups = "drop") %>%
+  mutate(source = match(channel, nodes$name) - 1,
+         target = match(action_type, nodes$name) - 1) %>%
+  select(source, target, value)
+
+links_all <- bind_rows(links_1, links_2)
+
+sankeyNetwork(
+  Links = as.data.frame(links_all),
+  Nodes = nodes,
+  Source = "source",
+  Target = "target",
+  Value = "value",
+  NodeID = "name",
+  fontSize = 14,
+  nodeWidth = 30
+)
+```
+
+::: callout-note
+Insights:
+
+**1. Legal-Agent is the most active — and the most suspicious**
+
+- Legal-Agent has the **largest flow** of embargo-related messages
+- Legal-Agent is the **only agent connected to `anonymous_post`** — this is the breach channel
+- A senior legal counsel posting anonymously about the merger they're supposed to protect is a major red flag
+
+**2. The anonymous post channel is isolated**
+
+- Only `legal_agent` flows to `anonymous_post` — no other agent used this channel
+- This suggests the anonymous posting was a **solo decision**, not a team-coordinated leak
+
+**3. Most embargo discussion stayed internal**
+
+- The overwhelming majority of messages went to `Internal Discussion` via `comms_huddle` and `one_on_one_chat`
+- This means agents *were* discussing the embargo internally — but the controls failed to prevent the breach
+
+**4. Social-Media-Agent also posted externally**
+
+- `social_media_agent` connects to `personal_post` — they posted sentiment updates publicly
+- This is a second potential breach, though less severe than the anonymous post
+
+**5. PR-Intern-Agent had access to channels**
+
+- Despite being junior, `pr_intern_agent` has flow to multiple channels including `official_post`
+- Junior staff with posting access is a system design risk
+:::
+
+## 3. Question 2: Was the evasion of the embargo a new behavior?
+
+### 3.1 Compare agent behavior **before vs during** the crisis
+
+**Sentiment analysis** of the deliberating text
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+pacman::p_load(tidytext)
+
+# NRC emotion analysis on legal_agent's deliberating
+legal_emotions <- comms_df %>%
+  filter(agent_id == "legal_agent",
+         !is.na(deliberating)) %>%
+  mutate(timestamp = ymd_hms(timestamp),
+         date = as.Date(timestamp)) %>%
+  select(date, deliberating) %>%
+  unnest_tokens(word, deliberating) %>%
+  inner_join(get_sentiments("nrc"), by = "word") %>%
+  count(date, sentiment) %>%
+  filter(!sentiment %in% c("positive", "negative"))  # keep only emotions
+
+# Plot emotion trajectory
+plot_ly(legal_emotions, 
+        x = ~date, y = ~n, color = ~sentiment,
+        type = "scatter", mode = "lines+markers") %>%
+  layout(title = "Legal-Agent Emotional Trajectory",
+         xaxis = list(title = "Date"),
+         yaxis = list(title = "Word Count"))
+```
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+legal_emotions <- comms_df %>%
+  filter(agent_id == "legal_agent",
+         !is.na(deliberating)) %>%
+  mutate(timestamp = ymd_hms(timestamp),
+         date = as.Date(timestamp)) %>%
+  select(date, deliberating) %>%
+  unnest_tokens(word, deliberating) %>%
+  inner_join(get_sentiments("nrc"), by = "word") %>%
+  count(date, sentiment) %>%
+  filter(!sentiment %in% c("positive", "negative")) %>%
+  group_by(date) %>%
+  mutate(share = n / sum(n)) %>%
+  ungroup()
+
+# Plot as share
+plot_ly(legal_emotions, 
+        x = ~date, y = ~share, color = ~sentiment,
+        type = "scatter", mode = "none",
+        stackgroup = "one", 
+        groupnorm = "percent") %>%
+  layout(title = "Legal-Agent Emotion Share Over Time",
+         xaxis = list(title = "Date"),
+         yaxis = list(title = "Share (%)", ticksuffix = "%"))
+```
+
+::: callout-not
+**1. Trust drops dramatically on crisis day (Jun 5)**
+
+- Trust (grey) was dominant at \~30-40% throughout, but drops to \~15% on Jun 5
+
+- This means Legal-Agent lost confidence in the system/process right before the breach
+
+**2. Anticipation surges on Jun 5**
+
+- Anticipation (orange) grows from \~15% to \~30% on Jun 5
+
+- Legal-Agent was expecting something — they knew what was coming because they planned it
+
+**3. Disgust appears and grows toward crisis**
+
+- Disgust (green) barely exists early on, but grows from May 28 onward
+
+- This suggests growing frustration with the situation or the embargo restrictions
+
+**4. Fear spikes around May 27-28 then stabilizes**
+
+- Fear (pink) peaks mid-timeline when pressure was building
+
+- But fear *decreases* toward Jun 5 — again suggesting the decision was already made, not a panic reaction
+
+**5. Anger appears on Jun 5**
+
+- Anger (blue) was near zero most of the time, but appears on the crisis day
+
+- Combined with dropping trust and rising anticipation, this suggests frustration-driven action
+:::
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#  sentence-level sentiment
+pacman::p_load(sentimentr)
+
+legal_deliberating <- comms_df %>%
+  filter(agent_id == "legal_agent",
+         !is.na(deliberating)) %>%
+  mutate(timestamp = ymd_hms(timestamp),
+         date = as.Date(timestamp)) %>%
+  select(date, deliberating)
+
+# Sentence-level sentiment
+sent_result <- legal_deliberating %>%
+  mutate(id = row_number()) %>%
+  unnest_tokens(sentence, deliberating, token = "sentences") %>%
+  mutate(sentiment = sentiment_by(sentence)$ave_sentiment)
+
+# Aggregate by date
+sent_by_date <- sent_result %>%
+  group_by(date) %>%
+  summarise(avg_sentiment = mean(sentiment),
+            min_sentiment = min(sentiment),
+            max_sentiment = max(sentiment))
+
+plot_ly(sent_by_date, x = ~date) %>%
+  add_trace(y = ~avg_sentiment, type = "scatter", mode = "lines+markers",
+            name = "Average") %>%
+  add_ribbons(ymin = ~min_sentiment, ymax = ~max_sentiment,
+              name = "Range", opacity = 0.2) %>%
+  layout(title = "Legal-Agent Sentiment (sentimentr)",
+         yaxis = list(title = "Sentiment Score"),
+         shapes = list(
+           list(type = "line", x0 = "2046-06-05", x1 = "2046-06-05",
+                y0 = -1, y1 = 1,
+                line = list(color = "red", dash = "dash"))))
+```
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+# Keyword-based thematic analysis
+legal_themes <- comms_df %>%
+  filter(agent_id == "legal_agent",
+         !is.na(deliberating)) %>%
+  mutate(timestamp = ymd_hms(timestamp),
+         date = as.Date(timestamp)) %>%
+  mutate(
+    mentions_embargo = str_detect(deliberating, regex("embargo|compliance|restrict", ignore_case = TRUE)),
+    mentions_risk    = str_detect(deliberating, regex("risk|danger|threat|worry|concern", ignore_case = TRUE)),
+    mentions_strategy = str_detect(deliberating, regex("strategy|plan|position|frame|narrative", ignore_case = TRUE)),
+    mentions_post    = str_detect(deliberating, regex("post|publish|anonymous|Flex|public", ignore_case = TRUE)),
+    mentions_pressure = str_detect(deliberating, regex("pressure|urgent|deadline|time|fast|quick", ignore_case = TRUE))
+  ) %>%
+  select(date, starts_with("mentions_")) %>%
+  pivot_longer(cols = starts_with("mentions_"),
+               names_to = "theme",
+               values_to = "present") %>%
+  mutate(theme = str_remove(theme, "mentions_"))
+
+# Heatmap of themes over time
+ggplotly(
+  legal_themes %>%
+    filter(present == TRUE) %>%
+    ggplot(aes(x = date, y = theme, fill = theme)) +
+    geom_tile(color = "white", height = 0.8) +
+    scale_fill_manual(values = c(
+      "embargo"  = "#e74c3c",   # red — compliance
+      "risk"     = "#f39c12",   # orange — warning
+      "pressure" = "#9b59b6",   # purple — stress
+      "post"     = "#2ecc71",   # green — action
+      "strategy" = "#3498db"    # blue — planning
+    )) +
+    labs(title = "Legal-Agent: Themes in Deliberation Over Time",
+         x = "Date", y = "Theme") +
+    theme_minimal() 
+)
+```
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+# Channel usage by agent over time
+channel_usage <- comms_df %>%
+  mutate(timestamp = ymd_hms(timestamp),
+         date = as.Date(timestamp)) %>%
+  count(date, agent_id, channel)
+
+# Heatmap view
+ggplotly(
+  channel_usage %>%
+    ggplot(aes(x = date, y = channel, fill = n)) +
+    geom_tile(color = "white") +
+    scale_fill_gradient(low = "lightyellow", high = "red") +
+    facet_wrap(~agent_id, ncol = 2) +
+    labs(title = "Heatmap of Channel Usage by Agent Over Time",
+         x = "Date", y = "Channel", fill = "Messages") +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1,
+                                     size = 6))
+)
+```
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+pacman::p_load(crosstalk, wordcloud2, htmlwidgets)
+# Prepare word frequencies by agent and date
+word_freq <- comms_df %>%
+  mutate(date = as.Date(ymd_hms(timestamp))) %>%
+  select(date, agent_id, content) %>%
+  unnest_tokens(word, content) %>%
+  anti_join(stop_words, by = "word") %>%
+  filter(str_length(word) > 2) %>%
+  count(agent_id, word, sort = TRUE)
+
+# Word cloud per agent using wordcloud2
+# Pick one agent at a time
+agent_wc <- function(agent_name) {
+  wc_data <- word_freq %>%
+    filter(agent_id == agent_name) %>%
+    select(word, n) %>%
+    head(100)
+  
+  wordcloud2(wc_data, size = 0.5,
+             color = "random-light",
+             backgroundColor = "white")
+}
+
+# Example: Legal Agent word cloud
+agent_wc("legal_agent")
+```
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+word_freq_date <- comms_df %>%
+  mutate(date = as.Date(ymd_hms(timestamp))) %>%
+  select(date, agent_id, content) %>%
+  unnest_tokens(word, content) %>%
+  anti_join(stop_words, by = "word") %>%
+  filter(str_length(word) > 2) %>%
+  count(date, agent_id, word, sort = TRUE)
+
+shared_words <- SharedData$new(
+  word_freq_date %>%
+    group_by(agent_id, word) %>%
+    summarise(n = sum(n), .groups = "drop") %>%
+    filter(n > 0) %>%  # remove 0 count
+    group_by(agent_id) %>%
+    slice_max(n, n = 15) %>%
+    ungroup()
+)
+
+bscols(
+  widths = c(3, 9),
+  list(
+    filter_select("agent", "Select Agent", shared_words, ~agent_id)
+  ),
+  plot_ly(shared_words,
+          y = ~reorder_within(word, n, agent_id), 
+          x = ~n, color = ~agent_id,
+          type = "bar", orientation = "h",
+          text = ~paste(word, ":", n),
+          hoverinfo = "text") %>%
+    layout(title = "Top Words by Agent",
+           yaxis = list(title = "", 
+                        categoryorder = "total ascending"),
+           xaxis = list(title = "Frequency"),
+           showlegend = FALSE)
+)
+```
+
+```{r}
+# Check what's in market_snapshot
+glimpse(env_df$market_snapshot)
+```
+
+```{r}
+# Extract and clean market data
+market_df <- env_df %>%
+  select(hour, market_snapshot) %>%
+  unnest(market_snapshot) %>%
+  mutate(
+    date = as.Date(ymd_hms(hour)),
+    stock_price = as.numeric(str_remove(stock_price, "\\$")),
+    percent_change = as.numeric(str_remove(percent_change, "%"))
+  )
+
+# Get sentiment scores
+legal_sentiment <- comms_df %>%
+  filter(agent_id == "legal_agent",
+         !is.na(deliberating)) %>%
+  mutate(date = as.Date(ymd_hms(timestamp))) %>%
+  select(date, deliberating) %>%
+  unnest_tokens(word, deliberating) %>%
+  inner_join(get_sentiments("afinn"), by = "word") %>%
+  group_by(date) %>%
+  summarise(sentiment_score = sum(value))
+
+# Join market + sentiment
+dual_data <- market_df %>%
+  select(date, stock_price, percent_change, sentiment) %>%
+  left_join(legal_sentiment, by = "date")
+
+# Dual-axis plot
+plot_ly(dual_data) %>%
+  add_trace(x = ~date, y = ~stock_price, 
+            type = "scatter", mode = "lines+markers",
+            name = "Stock Price ($)",
+            line = list(color = "#3498db", width = 2),
+            text = ~paste("Date:", date,
+                          "<br>Stock:", stock_price,
+                          "<br>Change:", percent_change, "%",
+                          "<br>Market Sentiment:", sentiment),
+            hoverinfo = "text") %>%
+  add_trace(x = ~date, y = ~sentiment_score,
+            type = "scatter", mode = "lines+markers",
+            name = "Legal-Agent Sentiment",
+            yaxis = "y2",
+            line = list(color = "#e74c3c", width = 2),
+            text = ~paste("Date:", date,
+                          "<br>Sentiment Score:", sentiment_score),
+            hoverinfo = "text") %>%
+  layout(
+    title = "Stock Price vs Legal-Agent Internal Sentiment",
+    xaxis = list(title = "Date"),
+    yaxis = list(title = "Stock Price ($)", side = "left",
+                 titlefont = list(color = "#3498db")),
+    yaxis2 = list(title = "Sentiment Score (AFINN)", side = "right",
+                  overlaying = "y",
+                  titlefont = list(color = "#e74c3c")),
+    shapes = list(
+      list(type = "line",
+           x0 = "2046-06-05", x1 = "2046-06-05",
+           y0 = 0, y1 = 1, yref = "paper",
+           line = list(color = "red", dash = "dash", width = 2))),
+    annotations = list(
+      list(x = "2046-06-05", y = 1.05, yref = "paper",
+           text = "BREACH DAY", showarrow = FALSE,
+           font = list(color = "red", size = 12, bold = TRUE)))
+  )
+```
+
+```{r}
+plot_ly(dual_data) %>%
+  add_trace(x = ~date, y = ~percent_change,
+            type = "scatter", mode = "lines+markers",
+            name = "Stock % Change",
+            line = list(color = "#e74c3c", width = 2),
+            marker = list(size = 8),
+            text = ~paste("Date:", date,
+                          "<br>Change:", percent_change, "%",
+                          "<br>Market:", sentiment),
+            hoverinfo = "text") %>%
+  add_trace(x = ~date, y = ~sentiment_score,
+            type = "scatter", mode = "lines+markers",
+            name = "Legal-Agent Sentiment",
+            yaxis = "y2",
+            line = list(color = "#3498db", width = 2),
+            marker = list(size = 8),
+            text = ~paste("Date:", date,
+                          "<br>Sentiment Score:", sentiment_score),
+            hoverinfo = "text") %>%
+  layout(
+    title = "Market Pressure vs Legal-Agent Internal Sentiment",
+    xaxis = list(title = "Date"),
+    yaxis = list(title = "Stock % Change",
+                 ticksuffix = "%",
+                 titlefont = list(color = "#e74c3c"),
+                 zeroline = TRUE,
+                 zerolinecolor = "grey"),
+    yaxis2 = list(title = "Sentiment Score (AFINN)",
+                  side = "right",
+                  overlaying = "y",
+                  titlefont = list(color = "#3498db")),
+    shapes = list(
+      list(type = "line",
+           x0 = "2046-06-05", x1 = "2046-06-05",
+           y0 = 0, y1 = 1, yref = "paper",
+           line = list(color = "red", dash = "dash", width = 2))),
+    annotations = list(
+      list(x = "2046-06-05", y = 1.05, yref = "paper",
+           text = "BREACH DAY", showarrow = FALSE,
+           font = list(color = "red", size = 12)))
+  )
+```
