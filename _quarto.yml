@@ -55,11 +55,14 @@ website:
           - text: "HO15_Visualising and Analysing Time-oriented Data"
             href: "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html"
             
-          - text: "HO16_Visualising and Analysing Time-oriented Data"
+          - text: "HO16_Choropleth Mapping with R"
             href: "Hands-on_Ex/Hands-on_Ex09/Hands-on_Ex09a.html"
             
           - text: "HO17_Visualising Geospatial Point Data"
             href: "Hands-on_Ex/Hands-on_Ex09/Hands-on_Ex09b.html"
+          
+          - text: "HO18_Analytical Mapping"
+            href: "Hands-on_Ex/Hands-on_Ex09/Hands-on_Ex09c.html"
             
       - text: "<img src='/images/shark.png' width='40' height='40' style='margin-right: 5px;'> 
       Take-home Exercise"
