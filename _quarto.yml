@@ -58,6 +58,9 @@ website:
           - text: "HO16_Visualising and Analysing Time-oriented Data"
             href: "Hands-on_Ex/Hands-on_Ex09/Hands-on_Ex09a.html"
             
+          - text: "HO17_Visualising Geospatial Point Data"
+            href: "Hands-on_Ex/Hands-on_Ex09/Hands-on_Ex09b.html"
+            
       - text: "<img src='/images/shark.png' width='40' height='40' style='margin-right: 5px;'> 
       Take-home Exercise"
         menu:
