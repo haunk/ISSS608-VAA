@@ -20,9 +20,7 @@ format:
 By the end of this hands-on exercise, you will be able to:
 
 - create bullet chart by using ggplot2,
-
 - create sparklines by using ggplot2 ,
-
 - build industry standard dashboard by using R Shiny.
 
 ## **19.2 Getting started**
