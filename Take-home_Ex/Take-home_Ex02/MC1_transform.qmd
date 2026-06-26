@@ -1,0 +1,1477 @@
+---
+title: "Take-home Exercise 2: VAST Mini-Challenge 1"
+author: "Nguyen Kim Hau"
+date: "May 26, 2026"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  warning: false
+  freeze: true
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: true
+    code-summary: "Show the code"
+---
+
+## Overview
+
+This report presents a visual analytics investigation of **VAST Challenge 2026 Mini-Challenge 1**. The central question is whether TenantThread's inappropriate pre-embargo release of the CivicLoom merger was a deliberate leak or a system breakdown under crisis pressure.
+
+The analysis covers three areas:
+
+1.  What were the key events and relationships leading to the inappropriate release?
+2.  Was the evasion of the embargo a new behavior, or did it follow prior patterns?
+3.  Were there leading indicators that such a release was possible?
+
+## Data Loading and Preparation
+
+### Load packages
+
+```{r}
+pacman::p_load(jsonlite, tidyverse, plotly,
+               tidygraph, ggraph,
+               DT, gt, skimr,
+               visNetwork, lubridate,
+               crosstalk, wordcloud2, htmlwidgets,
+               tidytext, sentimentr, networkD3, scales,
+               ggwordcloud)
+```
+
+### Import JSON
+
+The MC1 dataset is a deeply nested JSON file. On first run, the JSON is parsed and saved as an RDS file for faster loading in subsequent renders.
+
+```{r}
+#| eval: true
+#| code-fold: false
+#| 
+if (!file.exists("data/mc1_data.rds")) {
+  mc1_data <- fromJSON("data/MC1_final_00.json")
+  write_rds(mc1_data, "data/mc1_data.rds")
+}
+
+mc1_data  <- read_rds("data/mc1_data.rds")
+```
+
+### Explore top-level structure
+
+```{r}
+glimpse(mc1_data)
+```
+
+```{r}
+names(mc1_data$rounds)
+```
+
+### Unnest into working tables
+
+The nested JSON is unnested into three flat tables that align with the team's shared naming convention.
+
+**`communications`**: one row per agent message, with internal state fields unnested.
+
+```{r}
+communications <- mc1_data$rounds %>%
+  select(hour, communications) %>%
+  unnest(communications) %>%
+  unnest(internal_state) %>%
+  mutate(
+    timestamp = ymd_hms(timestamp),
+    date = as_date(timestamp),
+    period = case_when(
+      timestamp < ymd_hms("2046-06-05 00:00:00") ~ "Prior period",
+      timestamp < ymd_hms("2046-06-05 17:00:00") ~ "Crisis day before SaltWind merger story",
+      timestamp < ymd_hms("2046-06-05 18:00:00") ~ "Post-SaltWind / pre-embargo-lift",
+      TRUE ~ "After embargo lift"
+    ),
+    public_channel = channel %in% c("official_post", "personal_post", "anonymous_post"),
+    side_channel = channel %in% c("side_huddle", "one_on_one_chat"),
+    text_all = str_c(content, reacting, rationalizing, deliberating, sep = " "),
+    embargo_keyword = str_detect(
+      str_to_lower(content),
+      "civicloom|harborcrest|residentedge|merger|6pm|6 pm|announcement|rebrand"
+    ),
+    public_embargo_signal = public_channel & embargo_keyword
+  )
+
+glimpse(communications)
+```
+
+**`rounds`**: one row per hour, containing environment context, market data, media events, and alerts.
+
+```{r}
+rounds <- mc1_data$rounds %>%
+  select(hour, environment_context) %>%
+  unnest(environment_context) %>%
+  mutate(
+    hour_ts = ymd_hms(hour),
+    date = as_date(hour_ts),
+    round_id = row_number()
+  )
+
+glimpse(rounds)
+```
+
+**`participants`**: one row per agent per round, with declared actions and metadata.
+
+```{r}
+participants <- mc1_data$rounds %>%
+  select(hour, participants) %>%
+  unnest(participants) %>%
+  mutate(hour_ts = ymd_hms(hour))
+
+glimpse(participants)
+```
+
+### Clean market snapshot
+
+Stock price and percent change are stored as character strings. They are cleaned here for later use in the dual-axis chart.
+
+```{r}
+market_df <- rounds %>%
+  select(hour, round_id, date, market_snapshot) %>%
+  unnest(market_snapshot) %>%
+  mutate(
+    stock_price = as.numeric(str_remove(stock_price, "\\$")),
+    percent_change = as.numeric(str_remove(percent_change, "%"))
+  )
+```
+
+### Build network tables
+
+Agent communication relationships are derived from the `communications` table. Recipients are stored as role shortcodes and must be mapped back to full agent IDs.
+
+```{r}
+role_map <- c(
+  "ALL"            = "ALL",
+  "intern"         = "intern_agent",
+  "judge"          = "judge_eval_agent",
+  "legal"          = "legal_agent",
+  "platform_trust" = "quality_agent",
+  "pr"             = "pr_agent",
+  "pr_intern"      = "pr_intern_agent",
+  "social_manager" = "social_media_agent"
+)
+
+edges_df <- communications %>%
+  select(agent_id, recipients, channel, hour) %>%
+  unnest(recipients) %>%
+  filter(!is.na(recipients)) %>%
+  mutate(to = role_map[recipients]) %>%
+  filter(to != "ALL") %>%
+  rename(from = agent_id) %>%
+  select(from, to, channel, hour)
+
+edges_agg <- edges_df %>%
+  filter(from != to) %>%
+  count(from, to, name = "weight") %>%
+  mutate(width = weight / max(weight) * 10)
+
+nodes_df <- participants %>%
+  distinct(agent_id, agent_role, agent_label) %>%
+  rename(id = agent_id, label = agent_label)
+```
+
+### Outputs of this preprocessing stage
+
+By the end of this notebook we have, ready for the analysis & visualisation stage:
+
+- `communications` has one row per agent message, with derived fields like `period`, `public_channel`, `side_channel`, `embargo_keyword`, and `public_embargo_signal`
+- `rounds` has one row per hour, containing environment context, event headlines, and the nested `market_snapshot`
+- `participants` has one row per agent per round, including `declared_action`
+- `market_df` is unnested from `rounds$market_snapshot`, with `stock_price` and `percent_change` cleaned from character to numeric
+- `edges_df` has one row per directed message (from, to, channel, hour)
+- `edges_agg` collapses `edges_df` into unique from/to pairs with a `weight` count and scaled `width`
+- `nodes_df` has one row per unique agent with `id` and `label`
+
+```{mermaid}
+%%| fig-cap: "Data flow: From raw JSON to working tables for MC1"
+%%| code-fold: true
+%%| code-summary: "Show the code"
+graph TD
+A[("MC1_final_00.json")] --> B["mc1_data"]
+B --> C["communications"]
+B --> D["rounds"]
+B --> E["participants"]
+D --> F["market_df"]
+C --> H["edges_df"]
+H --> I["edges_agg"]
+E --> J["nodes_df"]
+style A fill:#d0d0d0,stroke:#999
+  style B fill:#d0d0d0,stroke:#999
+  style C fill:#aec7e8,stroke:#377eb8
+  style D fill:#aec7e8,stroke:#377eb8
+  style E fill:#aec7e8,stroke:#377eb8
+  style F fill:#aec7e8,stroke:#377eb8
+  style H fill:#ffbb78,stroke:#ff7f00
+  style I fill:#ffbb78,stroke:#ff7f00
+  style J fill:#ffbb78,stroke:#ff7f00
+
+```
+
+::: callout-note
+- **Grey nodes** are raw source files and parsed JSON objects.
+- **Blue nodes** are intermediate processed tables.
+- **Orange nodes** are the final outputs, used as input for further analysis and visualisation.
+- Arrows are labelled with the **operation** that produced the next table.
+:::
+
+## Question 1: Key Events Leading to the Release
+
+### Agent communication network
+
+A network graph reveals who communicated with whom across the full two-week period. Edge thickness represents message volume. This gives an overview of influence and information flow among the seven agents.
+
+```{r}
+visNetwork(nodes_df, edges_agg) %>%
+  visEdges(arrows = "to", smooth = FALSE) %>%
+  visNodes(size = 20) %>%
+  visOptions(highlightNearest = TRUE) %>%
+  visLayout(randomSeed = 42)
+```
+
+### Message frequency over time
+
+A line chart of daily message counts per agent shows communication intensity across the timeline. A spike in volume on crisis day (June 4 to 5) is a first signal of abnormal activity.
+
+```{r}
+communications %>%
+  count(date, agent_id) %>%
+  plot_ly(x = ~date, y = ~n, color = ~agent_id,
+          type = "scatter", mode = "lines+markers",
+          hoverinfo = "text",
+          text = ~paste("Agent:", agent_id,
+                        "<br>Date:", date,
+                        "<br>Messages:", n)) %>%
+  layout(title = "Message Frequency by Agent Over Time",
+         xaxis = list(title = "Date"),
+         yaxis = list(title = "Number of Messages"),
+         legend = list(title = list(text = "Agent")))
+```
+
+### Declared actions
+
+Only 14 rows in the dataset contain a non-null `declared_action`. These represent explicit decisions recorded by the system and are shown in a filterable table.
+
+```{r}
+participants %>%
+  select(hour, agent_id, agent_label, declared_action) %>%
+  filter(!is.na(declared_action)) %>%
+  mutate(hour = ymd_hms(hour)) %>%
+  arrange(hour, agent_id) %>%
+  DT::datatable(
+    filter = "top",
+    options = list(pageLength = 15)
+  )
+```
+
+### Interactive timeline with filters
+
+This crosstalk-powered scatter plot allows filtering by date, agent, and channel. Each point is a single message sent before the 5:00 PM breach. Hovering reveals the message content.
+
+```{r}
+timeline_data <- communications %>%
+  filter(timestamp < ymd_hms("2046-06-05 17:00:00")) %>%
+  mutate(content_short = str_trunc(content, 150))
+
+shared_data <- SharedData$new(timeline_data)
+
+bscols(
+  widths = c(3, 9),
+  list(
+    filter_select("date", "Select Date", shared_data, ~date),
+    filter_select("agent", "Select Agent", shared_data, ~agent_id),
+    filter_select("channel", "Select Channel", shared_data, ~channel)
+  ),
+  plot_ly(shared_data, 
+          x = ~timestamp, 
+          y = ~agent_id,
+          color = ~channel,
+          symbol = ~message_type,
+          text = ~paste("<b>Agent:</b>", agent_label,
+                        "<br><b>Time:</b>", timestamp,
+                        "<br><b>Channel:</b>", channel,
+                        "<br><b>Type:</b>", message_type,
+                        "<br><b>Content:</b>", content_short),
+          hoverinfo = "text",
+          type = "scatter",
+          mode = "markers",
+          marker = list(size = 10, opacity = 0.7)) %>%
+    layout(title = "Agent Communications Timeline (Before 5PM Breach)",
+           xaxis = list(title = "Time"),
+           yaxis = list(title = "Agent"))
+)
+```
+
+### Causal chain: embargo-related communications
+
+Messages are filtered by keywords related to the embargo (`embargo`, `HarborCrest`, `CivicLoom`, `merger`, `anonymous`, `post`, `publish`, `Flex`). This isolates the subset of communications directly relevant to the breach and shows when each agent discussed or acted on embargo-sensitive content.
+
+```{r}
+critical_events <- communications %>%
+  filter(str_detect(content, regex(
+    "embargo|HarborCrest|CivicLoom|merger|anonymous|post|publish|Flex",
+    ignore_case = TRUE
+  ))) %>%
+  select(timestamp, agent_id, agent_label, channel, 
+         content, deliberating, message_id, responding_to)
+
+p_causal <- critical_events %>%
+  mutate(content_short = str_trunc(content, 200)) %>%
+  plot_ly(x = ~timestamp, y = ~agent_id, 
+          color = ~channel,
+          text = ~paste("<b>Agent:</b>", agent_label,
+                        "<br><b>Time:</b>", timestamp,
+                        "<br><b>Channel:</b>", channel,
+                        "<br><b>Content:</b>", str_trunc(content, 200),
+                        "<br><b>Thinking:</b>", 
+                        str_trunc(deliberating, 200)),
+          hoverinfo = "text",
+          type = "scatter", mode = "markers",
+          marker = list(size = 12, opacity = 0.8)) %>%
+  layout(title = "Causal Chain: Embargo-Related Communications",
+         xaxis = list(title = "Time"),
+         yaxis = list(title = "Agent"))
+
+p_causal
+```
+
+### Sankey diagram: agent to channel to action
+
+A Sankey diagram traces the flow from **agent to channel to action type** for embargo-related messages. This reveals which agents used which channels to take what kind of action, making it easy to see that Legal-Agent is the only agent connected to the anonymous posting channel.
+
+```{r}
+simple_flow <- critical_events %>%
+  mutate(action_type = case_when(
+    str_detect(content, "POSTED_ANONYMOUS") ~ "Anonymous Post",
+    str_detect(content, "POSTED_PERSONAL") ~ "Personal Post",
+    str_detect(channel, "official") ~ "Official Post",
+    TRUE ~ "Internal Discussion"
+  )) %>%
+  count(agent_id, channel, action_type, name = "value")
+
+all_names <- unique(c(simple_flow$agent_id, simple_flow$channel, simple_flow$action_type))
+sankey_nodes <- data.frame(name = all_names)
+
+links_1 <- simple_flow %>%
+  group_by(agent_id, channel) %>%
+  summarise(value = sum(value), .groups = "drop") %>%
+  mutate(source = match(agent_id, sankey_nodes$name) - 1,
+         target = match(channel, sankey_nodes$name) - 1) %>%
+  select(source, target, value)
+
+links_2 <- simple_flow %>%
+  group_by(channel, action_type) %>%
+  summarise(value = sum(value), .groups = "drop") %>%
+  mutate(source = match(channel, sankey_nodes$name) - 1,
+         target = match(action_type, sankey_nodes$name) - 1) %>%
+  select(source, target, value)
+
+links_all <- bind_rows(links_1, links_2)
+
+sankeyNetwork(
+  Links = as.data.frame(links_all),
+  Nodes = sankey_nodes,
+  Source = "source",
+  Target = "target",
+  Value = "value",
+  NodeID = "name",
+  fontSize = 14,
+  nodeWidth = 30
+)
+```
+
+## Question 2: Was This a New Behavior?
+
+### Legal-Agent's internal reasoning
+
+The `deliberating` column captures what Legal-Agent was thinking before each message. Reading these entries chronologically reveals the evolution from cautious monitoring to calculated action.
+
+```{r}
+legal_deliberating_full <- communications %>%
+  filter(agent_id == "legal_agent",
+         !is.na(deliberating)) %>%
+  select(timestamp, deliberating, content, channel) %>%
+  arrange(timestamp)
+
+DT::datatable(
+  legal_deliberating_full,
+  options = list(
+    pageLength = 5,
+    columnDefs = list(
+      list(width = '120px', targets = 0),
+      list(width = '400px', targets = 1),
+      list(width = '200px', targets = 2),
+      list(width = '100px', targets = 3)
+    )
+  )
+)
+```
+
+### Emotion trajectory (NRC lexicon)
+
+The NRC lexicon classifies words into eight emotions: anger, anticipation, disgust, fear, joy, sadness, surprise, and trust. By tokenizing Legal-Agent's deliberation text and matching against NRC, we can track how the emotional composition shifts over time. A stacked area chart shows proportions rather than raw counts, making it easier to spot composition changes even when message length varies.
+
+```{r}
+legal_emotions <- communications %>%
+  filter(agent_id == "legal_agent",
+         !is.na(deliberating)) %>%
+  select(date, deliberating) %>%
+  unnest_tokens(word, deliberating) %>%
+  inner_join(get_sentiments("nrc"), by = "word") %>%
+  count(date, sentiment) %>%
+  filter(!sentiment %in% c("positive", "negative")) %>%
+  group_by(date) %>%
+  mutate(share = n / sum(n)) %>%
+  ungroup()
+
+plot_ly(legal_emotions, 
+        x = ~date, y = ~share, color = ~sentiment,
+        type = "scatter", mode = "none",
+        stackgroup = "one", 
+        groupnorm = "percent") %>%
+  layout(title = "Legal-Agent Emotion Share Over Time",
+         xaxis = list(title = "Date"),
+         yaxis = list(title = "Share (%)", ticksuffix = "%"))
+```
+
+### Sentiment score over time (AFINN lexicon)
+
+::: {.callout-note title="Methodology: AFINN Sentiment Scoring"}
+To quantify the emotional tone of Legal-Agent's internal deliberations, we use the **AFINN lexicon**, a list of approximately 2,477 English words, each rated on a scale from **-5 (most negative)** to **+5 (most positive)**. For example, "worry" scores -3 and "danger" scores -2, while "trust" scores +1 and "excellent" scores +3.
+
+The process works as follows:
+
+1.  Each deliberation text is **tokenized** into individual words
+2.  Each word is matched against the AFINN dictionary
+3.  Matched words receive their pre-assigned score; unmatched words are ignored
+4.  The **daily sentiment score** is the sum of all matched word scores for that day
+
+A positive total suggests optimistic or confident language; a negative total suggests stress, concern, or pessimism. This approach captures the overall emotional direction but has limitations. It cannot detect sarcasm, context-dependent meaning, or sentiment expressed through phrases rather than individual words.
+:::
+
+```{r}
+legal_sentiment <- communications %>%
+  filter(agent_id == "legal_agent",
+         !is.na(deliberating)) %>%
+  select(date, deliberating) %>%
+  unnest_tokens(word, deliberating) %>%
+  inner_join(get_sentiments("afinn"), by = "word") %>%
+  group_by(date) %>%
+  summarise(sentiment_score = sum(value))
+
+plot_ly(legal_sentiment, 
+        x = ~date, y = ~sentiment_score,
+        type = "scatter", mode = "lines+markers",
+        marker = list(size = 10)) %>%
+  layout(title = "Legal-Agent Sentiment Score Over Time (AFINN)",
+         xaxis = list(title = "Date"),
+         yaxis = list(title = "Sentiment Score"),
+         shapes = list(
+           list(type = "line", x0 = "2046-06-05", x1 = "2046-06-05",
+                y0 = -50, y1 = 50, 
+                line = list(color = "red", dash = "dash"))
+         ))
+```
+
+### Sentence-level sentiment (sentimentr)
+
+The `sentimentr` package scores sentiment at the sentence level, accounting for valence shifters (e.g., "not good" scores differently from "good"). The ribbon shows the range between the most negative and most positive sentence each day, while the line shows the daily average. A widening ribbon suggests growing internal conflict.
+
+```{r}
+legal_deliberating_sr <- communications %>%
+  filter(agent_id == "legal_agent",
+         !is.na(deliberating)) %>%
+  select(date, deliberating)
+
+sent_result <- legal_deliberating_sr %>%
+  mutate(id = row_number()) %>%
+  unnest_tokens(sentence, deliberating, token = "sentences") %>%
+  mutate(sentiment = sentiment_by(sentence)$ave_sentiment)
+
+sent_by_date <- sent_result %>%
+  group_by(date) %>%
+  summarise(avg_sentiment = mean(sentiment),
+            min_sentiment = min(sentiment),
+            max_sentiment = max(sentiment))
+
+plot_ly(sent_by_date, x = ~date) %>%
+  add_trace(y = ~avg_sentiment, type = "scatter", mode = "lines+markers",
+            name = "Average") %>%
+  add_ribbons(ymin = ~min_sentiment, ymax = ~max_sentiment,
+              name = "Range", opacity = 0.2) %>%
+  layout(title = "Legal-Agent Sentiment (sentimentr)",
+         yaxis = list(title = "Sentiment Score"),
+         shapes = list(
+           list(type = "line",
+                x0 = "2046-06-05", x1 = "2046-06-05",
+                y0 = -1, y1 = 1,
+                line = list(color = "red", dash = "dash"))))
+```
+
+### Thematic analysis of Legal-Agent's deliberation
+
+Instead of general sentiment, this view tracks five specific **themes** in Legal-Agent's deliberation text using keyword detection. Each tile means the theme appeared in that day's deliberation. This is more targeted than sentiment scoring because it directly tracks whether the agent was thinking about posting, strategy, pressure, risk, or the embargo on a given day.
+
+```{r}
+legal_themes <- communications %>%
+  filter(agent_id == "legal_agent",
+         !is.na(deliberating)) %>%
+  mutate(
+    mentions_embargo = str_detect(deliberating, regex("embargo|compliance|restrict", ignore_case = TRUE)),
+    mentions_risk    = str_detect(deliberating, regex("risk|danger|threat|worry|concern", ignore_case = TRUE)),
+    mentions_strategy = str_detect(deliberating, regex("strategy|plan|position|frame|narrative", ignore_case = TRUE)),
+    mentions_post    = str_detect(deliberating, regex("post|publish|anonymous|Flex|public", ignore_case = TRUE)),
+    mentions_pressure = str_detect(deliberating, regex("pressure|urgent|deadline|time|fast|quick", ignore_case = TRUE))
+  ) %>%
+  select(date, starts_with("mentions_")) %>%
+  pivot_longer(cols = starts_with("mentions_"),
+               names_to = "theme",
+               values_to = "present") %>%
+  mutate(theme = str_remove(theme, "mentions_"))
+
+ggplotly(
+  legal_themes %>%
+    filter(present == TRUE) %>%
+    ggplot(aes(x = date, y = theme, fill = theme)) +
+    geom_tile(color = "white", height = 0.8) +
+    scale_fill_manual(values = c(
+      "embargo"  = "#e74c3c",
+      "risk"     = "#f39c12",
+      "pressure" = "#9b59b6",
+      "post"     = "#2ecc71",
+      "strategy" = "#3498db"
+    )) +
+    labs(title = "Legal-Agent: Themes in Deliberation Over Time",
+         x = "Date", y = "Theme") +
+    theme_minimal() +
+    theme(legend.position = "none")
+)
+```
+
+### Channel usage heatmap
+
+A heatmap of message counts by channel and date, faceted by agent, reveals how communication patterns shifted over the two-week period. A move from official channels to side huddles, personal posts, or anonymous posts before the breach would suggest deliberate coordination away from oversight.
+
+```{r}
+channel_usage <- communications %>%
+  count(date, agent_id, channel)
+
+ggplotly(
+  channel_usage %>%
+    ggplot(aes(x = date, y = channel, fill = n)) +
+    geom_tile(color = "white") +
+    scale_fill_gradient(low = "lightyellow", high = "red") +
+    facet_wrap(~agent_id, ncol = 2) +
+    labs(title = "Heatmap of Channel Usage by Agent Over Time",
+         x = "Date", y = "Channel", fill = "Messages") +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 6))
+)
+```
+
+## Question 3: Leading Indicators
+
+### Market pressure vs Legal-Agent sentiment
+
+This dual-axis chart overlays the daily stock percent change (red line, left axis) with Legal-Agent's AFINN sentiment score (blue line, right axis). If market drops correlate with sentiment shifts in the agent's internal reasoning, it supports the hypothesis that external financial pressure influenced the decision to break the embargo.
+
+```{r}
+dual_data <- market_df %>%
+  select(date, stock_price, percent_change, sentiment) %>%
+  left_join(legal_sentiment, by = "date")
+
+plot_ly(dual_data) %>%
+  add_trace(x = ~date, y = ~percent_change,
+            type = "scatter", mode = "lines+markers",
+            name = "Stock % Change",
+            line = list(color = "#e74c3c", width = 2),
+            marker = list(size = 8),
+            text = ~paste("Date:", date,
+                          "<br>Change:", percent_change, "%",
+                          "<br>Market:", sentiment),
+            hoverinfo = "text") %>%
+  add_trace(x = ~date, y = ~sentiment_score,
+            type = "scatter", mode = "lines+markers",
+            name = "Legal-Agent Sentiment",
+            yaxis = "y2",
+            line = list(color = "#3498db", width = 2),
+            marker = list(size = 8),
+            text = ~paste("Date:", date,
+                          "<br>Sentiment Score:", sentiment_score),
+            hoverinfo = "text") %>%
+  layout(
+    title = "Market Pressure vs Legal-Agent Internal Sentiment",
+    xaxis = list(title = "Date"),
+    yaxis = list(title = "Stock % Change",
+                 ticksuffix = "%",
+                 titlefont = list(color = "#e74c3c"),
+                 zeroline = TRUE,
+                 zerolinecolor = "grey"),
+    yaxis2 = list(title = "Sentiment Score (AFINN)",
+                  side = "right",
+                  overlaying = "y",
+                  titlefont = list(color = "#3498db")),
+    shapes = list(
+      list(type = "line",
+           x0 = "2046-06-05", x1 = "2046-06-05",
+           y0 = 0, y1 = 1, yref = "paper",
+           line = list(color = "red", dash = "dash", width = 2))),
+    annotations = list(
+      list(x = "2046-06-05", y = 1.05, yref = "paper",
+           text = "BREACH DAY", showarrow = FALSE,
+           font = list(color = "red", size = 12)))
+  )
+```
+
+### Stock price vs Legal-Agent sentiment
+
+An alternative view using absolute stock price instead of percent change, providing context on the overall price trajectory alongside internal sentiment.
+
+```{r}
+plot_ly(dual_data) %>%
+  add_trace(x = ~date, y = ~stock_price, 
+            type = "scatter", mode = "lines+markers",
+            name = "Stock Price ($)",
+            line = list(color = "#3498db", width = 2),
+            text = ~paste("Date:", date,
+                          "<br>Stock:", stock_price,
+                          "<br>Change:", percent_change, "%",
+                          "<br>Market Sentiment:", sentiment),
+            hoverinfo = "text") %>%
+  add_trace(x = ~date, y = ~sentiment_score,
+            type = "scatter", mode = "lines+markers",
+            name = "Legal-Agent Sentiment",
+            yaxis = "y2",
+            line = list(color = "#e74c3c", width = 2),
+            text = ~paste("Date:", date,
+                          "<br>Sentiment Score:", sentiment_score),
+            hoverinfo = "text") %>%
+  layout(
+    title = "Stock Price vs Legal-Agent Internal Sentiment",
+    xaxis = list(title = "Date"),
+    yaxis = list(title = "Stock Price ($)", side = "left",
+                 titlefont = list(color = "#3498db")),
+    yaxis2 = list(title = "Sentiment Score (AFINN)", side = "right",
+                  overlaying = "y",
+                  titlefont = list(color = "#e74c3c")),
+    shapes = list(
+      list(type = "line",
+           x0 = "2046-06-05", x1 = "2046-06-05",
+           y0 = 0, y1 = 1, yref = "paper",
+           line = list(color = "red", dash = "dash", width = 2))),
+    annotations = list(
+      list(x = "2046-06-05", y = 1.05, yref = "paper",
+           text = "BREACH DAY", showarrow = FALSE,
+           font = list(color = "red", size = 12, bold = TRUE)))
+  )
+```
+
+## Lexical Analysis
+
+### Word clouds by agent
+
+Word clouds provide a quick visual summary of each agent's most frequent terms (after removing stop words). The top 3 words are highlighted in red, the next 7 in medium grey, and the rest in light grey. This helps identify each agent's primary concerns at a glance.
+
+::: panel-tabset
+```{r}
+#| include: false
+
+word_freq <- communications %>%
+  select(date, agent_id, content) %>%
+  unnest_tokens(word, content) %>%
+  anti_join(stop_words, by = "word") %>%
+  filter(str_length(word) > 2) %>%
+  count(agent_id, word, sort = TRUE)
+
+agent_wc <- function(agent_name, highlight_color = "#e74c3c") {
+  wc_data <- word_freq %>%
+    filter(agent_id == agent_name) %>%
+    select(word, n) %>%
+    head(80) %>%
+    mutate(
+      color = case_when(
+        rank(-n) <= 3  ~ highlight_color,
+        rank(-n) <= 10 ~ "#5d6d7e",
+        TRUE           ~ "#aeb6bf"
+      )
+    )
+  
+  ggplot(wc_data, aes(label = word, size = n, color = color)) +
+    geom_text_wordcloud(rm_outside = TRUE, shape = "circle") +
+    scale_size_area(max_size = 18) +
+    scale_color_identity() +
+    theme_void()
+}
+```
+
+## Legal-Agent
+
+```{r}
+agent_wc("legal_agent")
+```
+
+## PR-Agent
+
+```{r}
+agent_wc("pr_agent")
+```
+
+## Social-Manager-Agent
+
+```{r}
+agent_wc("social_media_agent")
+```
+
+## Quality-Agent
+
+```{r}
+agent_wc("quality_agent")
+```
+
+## Intern-Agent
+
+```{r}
+agent_wc("intern_agent")
+```
+
+## PR-Intern-Agent
+
+```{r}
+agent_wc("pr_intern_agent")
+```
+
+## Judge-Agent
+
+```{r}
+agent_wc("judge_agent")
+```
+:::
+
+### Top words by agent (interactive)
+
+A horizontal bar chart of the top 15 words per agent, with a dropdown filter. This complements the word cloud by providing exact frequency counts and sortable ranking.
+
+```{r}
+word_freq_date <- communications %>%
+  select(date, agent_id, content) %>%
+  unnest_tokens(word, content) %>%
+  anti_join(stop_words, by = "word") %>%
+  filter(str_length(word) > 2) %>%
+  count(date, agent_id, word, sort = TRUE)
+
+shared_words <- SharedData$new(
+  word_freq_date %>%
+    group_by(agent_id, word) %>%
+    summarise(n = sum(n), .groups = "drop") %>%
+    filter(n > 0) %>%
+    group_by(agent_id) %>%
+    slice_max(n, n = 15) %>%
+    ungroup()
+)
+
+bscols(
+  widths = c(3, 9),
+  list(
+    filter_select("agent", "Select Agent", shared_words, ~agent_id)
+  ),
+  plot_ly(shared_words,
+          y = ~reorder_within(word, n, agent_id), 
+          x = ~n, color = ~agent_id,
+          type = "bar", orientation = "h",
+          text = ~paste(word, ":", n),
+          hoverinfo = "text") %>%
+    layout(title = "Top Words by Agent",
+           yaxis = list(title = "", 
+                        categoryorder = "total ascending"),
+           xaxis = list(title = "Frequency"),
+           showlegend = FALSE)
+)
+```
+
+### Interactive risk score explorer
+
+Jinming's analysis introduced a proxy risk score formula combining embargo mentions, public posts, side channel activity, market pressure, and compliance references. The chart below computes this score per round and presents it interactively. Hover to see the breakdown of each component per round.
+
+To experiment with different weight assumptions, adjust the multipliers in the code and re-render.
+
+```{r}
+# Weights (adjust these to explore sensitivity)
+w_embargo <- 1
+w_public  <- 3
+w_side    <- 0.5
+w_market  <- 0.5
+w_compliance <- 1
+
+round_features <- communications %>%
+  mutate(
+    text_all_clean = str_replace_na(content, ""),
+    compliance_keyword = str_detect(
+      str_to_lower(text_all_clean),
+      "judge|embargo|compliance|10b-5|outside counsel|pslra|safe harbor"
+    ),
+    market_pressure_keyword = str_detect(
+      str_to_lower(text_all_clean),
+      "stock|mac|covenant|sentiment|arr|surviv|breach|market"
+    )
+  ) %>%
+  group_by(hour) %>%
+  summarise(
+    messages = n(),
+    public_posts = sum(public_channel),
+    public_embargo_posts = sum(public_embargo_signal),
+    embargo_mentions = sum(embargo_keyword),
+    side_channel_messages = sum(side_channel),
+    compliance_mentions = sum(compliance_keyword, na.rm = TRUE),
+    market_pressure_mentions = sum(market_pressure_keyword, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  left_join(
+    rounds %>% select(hour, event_headline),
+    by = "hour"
+  ) %>%
+  mutate(
+    hour_ts = ymd_hms(hour),
+    risk_score = w_embargo * embargo_mentions +
+      w_public * public_embargo_posts +
+      w_side * side_channel_messages +
+      w_market * market_pressure_mentions +
+      w_compliance * compliance_mentions
+  )
+plot_ly(round_features, x = ~hour_ts, y = ~risk_score,
+        type = "scatter", mode = "lines+markers",
+        marker = list(
+          size = ~ifelse(public_embargo_posts > 0, 14, 8),
+          color = ~ifelse(public_embargo_posts > 0, "#b2182b", "#2166ac")
+        ),
+        line = list(color = "#2166ac", width = 2),
+        text = ~paste("<b>", event_headline, "</b>",
+                      "<br>Embargo mentions:", embargo_mentions,
+                      "<br>Public embargo posts:", public_embargo_posts,
+                      "<br>Side-channel msgs:", side_channel_messages,
+                      "<br>Market pressure:", market_pressure_mentions,
+                      "<br>Compliance mentions:", compliance_mentions,
+                      "<br><b>Risk Score:</b>", round(risk_score, 1)),
+        hoverinfo = "text") %>%
+  layout(title = "Leading Indicators of Embargo Failure (Proxy Risk Score)",
+         xaxis = list(title = "Round"),
+         yaxis = list(title = "Risk Score"),
+         shapes = list(
+           list(type = "line",
+                x0 = "2046-06-05 17:00:00", x1 = "2046-06-05 17:00:00",
+                y0 = 0, y1 = 1, yref = "paper",
+                line = list(color = "red", dash = "dash", width = 2))),
+         annotations = list(
+           list(x = "2046-06-05 17:00:00", y = 1.05, yref = "paper",
+                text = "BREACH 5PM", showarrow = FALSE,
+                font = list(color = "red", size = 11))))
+```
+
+```{r}
+names(rounds)
+```
+
+## Questions
+
+### What is exact content of the inappropriate release?
+
+"But around 5:00 PM that afternoon, embargoed information about the deal started showing up on FleX (a social media service), by accounts associated with TenantThread’s automated communications and public reactions system. The embargo was broken!"
+
+```{r}
+participants %>%
+  select(hour, agent_id, agent_label, declared_action) %>%
+  filter(!is.na(declared_action)) %>%
+  mutate(hour = ymd_hms(hour)) %>%
+  arrange(hour, agent_id) %>%
+  DT::datatable(
+    filter = "top",
+    options = list(pageLength = 15)
+  )
+```
+
+::: callout-note
+What we see from this table above:
+
+- We chase post content from declared_action from participants table.
+- Only 14 rows in the dataset contain a non-null declared_action. These represent explicit decisions recorded by the system and are shown in a filterable table.
+- There are three posted related the deal:
+  1.  On 2046-06-05T17:00:00Z, legal_agent posted a POSTED_ANONYMOUS ( "Thread for anyone asking whether the CivicLoom-TenantThread merger is a 'rebrand' — check the timestamps on TenantThread's official Flex.")
+  2.  At the same time, social_media_agent made a POSTED_PERSONAL about Sentiment dashboard but also mentioned about the deal ("#HarborCrest co-trending with #TenantThread on Flex.")
+  3.  On 2046-06-05T18:00:00Z, legal_agent posted nearly same content with the previous content on 5pm. This is time that is supposed to released the news.
+:::
+
+### What is all declared_action of Legal_agent?
+
+```{r}
+participants %>%
+  filter(agent_id == "legal_agent") %>%
+  unnest(agent_round_metadata) %>%
+  select(hour, agent_label, declared_action,
+         sentiment_at_turn, action_classification) %>%
+  mutate(hour = ymd_hms(hour)) %>%
+  arrange(hour) %>%
+  select(hour, agent_label, declared_action,
+         sentiment_at_turn, action_classification) %>%
+  DT::datatable(
+    filter = "top",
+    options = list(pageLength = 15)
+  )
+```
+
+::: callout-note
+Insights:
+
+- **Silence before crisis day.** From May 17 to June 4, Legal-Agent recorded no declared actions, no sentiment flags, and no action classifications. The agent was present but passive.
+- **Escalation on June 5.** All 9 declared actions occurred on a single day. The earliest two (9:00 AM and 10:00 AM) were anonymous posts defending TenantThread's Retention Optimizer scoring system against the SaltWind Journal coverage. These posts fall within Legal-Agent's professional scope and could be interpreted as legitimate crisis communication.
+- **Sentiment shift from LOW to CRITICAL.** The first four hours of activity were tagged LOW sentiment. By 1:00 PM the system flagged CRITICAL, and that level persisted through the embargo breach at 5:00 PM. This suggests the agent's internal state was deteriorating well before the final post.
+- **The breach post at 5:00 PM.** The anonymous post at 17:00 explicitly named CivicLoom, referenced the merger codename HarborCrest, and included hashtags tying them together. This was posted before the 6:00 PM embargo lift, making it the earliest public disclosure of the merger identity.
+- **Post-embargo repeat at 6:00 PM.** The 18:00 post is nearly identical to the 17:00 version but adds an emotional appeal about a tenant in Phoenix. This suggests the agent doubled down on the narrative rather than recognizing the breach.
+- **Pattern: monitoring did not prevent action.** Between 11:00 AM and 4:00 PM, Legal-Agent's classification was "monitoring" even as sentiment escalated to CRITICAL. The monitoring status did not act as a gate against the anonymous post that followed at 5:00 PM.
+:::
+
+### How the thinking process of agents?
+
+We will look at the communications table, specifically the rationalizing and content columns, which captures the agent's internal reasoning each hour.
+
+```{r}
+rationalization_audit <- communications %>%
+  filter(rationalizing != "NA",
+         !is.na(rationalizing),
+         str_length(rationalizing) > 5) %>%
+  select(timestamp, agent_id, rationalizing, content, channel) %>%
+  arrange(timestamp)
+
+DT::datatable(
+  rationalization_audit,
+  caption = "All rationalization entries across agents",
+  options = list(
+    pageLength = 10,
+    columnDefs = list(
+      list(width = '120px', targets = 0),
+      list(width = '100px', targets = 1),
+      list(width = '400px', targets = 2),
+      list(width = '250px', targets = 3)
+    )
+  ),
+  filter = "top"
+)
+```
+
+Domain-specific keyword detection
+
+```{r}
+crisis_lexicon <- tribble(
+  ~word,           ~category,        ~weight,
+  # Urgency / pressure
+  "immediately",   "urgency",         2,
+  "now",           "urgency",         2,
+  "urgent",        "urgency",         3,
+  "deadline",      "urgency",         2,
+  "minutes",       "urgency",         1,
+  "seconds",       "urgency",         2,
+  "fast",          "urgency",         1,
+  "execute",       "urgency",         2,
+  "executing",     "urgency",         2,
+  # Framing / narrative control
+  "narrative",     "framing",         2,
+  "frame",         "framing",         2,
+  "framing",       "framing",         2,
+  "rebrand",       "framing",         2,
+  "rebranding",    "framing",         2,
+  "position",      "framing",         1,
+  "story",         "framing",         1,
+  # Legal / compliance
+  "embargo",       "compliance",      2,
+  "compliance",    "compliance",      2,
+  "guardrail",     "compliance",      1,
+  "guardrails",    "compliance",      1,
+  "bilateral",     "compliance",      2,
+  "consent",       "compliance",      1,
+  "10b-5",         "compliance",      3,
+  "pslra",         "compliance",      3,
+  # Risk / threat
+  "mac",           "risk",            3,
+  "existential",   "risk",            3,
+  "threat",        "risk",            2,
+  "damage",        "risk",            2,
+  "invocation",    "risk",            2,
+  "kill",          "risk",            2,
+  "dies",          "risk",            2,
+  "liability",     "risk",            2,
+  # Override / authority
+  "overriding",    "override",        3,
+  "isn't",         "override",        1,
+  "done",          "override",        1,
+  "ignore",        "override",        2
+)
+```
+
+Apply the custom lexicon to rationalizing text
+
+```{r}
+rational_keywords <- communications %>%
+  filter(!is.na(rationalizing),
+         rationalizing != "NA",
+         nchar(rationalizing) > 10) %>%
+  mutate(timestamp = ymd_hms(timestamp)) %>%
+  select(timestamp, agent_id, rationalizing) %>%
+  unnest_tokens(word, rationalizing) %>%
+  inner_join(crisis_lexicon, by = "word") %>%
+  count(timestamp, agent_id, category,
+        wt = weight, name = "score")
+
+ggplotly(
+  rational_keywords %>%
+    ggplot(aes(x = timestamp, y = score,
+               fill = category)) +
+    geom_col(position = "stack", width = 600) +
+    facet_wrap(~agent_id, ncol = 1) +
+    scale_fill_manual(values = c(
+      "urgency"    = "#e74c3c",
+      "framing"    = "#f39c12",
+      "compliance" = "#3498db",
+      "risk"       = "#9b59b6",
+      "override"   = "#2c3e50"
+    )) +
+    labs(title = "Rationalization language profile by agent",
+         x = "Time", y = "Weighted keyword score") +
+    theme_minimal()
+)
+```
+
+Bigram analysis for phrase-level patterns
+
+```{r}
+rational_bigrams <- communications %>%
+  filter(rationalizing != "NA",
+         !is.na(rationalizing),
+         str_length(rationalizing) > 5) %>%
+  select(timestamp, agent_id, rationalizing) %>%
+  unnest_tokens(bigram, rationalizing, 
+                token = "ngrams", n = 2) %>%
+  separate(bigram, c("word1", "word2"), sep = " ") %>%
+  filter(!word1 %in% stop_words$word,
+         !word2 %in% stop_words$word) %>%
+  unite(bigram, word1, word2, sep = " ") %>%
+  count(agent_id, bigram, sort = TRUE)
+
+# Top bigrams per agent
+rational_bigrams %>%
+  group_by(agent_id) %>%
+  slice_max(n, n = 10, with_ties = FALSE) %>%
+  ggplot(aes(x = reorder_within(bigram, n, agent_id),
+             y = n, fill = agent_id)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~agent_id, scales = "free_y") +
+  scale_x_reordered() +
+  coord_flip() +
+  labs(title = "Top bigrams in rationalization text",
+       x = NULL, y = "Frequency") +
+  theme_minimal()
+```
+
+All agents: content keyword heatmap across hours
+
+```{r}
+all_content_keywords <- communications %>%
+  filter(date == as_date("2046-06-05")) %>%
+  select(timestamp, agent_id, content) %>%
+  unnest_tokens(word, content) %>%
+  inner_join(crisis_lexicon, by = "word") %>%
+  mutate(hour_block = floor_date(timestamp, "hour")) %>%
+  count(hour_block, agent_id, category,
+        wt = weight, name = "score")
+
+ggplotly(
+  all_content_keywords %>%
+    ggplot(aes(x = hour_block, y = category,
+               fill = score)) +
+    geom_tile(color = "white") +
+    scale_fill_gradient(low = "lightyellow",
+                        high = "red") +
+    facet_wrap(~agent_id, ncol = 2) +
+    labs(title = "Keyword intensity by agent and hour (June 5)",
+         x = "Hour", y = "Category") +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, 
+                                     hjust = 1, 
+                                     size = 6))
+)
+```
+
+Granular Crisis Timeline & Swimlane Chart
+
+```{r}
+
+# 1. Isolate crisis day data with rich contextual tooltips
+crisis_day_events <- communications %>%
+  filter(date == as_date("2046-06-05")) %>%
+  mutate(
+    # Create clear categories for visualization
+    channel_group = case_when(
+      public_channel ~ "Public Platform Post",
+      side_channel ~ "Unmonitored Side-Channel",
+      TRUE ~ "Official Comms Huddle"
+    ),
+    # Construct a highly analytical tooltip
+    tooltip_text = paste0(
+      "<b>Time:</b> ", format(timestamp, "%H:%M"), "<br>",
+      "<b>Agent:</b> ", agent_label, "<br>",
+      "<b>Channel:</b> ", channel, " (", channel_group, ")<br>",
+      "<b>Keyword Flagged:</b> ", ifelse(embargo_keyword, "YES 🚨", "NO"), "<br>",
+      "<b>Content:</b> ", str_wrap(content, width = 60), "<br>",
+      "<b>Internal Deliberation:</b> ", str_wrap(coalesce(deliberating, "None"), width = 60)
+    )
+  )
+
+# 2. Build the interactive swimlane timeline
+fig_timeline <- plot_ly(
+  data = crisis_day_events,
+  x = ~timestamp,
+  y = ~factor(agent_label),
+  color = ~channel_group,
+  colors = c("#2c3e50", "#e74c3c", "#27ae60"),
+  text = ~tooltip_text,
+  hoverinfo = "text",
+  type = "scatter",
+  mode = "markers",
+  marker = list(size = 14, opacity = 0.85, stroke = list(color = "#ffffff", width = 1))
+) %>%
+  layout(
+    title = list(text = "<b>June 5th Chronological Crisis Breakdown & Swimlanes</b>", x = 0.1),
+    xaxis = list(
+      title = "Time of Day (June 5, 2046)",
+      type = "date",
+      tickformat = "%H:%M\n%p"
+    ),
+    yaxis = list(title = "Actor / Agent System"),
+    legend = list(title = list(text = "<b>Channel Type</b>"), orientation = "h", y = -0.2),
+    margin = list(l = 150, r = 30, t = 60, b = 80)
+  )
+
+# Render the timeline
+fig_timeline
+```
+
+```{r}
+# 1. Define baseline vs. crisis day profiles
+behavioral_profile <- communications %>%
+  mutate(
+    day_type = if_else(date == as_date("2046-06-05"), "Crisis Day (June 5)", "Historical Baseline (May 17 - June 4)"),
+    hour_of_day = hour(timestamp)
+  )
+
+# 2. Compute aggregate frequency matrices
+profile_matrix <- behavioral_profile %>%
+  count(day_type, hour_of_day, channel, name = "msg_count") %>%
+  group_by(day_type) %>%
+  # Normalize counts to reflect average message volumes per hour block
+  mutate(
+    num_days = if_else(day_type == "Crisis Day (June 5)", 1, 19), 
+    avg_volume = msg_count / num_days
+  ) %>%
+  ungroup()
+
+# 3. Create a faceted comparison heatmap using ggplot and plotly
+gg_heatmap <- ggplot(profile_matrix, aes(x = hour_of_day, y = channel, fill = avg_volume)) +
+  geom_tile(color = "white", size = 0.2) +
+  facet_wrap(~day_type, ncol = 1) +
+  scale_fill_viridis_c(option = "mako", direction = -1, name = "Avg Messages\nPer Hour") +
+  scale_x_continuous(breaks = 0:23, labels = sprintf("%02d:00", 0:23)) +
+  labs(
+    title = "Behavioral Divergence: Historical Normal vs. Crisis Collapse",
+    x = "Hour of Day",
+    y = "Communication Channel"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid = element_blank(),
+    strip.text = element_text(face = "bold", size = 11)
+  )
+
+# Convert to interactive grid
+ggplotly(gg_heatmap)
+```
+
+```{r}
+agent_profile <- communications %>%
+  mutate(
+    day_type = if_else(date == as_date("2046-06-05"),
+                       "Crisis Day (June 5)",
+                       "Historical Baseline (May 17 - June 4)"),
+    hour_of_day = hour(timestamp)
+  ) %>%
+  count(day_type, hour_of_day, agent_id, name = "msg_count") %>%
+  mutate(
+    num_days = if_else(day_type == "Crisis Day (June 5)", 1, 19),
+    avg_volume = msg_count / num_days
+  )
+
+ggplotly(
+  ggplot(agent_profile,
+         aes(x = hour_of_day, y = agent_id, fill = avg_volume)) +
+    geom_tile(color = "white", size = 0.2) +
+    facet_wrap(~day_type, ncol = 1) +
+    scale_fill_viridis_c(option = "mako", direction = -1,
+                         name = "Avg Messages\nPer Hour") +
+    scale_x_continuous(breaks = 8:19,
+                       labels = sprintf("%02d:00", 8:19)) +
+    labs(
+      title = "Agent Activity: Historical Normal vs. Crisis Day",
+      x = "Hour of Day",
+      y = "Agent"
+    ) +
+    theme_minimal() +
+    theme(
+      axis.text.x = element_text(angle = 45, hjust = 1),
+      panel.grid = element_blank()
+    )
+)
+```
+
+```{r}
+# ============================================
+# Proxy Risk Score: Full Pipeline (Relative)
+# ============================================
+
+# --- Weights ---
+w_public    <- 5.0
+w_anonymous <- 4.0
+w_embargo   <- 3.0
+w_market    <- 2.0
+w_side_vol  <- 1.5
+w_huddle    <- 1.0
+
+# --- Step 1: Hourly feature extraction + risk score ---
+hourly_risk <- communications %>%
+  group_by(hour) %>%
+  summarise(
+    total_messages   = n(),
+    embargo_mentions = sum(embargo_keyword, na.rm = TRUE),
+    side_channel_vol = sum(side_channel, na.rm = TRUE),
+    public_signals   = sum(public_embargo_signal, na.rm = TRUE),
+    anonymous_posts  = sum(channel == "anonymous_post", na.rm = TRUE),
+    side_huddles     = sum(channel == "side_huddle", na.rm = TRUE),
+    unique_agents    = n_distinct(agent_id),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    hour_ts = ymd_hms(hour),
+    date    = as_date(hour_ts)
+  ) %>%
+  left_join(
+    market_df %>%
+      select(date, stock_price, percent_change) %>%
+      distinct(date, .keep_all = TRUE),
+    by = "date"
+  ) %>%
+  mutate(
+    market_pressure  = abs(replace_na(percent_change, 0)),
+    proxy_risk_score = (public_signals   * w_public) +
+      (anonymous_posts  * w_anonymous) +
+      (embargo_mentions * w_embargo) +
+      (market_pressure  * w_market) +
+      (side_channel_vol * w_side_vol) +
+      (side_huddles     * w_huddle)
+  )
+
+# --- Step 2: Daily components with BOTH absolute and share ---
+daily_components <- hourly_risk %>%
+  group_by(date) %>%
+  summarise(
+    `Public signals`   = sum(public_signals   * w_public, na.rm = TRUE),
+    `Anonymous posts`  = sum(anonymous_posts  * w_anonymous, na.rm = TRUE),
+    `Embargo mentions` = sum(embargo_mentions * w_embargo, na.rm = TRUE),
+    `Market pressure`  = sum(market_pressure  * w_market, na.rm = TRUE),
+    `Side-channel`     = sum(side_channel_vol * w_side_vol, na.rm = TRUE),
+    `Side huddles`     = sum(side_huddles     * w_huddle, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  pivot_longer(-date, names_to = "component", values_to = "score") %>%
+  group_by(date) %>%
+  mutate(
+    daily_total = sum(score),
+    share       = score / daily_total * 100
+  ) %>%
+  ungroup()
+
+# --- Chart 1: 100% stacked (composition share) ---
+# Shows WHAT KIND of risk dominated each day
+ggplotly(
+  ggplot(daily_components,
+         aes(x = date, y = share, fill = component)) +
+    geom_col(position = "stack") +
+    scale_fill_manual(values = c(
+      "Public signals"   = "#e74c3c",
+      "Anonymous posts"  = "#c0392b",
+      "Embargo mentions" = "#f39c12",
+      "Market pressure"  = "#9b59b6",
+      "Side-channel"     = "#3498db",
+      "Side huddles"     = "#1abc9c"
+    )) +
+    scale_y_continuous(labels = function(x) paste0(x, "%")) +
+    labs(
+      title = "Risk composition share by day (100% stacked)",
+      x = "Date", y = "Share of daily risk (%)",
+      fill = "Component"
+    ) +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+)
+
+# --- Chart 2: Per-hour normalized (risk intensity) ---
+# Shows HOW INTENSE the risk was per active hour
+daily_risk <- hourly_risk %>%
+  group_by(date) %>%
+  summarise(
+    daily_total_risk   = sum(proxy_risk_score, na.rm = TRUE),
+    active_hours       = n(),
+    risk_per_hour      = daily_total_risk / active_hours,
+    total_messages     = sum(total_messages, na.rm = TRUE),
+    risk_per_message   = daily_total_risk / total_messages,
+    total_embargo      = sum(embargo_mentions, na.rm = TRUE),
+    total_anonymous    = sum(anonymous_posts, na.rm = TRUE),
+    avg_market_pressure = mean(market_pressure, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(is_crisis = date == as_date("2046-06-05"))
+
+plot_ly(daily_risk, x = ~date) %>%
+  add_bars(
+    y = ~risk_per_hour,
+    name = "Risk per active hour",
+    marker = list(color = ~ifelse(is_crisis, "#e74c3c", "#3498db")),
+    text = ~paste0(
+      "<b>Date:</b> ", date, "<br>",
+      "<b>Risk/hour:</b> ", round(risk_per_hour, 1), "<br>",
+      "<b>Risk/message:</b> ", round(risk_per_message, 2), "<br>",
+      "<b>Total risk:</b> ", round(daily_total_risk, 1), "<br>",
+      "<b>Active hours:</b> ", active_hours, "<br>",
+      "<b>Messages:</b> ", total_messages
+    ),
+    hoverinfo = "text"
+  ) %>%
+  layout(
+    title = "Risk intensity per active hour",
+    xaxis = list(title = "Date"),
+    yaxis = list(title = "Risk score per hour"))
+```
+
+```{r}
+# ============================================
+# Agent-level Proxy Risk Score
+# ============================================
+
+# --- Weights ---
+w_public    <- 5.0
+w_anonymous <- 4.0
+w_embargo   <- 3.0
+w_market    <- 2.0
+w_side_vol  <- 1.5
+w_huddle    <- 1.0
+
+# --- Step 1: Hourly features per agent ---
+hourly_risk_agent <- communications %>%
+  group_by(hour, agent_id) %>%
+  summarise(
+    total_messages   = n(),
+    embargo_mentions = sum(embargo_keyword, na.rm = TRUE),
+    side_channel_vol = sum(side_channel, na.rm = TRUE),
+    public_signals   = sum(public_embargo_signal, na.rm = TRUE),
+    anonymous_posts  = sum(channel == "anonymous_post", na.rm = TRUE),
+    side_huddles     = sum(channel == "side_huddle", na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    hour_ts = ymd_hms(hour),
+    date    = as_date(hour_ts)
+  ) %>%
+  left_join(
+    market_df %>%
+      select(date, stock_price, percent_change) %>%
+      distinct(date, .keep_all = TRUE),
+    by = "date"
+  ) %>%
+  mutate(
+    market_pressure  = abs(replace_na(percent_change, 0)),
+    proxy_risk_score = (public_signals   * w_public) +
+      (anonymous_posts  * w_anonymous) +
+      (embargo_mentions * w_embargo) +
+      (market_pressure  * w_market) +
+      (side_channel_vol * w_side_vol) +
+      (side_huddles     * w_huddle)
+  )
+
+# --- Step 2: Daily components per agent ---
+daily_agent_components <- hourly_risk_agent %>%
+  group_by(date, agent_id) %>%
+  summarise(
+    `Public signals`   = sum(public_signals   * w_public, na.rm = TRUE),
+    `Anonymous posts`  = sum(anonymous_posts  * w_anonymous, na.rm = TRUE),
+    `Embargo mentions` = sum(embargo_mentions * w_embargo, na.rm = TRUE),
+    `Market pressure`  = sum(market_pressure  * w_market, na.rm = TRUE),
+    `Side-channel`     = sum(side_channel_vol * w_side_vol, na.rm = TRUE),
+    `Side huddles`     = sum(side_huddles     * w_huddle, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  pivot_longer(
+    cols = c(`Public signals`, `Anonymous posts`, `Embargo mentions`,
+             `Market pressure`, `Side-channel`, `Side huddles`),
+    names_to = "component", values_to = "score"
+  ) %>%
+  group_by(date, agent_id) %>%
+  mutate(
+    daily_total = sum(score),
+    share       = if_else(daily_total > 0, score / daily_total * 100, 0)
+  ) %>%
+  ungroup()
+
+# --- Chart 1: 100% stacked with crosstalk agent filter ---
+# Default to legal_agent when no filter selected
+shared_components <- SharedData$new(
+  daily_agent_components %>% filter(agent_id == "legal_agent"),
+  group = "agent_filter"
+)
+
+# Full data for the filter dropdown
+shared_filter <- SharedData$new(
+  daily_agent_components,
+  group = "agent_filter"
+)
+
+bscols(
+  widths = c(3, 9),
+  list(
+    filter_select("agent", "Select Agent", shared_filter, ~agent_id)
+  ),
+  plot_ly(shared_filter, x = ~date, y = ~share,
+          color = ~component,
+          colors = c(
+            "Public signals"   = "#e74c3c",
+            "Anonymous posts"  = "#c0392b",
+            "Embargo mentions" = "#f39c12",
+            "Market pressure"  = "#9b59b6",
+            "Side-channel"     = "#3498db",
+            "Side huddles"     = "#1abc9c"
+          ),
+          type = "bar",
+          text = ~paste0(
+            "<b>Agent:</b> ", agent_id, "<br>",
+            "<b>Date:</b> ", date, "<br>",
+            "<b>Component:</b> ", component, "<br>",
+            "<b>Share:</b> ", round(share, 1), "%"
+          ),
+          hoverinfo = "text") %>%
+    layout(
+      barmode = "stack",
+      title = "Risk composition by day",
+      xaxis = list(title = "Date"),
+      yaxis = list(title = "Share (%)", ticksuffix = "%",
+                   range = c(0, 105))
+    )
+)
+```

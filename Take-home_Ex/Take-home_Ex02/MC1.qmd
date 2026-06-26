@@ -25,7 +25,7 @@ pacman::p_load(jsonlite, tidyverse, plotly,
 #| code-fold: false
 #| 
 if (!file.exists("data/mc1_data.rds")) {
-  mc1_data <- fromJSON("data/mc1_data.json")
+  mc1_data <- fromJSON("data/MC1_final_00.json")
   write_rds(mc1_data, "data/mc1_data.rds")
 }
 
@@ -381,7 +381,9 @@ Insights:
 
 ### 3.1 Compare agent behavior **before vs during** the crisis
 
-**Sentiment analysis** of the deliberating text
+**Sentiment analysis** of the deliberating text.
+
+To quantify the emotional tone of Legal-Agent's internal deliberations, we use the **AFINN lexicon**, a list of approximately 2,477 English words, each rated on a scale from **-5 (most negative)** to **+5 (most positive)**. For example, "worry" scores -3 and "danger" scores -2, while "trust" scores +1 and "excellent" scores +3.
 
 ```{r}
 #| code-fold: true
@@ -437,7 +439,7 @@ plot_ly(legal_emotions,
          yaxis = list(title = "Share (%)", ticksuffix = "%"))
 ```
 
-::: callout-not
+::: callout-note
 **1. Trust drops dramatically on crisis day (Jun 5)**
 
 - Trust (grey) was dominant at \~30-40% throughout, but drops to \~15% on Jun 5
@@ -588,18 +590,25 @@ word_freq <- comms_df %>%
 
 # Word cloud per agent using wordcloud2
 # Pick one agent at a time
-agent_wc <- function(agent_name) {
+agent_wc <- function(agent_name, highlight_color = "#e74c3c", base_color = "#2c3e50") {
   wc_data <- word_freq %>%
     filter(agent_id == agent_name) %>%
     select(word, n) %>%
     head(100)
   
+  # Top 3 words get highlight color, rest get base color with opacity gradient
+  top_n <- 3
+  colors <- case_when(
+    rank(-wc_data$n) <= top_n ~ highlight_color,
+    rank(-wc_data$n) <= 10 ~ "#5d6d7e",   # medium grey for mid-range
+    TRUE ~ "#aeb6bf"                        # light grey for low frequency
+  )
+  
   wordcloud2(wc_data, size = 0.5,
-             color = "random-light",
+             color = colors,
              backgroundColor = "white")
 }
 
-# Example: Legal Agent word cloud
 agent_wc("legal_agent")
 ```
 
@@ -644,11 +653,15 @@ bscols(
 ```
 
 ```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
 # Check what's in market_snapshot
 glimpse(env_df$market_snapshot)
 ```
 
 ```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
 # Extract and clean market data
 market_df <- env_df %>%
   select(hour, market_snapshot) %>%
@@ -715,6 +728,8 @@ plot_ly(dual_data) %>%
 ```
 
 ```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
 plot_ly(dual_data) %>%
   add_trace(x = ~date, y = ~percent_change,
             type = "scatter", mode = "lines+markers",
